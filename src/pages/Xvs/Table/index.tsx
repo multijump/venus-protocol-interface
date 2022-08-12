@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { Typography } from '@mui/material';
-import { Table, TableProps, Token } from 'components';
+import BigNumber from 'bignumber.js';
+import { Table, TableAlign, Token } from 'components';
 import React, { useContext, useMemo } from 'react';
 import { useTranslation } from 'translation';
 import { Asset } from 'types';
@@ -32,79 +33,95 @@ const XvsTableUi: React.FC<XvsTableProps> = ({ assets }) => {
   const { t } = useTranslation();
   const styles = useStyles();
 
-  const columns = useMemo(
-    () => [
-      { key: 'asset', label: t('xvs.columns.asset'), orderable: false, align: 'left' },
-      { key: 'xvsPerDay', label: t('xvs.columns.xvsPerDay'), orderable: true, align: 'right' },
-      {
-        key: 'supplyXvsApy',
-        label: t('xvs.columns.supplyXvsApy'),
-        orderable: true,
-        align: 'right',
-      },
-      {
-        key: 'borrowXvsApy',
-        label: t('xvs.columns.borrowXvsApy'),
-        orderable: true,
-        align: 'right',
-      },
-    ],
-    [],
+  // Format assets to rows
+  const rows = useMemo(
+    () =>
+      assets.map(asset => ({
+        asset: {
+          value: asset.id,
+          align: 'left' as TableAlign,
+        },
+        xvsPerDay: {
+          value: asset.xvsPerDay?.toFixed() || 0,
+          align: 'right' as TableAlign,
+        },
+        supplyXvsApy: {
+          value: asset.xvsSupplyApy?.toFixed() || 0,
+          align: 'right' as TableAlign,
+        },
+        borrowXvsApy: {
+          value: asset.xvsBorrowApy?.toFixed() || 0,
+          align: 'right' as TableAlign,
+        },
+      })),
+    [JSON.stringify(assets)],
   );
 
-  // Format assets to rows
-  const rows: TableProps['data'] = assets.map(asset => [
-    {
-      key: 'asset',
-      render: () => <Token tokenId={asset.id} />,
-      value: asset.id,
-      align: 'left',
-    },
-    {
-      key: 'xvsPerDay',
-      render: () => (
+  const renderCell = ({
+    row,
+    columnKey,
+  }: {
+    row: typeof rows[number];
+    columnKey: keyof typeof rows[number];
+  }) => {
+    if (columnKey === 'asset') {
+      return <Token tokenId={row.asset.value} />;
+    }
+
+    if (columnKey === 'xvsPerDay') {
+      return (
         <Typography variant="small1" css={[styles.whiteText, styles.fontWeight400]}>
           {formatTokensToReadableValue({
-            value: asset.xvsPerDay,
+            value: new BigNumber(row.xvsPerDay.value),
             tokenId: 'xvs',
             minimizeDecimals: true,
           })}
         </Typography>
-      ),
-      value: asset.xvsPerDay?.toFixed() || 0,
-      align: 'right',
-    },
-    {
-      key: 'supplyXvsApy',
-      render: () => (
+      );
+    }
+
+    if (columnKey === 'supplyXvsApy') {
+      return (
         <Typography variant="small1" css={[styles.whiteText, styles.fontWeight400]}>
-          {formatToReadablePercentage(asset.xvsSupplyApy)}
+          {formatToReadablePercentage(row.supplyXvsApy.value)}
         </Typography>
-      ),
-      value: asset.xvsSupplyApy?.toFixed() || 0,
-      align: 'right',
-    },
-    {
-      key: 'borrowXvsApy',
-      render: () => (
+      );
+    }
+
+    if (columnKey === 'borrowXvsApy') {
+      return (
         <Typography variant="small1" css={[styles.whiteText, styles.fontWeight400]}>
-          {formatToReadablePercentage(asset.xvsBorrowApy)}
+          {formatToReadablePercentage(row.borrowXvsApy.value)}
         </Typography>
-      ),
-      value: asset.xvsBorrowApy?.toFixed() || 0,
-      align: 'right',
-    },
-  ]);
+      );
+    }
+  };
 
   return (
     <Table
-      columns={columns}
       data={rows}
+      columns={[
+        { key: 'asset', label: t('xvs.columns.asset'), orderable: false, align: 'left' },
+        { key: 'xvsPerDay', label: t('xvs.columns.xvsPerDay'), orderable: true, align: 'right' },
+        {
+          key: 'supplyXvsApy',
+          label: t('xvs.columns.supplyXvsApy'),
+          orderable: true,
+          align: 'right',
+        },
+        {
+          key: 'borrowXvsApy',
+          label: t('xvs.columns.borrowXvsApy'),
+          orderable: true,
+          align: 'right',
+        },
+      ]}
+      renderCell={renderCell}
       initialOrder={{
         orderBy: 'xvsPerDay',
         orderDirection: 'desc',
       }}
-      rowKeyIndex={0}
+      keyExtractor={row => `xvs-table-row-${row}`}
       tableCss={styles.table}
       cardsCss={styles.cards}
       css={styles.cardContentGrid}

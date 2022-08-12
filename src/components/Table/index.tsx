@@ -15,6 +15,8 @@ import TableCards from './TableCards';
 import { useStyles } from './styles';
 import { TableColumnProps, TableRowProps } from './types';
 
+export * from './types';
+
 export interface TableBaseProps<T extends TableRowProps> {
   data: T[];
   keyExtractor: (row: T) => string;
