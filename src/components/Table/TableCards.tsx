@@ -5,36 +5,44 @@ import { Link } from 'react-router-dom';
 
 import { Delimiter } from '../Delimiter';
 import { useStyles } from './styles';
-import { TableRowProps } from './types';
+import { TableColumnProps, TableRowProps } from './types';
 
-interface TableCardProps {
-  rows: TableRowProps[][];
-  rowKeyIndex: number;
-  columns: { key: string; label: string; orderable: boolean }[];
+export interface TableCardsProps<T extends TableRowProps> {
+  rows: T[];
+  keyExtractor: (row: T) => string;
+  columns: TableColumnProps<T>[];
+  renderCell: ({
+    row,
+    columnKey,
+  }: {
+    row: T;
+    columnKey: TableColumnProps<T>['key'];
+  }) => React.ReactNode | string;
   className?: string;
-  rowOnClick?: (e: React.MouseEvent<HTMLDivElement>, row: TableRowProps[]) => void;
-  getRowHref?: (row: TableRowProps[]) => string;
+  rowOnClick?: (e: React.MouseEvent<HTMLDivElement>, row: T) => void;
+  getRowHref?: (row: T) => string;
 }
 
-const TableCards: React.FC<TableCardProps> = ({
+export function TableCards<T extends TableRowProps>({
   rows,
-  rowKeyIndex,
+  keyExtractor,
+  columns,
+  renderCell,
   rowOnClick,
   getRowHref,
-  columns,
   className,
-}) => {
+}: TableCardsProps<T>) {
   const styles = useStyles();
 
   return (
     <div className={className}>
-      {rows.map((row, idx) => {
-        const rowKey = `${row[rowKeyIndex].value.toString()}-${idx}-cards`;
+      {rows.map(row => {
+        const rowKey = keyExtractor(row);
         const [titleColumn, ...otherColumns] = columns;
-        const titleCell = row.find(cell => titleColumn.key === cell.key);
+
         return (
           <Paper
-            key={rowKey}
+            key={`table-card-row-${rowKey}`}
             css={styles.tableWrapperMobile({ clickable: !!(rowOnClick || getRowHref) })}
             onClick={rowOnClick && ((e: React.MouseEvent<HTMLDivElement>) => rowOnClick(e, row))}
             component={
@@ -47,17 +55,24 @@ const TableCards: React.FC<TableCardProps> = ({
                 : 'div'
             }
           >
-            <div css={styles.rowTitleMobile}>{titleCell?.render()}</div>
+            <div css={styles.rowTitleMobile}>{renderCell({ row, columnKey: titleColumn.key })}</div>
+
             <Delimiter css={styles.delimiterMobile} />
+
             <div className="table__table-cards__card-content" css={styles.rowWrapperMobile}>
               {otherColumns.map(column => {
-                const currentCell = row.find(cell => column.key === cell.key);
+                const cellContent = renderCell({ row, columnKey: column.key });
+
                 return (
-                  <div key={`${rowKey}-${currentCell?.key}`} css={styles.cellMobile}>
+                  <div
+                    key={`table-card-cell-${rowKey}-${String(column.key)}`}
+                    css={styles.cellMobile}
+                  >
                     <Typography variant="body2" css={styles.columnLabelMobile}>
                       {column?.label}
                     </Typography>
-                    <div css={styles.cellValueMobile}>{currentCell?.render()}</div>
+
+                    <div css={styles.cellValueMobile}>{cellContent}</div>
                   </div>
                 );
               })}
@@ -67,6 +82,6 @@ const TableCards: React.FC<TableCardProps> = ({
       })}
     </div>
   );
-};
+}
 
 export default TableCards;

@@ -7,9 +7,11 @@ import { formatToReadablePercentage, getToken } from 'utilities';
 
 import { Icon } from '../Icon';
 import { Toggle } from '../Toggle';
+import { TableColumnProps } from './types';
 
 export const useTableStyles = () => {
   const theme = useTheme();
+
   return {
     table: css`
       h4 {
@@ -30,6 +32,7 @@ export const useTableStyles = () => {
     `,
     cardsCss: css`
       display: none;
+
       ${theme.breakpoints.down('sm')} {
         display: initial;
       }
@@ -45,68 +48,122 @@ export const useTableStyles = () => {
     `,
   };
 };
-const createData = (asset: TokenId, apy: number, wallet: number, collateral: boolean) => {
-  const styles = {
-    asset: css`
-      display: flex;
-      align-items: center;
-      img {
-        height: 18px;
-        width: 18px;
-        margin-right: 4px;
-      }
-      span {
-        display: flex;
-        justify-self: flex-end;
-      }
-    `,
-    apy: css`
-      color: #18df8b;
-      svg {
-        margin-right: 12px;
-        fill: #18df8b;
-      }
-    `,
-  };
-  return [
-    {
-      key: 'asset',
-      value: asset,
-      render: () => (
-        <div css={styles.asset}>
-          <img src={getToken(asset).asset} alt={asset} />
-          <span>{asset.toUpperCase()}</span>
-        </div>
-      ),
-    },
-    {
-      key: 'apy',
-      value: apy,
-      render: () => (
-        <div css={styles.apy}>
-          <Icon name="longArrow" size="12px" />
-          {formatToReadablePercentage(apy)} {asset.toUpperCase()}
-        </div>
-      ),
-    },
-    { key: 'wallet', value: wallet, render: () => `${wallet} ${asset}` },
-    {
-      key: 'collateral',
-      value: collateral,
-      render: () => <Toggle onChange={console.log} value={collateral} />,
-    },
-  ];
-};
 
 export const rows = [
-  createData('sxp', 0.18, 0, true),
-  createData('usdc', 12.05, 90, false),
-  createData('usdt', 0.8, 160, true),
-  createData('bnb', 1.18, 37, false),
-  createData('xvs', 0.15, 160, true),
+  {
+    asset: {
+      value: 'sxp',
+    },
+    apy: {
+      value: 0.18,
+    },
+    wallet: { value: 0 },
+    collateral: {
+      value: true,
+    },
+  },
+  {
+    asset: {
+      value: 'usdc',
+    },
+    apy: {
+      value: 12.05,
+    },
+    wallet: { value: 90 },
+    collateral: {
+      value: false,
+    },
+  },
+  {
+    asset: {
+      value: 'usdt',
+    },
+    apy: {
+      value: 0.8,
+    },
+    wallet: { value: 160 },
+    collateral: {
+      value: true,
+    },
+  },
+  {
+    asset: {
+      value: 'bnb',
+    },
+    apy: {
+      value: 1.18,
+    },
+    wallet: { value: 37 },
+    collateral: {
+      value: false,
+    },
+  },
+  {
+    asset: {
+      value: 'xvs',
+    },
+    apy: {
+      value: 0.15,
+    },
+    wallet: { value: 160 },
+    collateral: {
+      value: false,
+    },
+  },
 ];
 
-export const columns = [
+type RowType = typeof rows[number];
+
+const styles = {
+  asset: css`
+    display: flex;
+    align-items: center;
+    img {
+      height: 18px;
+      width: 18px;
+      margin-right: 4px;
+    }
+    span {
+      display: flex;
+      justify-self: flex-end;
+    }
+  `,
+  apy: css`
+    color: #18df8b;
+    svg {
+      margin-right: 12px;
+      fill: #18df8b;
+    }
+  `,
+};
+
+export const renderCell = ({ row, columnKey }: { row: RowType; columnKey: keyof RowType }) => {
+  if (columnKey === 'asset') {
+    return (
+      <div css={styles.asset}>
+        <img src={getToken(row.asset.value as TokenId).asset} alt={row.asset.value} />
+        <span>{row.asset.value.toUpperCase()}</span>
+      </div>
+    );
+  }
+
+  if (columnKey === 'apy') {
+    return (
+      <div css={styles.apy}>
+        <Icon name="longArrow" size="12px" />
+        {formatToReadablePercentage(row.apy.value)} {row.asset.value.toUpperCase()}
+      </div>
+    );
+  }
+
+  if (columnKey === 'wallet') {
+    return `${row.wallet.value} ${row.asset.value}`;
+  }
+
+  return <Toggle onChange={console.log} value={row.collateral.value} />;
+};
+
+export const columns: TableColumnProps<RowType>[] = [
   { key: 'asset', label: 'Asset', orderable: false },
   { key: 'apy', label: 'APY', orderable: true },
   { key: 'wallet', label: 'Wallet', orderable: true },

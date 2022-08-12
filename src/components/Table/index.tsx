@@ -13,27 +13,28 @@ import { Spinner } from '../Spinner';
 import Head from './Head';
 import TableCards from './TableCards';
 import { useStyles } from './styles';
+import { TableColumnProps, TableRowProps } from './types';
 
-export interface TableRowProps {
-  key: string | number;
-  render: () => React.ReactNode | string;
-  value: string | number | boolean;
-  align?: 'left' | 'center' | 'right';
-}
-
-export interface TableBaseProps {
-  title?: string;
-  data: TableRowProps[][];
-  columns: { key: string; label: string; orderable: boolean }[];
-  cardColumns?: { key: string; label: string; orderable: boolean }[];
-  rowKeyIndex: number;
-  minWidth?: string;
+export interface TableBaseProps<T extends TableRowProps> {
+  data: T[];
+  keyExtractor: (row: T) => string;
+  renderCell: ({
+    row,
+    columnKey,
+  }: {
+    row: T;
+    columnKey: TableColumnProps<T>['key'];
+  }) => React.ReactNode | string;
+  columns: TableColumnProps<T>[];
+  cardColumns?: TableColumnProps<T>[];
+  rowOnClick?: (e: React.MouseEvent<HTMLDivElement>, row: T) => void;
   initialOrder?: {
-    orderBy: string;
+    orderBy: keyof T;
     orderDirection: 'asc' | 'desc';
   };
-  rowOnClick?: (e: React.MouseEvent<HTMLDivElement>, row: TableRowProps[]) => void;
+  title?: string;
   className?: string;
+  minWidth?: string;
   tableCss?: SerializedStyles;
   cardsCss?: SerializedStyles;
   gridTemplateColumnsCards?: string;
@@ -41,76 +42,84 @@ export interface TableBaseProps {
   isFetching?: boolean;
 }
 
-interface TableCardRowOnClickProps extends TableBaseProps {
-  rowOnClick?: (e: React.MouseEvent<HTMLDivElement>, row: TableRowProps[]) => void;
+interface TableCardRowOnClickProps<T extends TableRowProps> extends TableBaseProps<T> {
+  rowOnClick?: (e: React.MouseEvent<HTMLDivElement>, row: T) => void;
   getRowHref?: undefined;
 }
 
-interface TableCardHrefProps extends TableBaseProps {
+interface TableCardHrefProps<T extends TableRowProps> extends TableBaseProps<T> {
   rowOnClick?: undefined;
-  getRowHref?: (row: TableRowProps[]) => string;
+  getRowHref?: (row: T) => string;
 }
 
-export type TableProps = TableCardRowOnClickProps | TableCardHrefProps;
+export type TableProps<T extends TableRowProps> =
+  | TableCardRowOnClickProps<T>
+  | TableCardHrefProps<T>;
 
-export const Table = ({
+export function Table<T extends TableRowProps>({
   columns,
   cardColumns,
+  renderCell,
   data,
   title,
   minWidth,
   initialOrder,
   rowOnClick,
   getRowHref,
-  rowKeyIndex,
+  keyExtractor,
   className,
   tableCss,
   cardsCss,
   isFetching,
-}: TableProps) => {
+}: TableProps<T>) {
   const styles = useStyles();
 
-  const [orderBy, setOrderBy] = React.useState<typeof columns[number]['key'] | undefined>(
-    initialOrder?.orderBy,
-  );
+  const [orderBy, setOrderBy] = React.useState<keyof T | undefined>(initialOrder?.orderBy);
 
   const [orderDirection, setOrderDirection] = React.useState<'asc' | 'desc' | undefined>(
     initialOrder?.orderDirection,
   );
 
-  const onRequestOrder = (property: typeof columns[number]['key']) => {
+  const onRequestOrder = (property: keyof T) => {
     let newOrder: 'asc' | 'desc' = 'asc';
+
     if (property === orderBy) {
       newOrder = orderDirection === 'asc' ? 'desc' : 'asc';
     }
+
     setOrderBy(property);
     setOrderDirection(newOrder);
   };
 
   const rows = React.useMemo(() => {
-    // order in place
+    // Return raw data if no order has been set
     if (!orderBy) {
       return data;
     }
-    const rowIndex = columns.findIndex(column => column.key === orderBy);
-    const newRows = [...data];
-    newRows.sort((a, b) => {
-      const formattedValueA = Number.isNaN(+a[rowIndex]?.value)
-        ? a[rowIndex]?.value
-        : +a[rowIndex]?.value;
-      const formattedValueB = Number.isNaN(+b[rowIndex]?.value)
-        ? b[rowIndex]?.value
-        : +b[rowIndex]?.value;
+
+    const sortedRows = [...data];
+
+    sortedRows.sort((a, b) => {
+      const formattedValueA = Number.isNaN(+a[orderBy].value)
+        ? a[orderBy].value
+        : +a[orderBy].value;
+
+      const formattedValueB = Number.isNaN(+b[orderBy].value)
+        ? b[orderBy].value
+        : +b[orderBy].value;
 
       if (formattedValueA < formattedValueB) {
         return orderDirection === 'asc' ? -1 : 1;
       }
+
       if (formattedValueA > formattedValueB) {
         return orderDirection === 'asc' ? 1 : -1;
       }
+
       return 0;
     });
-    return newRows;
+
+    return sortedRows;
   }, [data, orderBy, orderDirection]);
 
   return (
@@ -121,7 +130,7 @@ export const Table = ({
 
       <TableContainer css={tableCss}>
         <TableMUI css={styles.table({ minWidth: minWidth ?? '0' })} aria-label={title}>
-          <Head
+          <Head<T>
             columns={columns}
             orderBy={orderBy}
             orderDirection={orderDirection}
@@ -129,8 +138,9 @@ export const Table = ({
           />
 
           <TableBody>
-            {rows.map((row, idx) => {
-              const rowKey = `${row[rowKeyIndex].value.toString()}-${idx}-table`;
+            {rows.map(row => {
+              const rowKey = keyExtractor(row);
+
               return (
                 <TableRow
                   hover
@@ -140,15 +150,17 @@ export const Table = ({
                     rowOnClick && ((e: React.MouseEvent<HTMLDivElement>) => rowOnClick(e, row))
                   }
                 >
-                  {row.map(({ key, render, align }: TableRowProps) => {
-                    const cellContent = render();
+                  {columns.map(({ key }) => {
+                    const cell = row[key];
+                    const cellContent = renderCell({ row, columnKey: key });
                     const cellTitle = typeof cellContent === 'string' ? cellContent : undefined;
+
                     return (
                       <TableCell
                         css={styles.getCellWrapper({ containsLink: !!getRowHref })}
-                        key={`${rowKey}-${key}-table`}
+                        key={`${rowKey}-cell-${String(key)}`}
                         title={cellTitle}
-                        align={align}
+                        align={cell.align}
                       >
                         {getRowHref ? <Link to={getRowHref(row)}>{cellContent}</Link> : cellContent}
                       </TableCell>
@@ -163,7 +175,8 @@ export const Table = ({
 
       <TableCards
         rows={rows}
-        rowKeyIndex={rowKeyIndex}
+        renderCell={renderCell}
+        keyExtractor={keyExtractor}
         rowOnClick={rowOnClick}
         getRowHref={getRowHref}
         columns={cardColumns || columns}
@@ -171,4 +184,4 @@ export const Table = ({
       />
     </Paper>
   );
-};
+}

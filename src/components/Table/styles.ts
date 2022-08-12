@@ -18,6 +18,7 @@ export const useStyles = () => {
     title: css`
       margin-bottom: ${theme.spacing(4)};
       padding: ${theme.spacing(0, 6)};
+
       ${theme.breakpoints.down('sm')} {
         padding: 0;
       }
@@ -110,6 +111,7 @@ export const useStyles = () => {
         margin-left: ${theme.spacing(2)};
         transform: rotate(0deg);
       }
+
       .MuiTableSortLabel-iconDirectionDesc {
         transform: rotate(180deg);
       }
@@ -131,6 +133,7 @@ export const useStyles = () => {
       &.MuiTableSortLabel-icon {
         fill: ${theme.palette.text.primary};
       }
+
       .Mui-active &.MuiTableSortLabel-icon {
         fill: ${active ? theme.palette.interactive.success : theme.palette.text.primary};
         color: ${active ? theme.palette.interactive.success : theme.palette.text.primary};

@@ -56,9 +56,9 @@ const useGetMarketData = ({ vTokenId }: { vTokenId: VBepToken['id'] }) => {
       assetMarket &&
       formattedSupplyRatePerBlock &&
       // prettier-ignore
-      +assetMarket.totalSupplyUsd * (((1 + formattedSupplyRatePerBlock) ** BLOCKS_PER_DAY) - 1) *
-      // Convert to cents
-      100;
+      +assetMarket.totalSupplyUsd * (((1 + formattedSupplyRatePerBlock) ** BLOCKS_PER_DAY) - 1)
+        // Convert to cents
+        * 100;
 
     const dailyBorrowingInterestsCents =
       assetMarket &&

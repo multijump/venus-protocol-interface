@@ -9,38 +9,34 @@ import React from 'react';
 
 import { Icon } from '../Icon';
 import { useStyles } from './styles';
+import { TableColumnProps, TableRowProps } from './types';
 
-interface ColProps {
-  key: string;
-  label: string;
-  orderable: boolean;
-  align?: 'left' | 'center' | 'right';
-}
-
-interface HeadProps<C extends ColProps[]> {
-  columns: C;
-  orderBy: string | undefined;
+export interface HeadProps<T extends TableRowProps> {
+  columns: TableColumnProps<T>[];
+  orderBy: keyof T | undefined;
   orderDirection: 'asc' | 'desc' | undefined;
-  onRequestOrder: (property: C[number]['key']) => void;
+  onRequestOrder: (property: TableColumnProps<T>[][number]['key']) => void;
   className?: string;
 }
 
-function Head<C extends ColProps[]>({
+function Head<T extends TableRowProps>({
   columns,
   orderBy,
   orderDirection,
   onRequestOrder,
   className,
-}: HeadProps<C>) {
+}: HeadProps<T>) {
   const styles = useStyles();
+
   return (
     <TableHead>
       <TableRow className={className}>
-        {columns.map((col: C[number]) => {
+        {columns.map(col => {
           const active = orderBy === col.key;
+
           return (
             <TableCell
-              key={col.key}
+              key={col.key as string | number}
               sortDirection={active ? orderDirection : false}
               align={col.align}
             >
@@ -54,6 +50,7 @@ function Head<C extends ColProps[]>({
                 IconComponent={null}
               >
                 <span>{col.label}</span>
+
                 {col.orderable && (
                   <div css={styles.tableSortLabelIconsContainer}>
                     <Icon
@@ -64,6 +61,7 @@ function Head<C extends ColProps[]>({
                       })}
                       className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc"
                     />
+
                     <Icon
                       name="sort"
                       size="8px"
@@ -74,6 +72,7 @@ function Head<C extends ColProps[]>({
                     />
                   </div>
                 )}
+
                 {active && col.orderable && (
                   <Box component="span" sx={visuallyHidden}>
                     {orderDirection === 'desc' ? 'sorted descending' : 'sorted ascending'}
