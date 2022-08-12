@@ -121,7 +121,7 @@ const XvsTableUi: React.FC<XvsTableProps> = ({ assets }) => {
         orderBy: 'xvsPerDay',
         orderDirection: 'desc',
       }}
-      keyExtractor={row => `xvs-table-row-${row}`}
+      keyExtractor={row => `xvs-table-row-${row.asset.value}`}
       tableCss={styles.table}
       cardsCss={styles.cards}
       css={styles.cardContentGrid}
