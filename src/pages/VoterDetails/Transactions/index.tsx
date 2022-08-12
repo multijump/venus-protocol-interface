@@ -1,12 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { Paper, Typography } from '@mui/material';
 import BigNumber from 'bignumber.js';
-import { AnchorButton, Icon, Spinner, Table, TableProps } from 'components';
+import { AnchorButton, Spinner, Table, TableAlign, TableColumnProps } from 'components';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'translation';
 import { VoteDetailTransaction } from 'types';
 import { convertWeiToTokens, generateBscScanUrl } from 'utilities';
 
+import ActionCell from './ActionCell';
 import { useStyles } from './styles';
 
 interface TransactionsProps {
@@ -22,117 +23,96 @@ export const Transactions: React.FC<TransactionsProps> = ({
 }) => {
   const styles = useStyles();
   const { t } = useTranslation();
-  const columns = useMemo(
+
+  const rows = useMemo(
+    () =>
+      voterTransactions.map(voterTransaction => {
+        let amountWei = new BigNumber(0);
+
+        if (voterTransaction.type === 'transfer') {
+          ({ amountWei } = voterTransaction);
+        } else if (voterTransaction.type === 'vote') {
+          amountWei = voterTransaction.votesWei;
+        }
+
+        return {
+          action: {
+            value:
+              voterTransaction.type === 'vote' ? voterTransaction.support : voterTransaction.to,
+            voterTransaction,
+            align: 'left' as TableAlign,
+          },
+          sent: {
+            value: voterTransaction.blockTimestamp.toDateString(),
+            align: 'left' as TableAlign,
+          },
+          amount: {
+            value: amountWei.toFixed(),
+            align: 'right' as TableAlign,
+          },
+        };
+      }),
+    [JSON.stringify(voterTransactions)],
+  );
+
+  const columns: TableColumnProps<typeof rows[number]>[] = useMemo(
     () => [
-      { key: 'action', label: t('voterDetail.actions'), orderable: false, align: 'left' },
-      { key: 'sent', label: t('voterDetail.sent'), orderable: false, align: 'left' },
-      { key: 'amount', label: t('voterDetail.amount'), orderable: false, align: 'right' },
+      {
+        key: 'action',
+        label: t('voterDetail.actions'),
+        orderable: false,
+        align: 'left' as TableAlign,
+      },
+      { key: 'sent', label: t('voterDetail.sent'), orderable: false, align: 'left' as TableAlign },
+      {
+        key: 'amount',
+        label: t('voterDetail.amount'),
+        orderable: false,
+        align: 'right' as TableAlign,
+      },
     ],
     [],
   );
 
-  const rows: TableProps['data'] = useMemo(
-    () =>
-      voterTransactions.map(voterTxs => {
-        // Transfer
-        let action = <></>;
-        let amountWei = new BigNumber(0);
-        if (voterTxs.type === 'transfer') {
-          action =
-            voterTxs.to.toLowerCase() === address.toLowerCase() ? (
-              <>
-                <Icon name="arrowShaft" css={styles.received} />
-                {t('voterDetail.receivedXvs')}
-              </>
-            ) : (
-              <>
-                <Icon name="arrowShaft" css={styles.sent} />
-                {t('voterDetail.sentXvs')}
-              </>
-            );
-          ({ amountWei } = voterTxs);
-        }
-        // Vote
-        if (voterTxs.type === 'vote') {
-          switch (voterTxs.support) {
-            case 'AGAINST':
-              action = (
-                <>
-                  <div css={[styles.icon, styles.against]}>
-                    <Icon name="close" />
-                  </div>
-                  {t('voterDetail.votedAgainst')}
-                </>
-              );
-              break;
-            case 'FOR':
-              action = (
-                <>
-                  <div css={[styles.icon, styles.for]}>
-                    <Icon name="mark" />
-                  </div>
-                  {t('voterDetail.votedFor')}
-                </>
-              );
-              break;
-            case 'ABSTAIN':
-              action = (
-                <>
-                  <div css={[styles.icon, styles.abstain]}>
-                    <Icon name="dots" />
-                  </div>
-                  {t('voterDetail.votedAbstain')}
-                </>
-              );
-            // no default
-          }
-          amountWei = voterTxs.votesWei;
-        }
+  const renderCell = ({
+    row,
+    columnKey,
+  }: {
+    row: typeof rows[number];
+    columnKey: keyof typeof rows[number];
+  }) => {
+    if (columnKey === 'action') {
+      return <ActionCell voterAddress={address} transaction={row.action.voterTransaction} />;
+    }
 
-        return [
-          {
-            key: 'action',
-            render: () => (
-              <Typography css={styles.action} variant="small2" color="textPrimary">
-                {action}
-              </Typography>
-            ),
-            value: voterTxs.type === 'vote' ? voterTxs.support : voterTxs.to,
-            align: 'left',
-          },
-          {
-            key: 'sent',
-            render: () => t('voterDetail.readableSent', { date: voterTxs.blockTimestamp }),
-            value: voterTxs.blockTimestamp.toDateString(),
-            align: 'left',
-          },
-          {
-            key: 'amount',
-            render: () =>
-              convertWeiToTokens({
-                valueWei: amountWei,
-                tokenId: 'xvs',
-                minimizeDecimals: true,
-                returnInReadableFormat: true,
-              }),
-            value: amountWei.toFixed(),
-            align: 'right',
-          },
-        ];
-      }),
-    [JSON.stringify(voterTransactions)],
-  );
+    if (columnKey === 'sent') {
+      return t('voterDetail.readableSent', { date: new Date(row.sent.value) });
+    }
+
+    if (columnKey === 'amount') {
+      return convertWeiToTokens({
+        valueWei: new BigNumber(row.amount.value),
+        tokenId: 'xvs',
+        minimizeDecimals: true,
+        returnInReadableFormat: true,
+      });
+    }
+  };
 
   return (
     <Paper css={styles.root} className={className}>
       <Typography css={styles.horizontalPadding} variant="h4">
         {t('voterDetail.transactions')}
       </Typography>
+
       {voterTransactions && voterTransactions.length ? (
         <Table
-          columns={columns}
           data={rows}
-          rowKeyIndex={1}
+          columns={columns}
+          renderCell={renderCell}
+          keyExtractor={row =>
+            `voter-transactions-table-row-${row.action.value}-${row.sent.value}-${row.amount.value}`
+          }
           tableCss={styles.table}
           cardsCss={styles.cards}
           css={styles.cardContentGrid}
@@ -140,6 +120,7 @@ export const Transactions: React.FC<TransactionsProps> = ({
       ) : (
         <Spinner css={styles.spinner} />
       )}
+
       <AnchorButton
         css={[styles.horizontalPadding, styles.anchorButton]}
         variant="secondary"

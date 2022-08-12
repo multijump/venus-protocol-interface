@@ -144,7 +144,7 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
       columns={columns}
       cardColumns={cardColumns}
       renderCell={renderCell}
-      keyExtractor={row => `voter-leaderboard-table-row-${row}`}
+      keyExtractor={row => `voter-leaderboard-table-row-${row.rank.voterAddress}`}
       isFetching={isFetching}
       initialOrder={{
         orderBy: 'rank',

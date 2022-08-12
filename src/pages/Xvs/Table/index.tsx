@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { Typography } from '@mui/material';
 import BigNumber from 'bignumber.js';
-import { Table, TableAlign, Token } from 'components';
+import { Table, TableAlign, TableColumnProps, Token } from 'components';
 import React, { useContext, useMemo } from 'react';
 import { useTranslation } from 'translation';
 import { Asset } from 'types';
@@ -57,6 +57,26 @@ const XvsTableUi: React.FC<XvsTableProps> = ({ assets }) => {
     [JSON.stringify(assets)],
   );
 
+  const columns: TableColumnProps<typeof rows[number]>[] = useMemo(
+    () => [
+      { key: 'asset', label: t('xvs.columns.asset'), orderable: false, align: 'left' },
+      { key: 'xvsPerDay', label: t('xvs.columns.xvsPerDay'), orderable: true, align: 'right' },
+      {
+        key: 'supplyXvsApy',
+        label: t('xvs.columns.supplyXvsApy'),
+        orderable: true,
+        align: 'right',
+      },
+      {
+        key: 'borrowXvsApy',
+        label: t('xvs.columns.borrowXvsApy'),
+        orderable: true,
+        align: 'right',
+      },
+    ],
+    [],
+  );
+
   const renderCell = ({
     row,
     columnKey,
@@ -100,22 +120,7 @@ const XvsTableUi: React.FC<XvsTableProps> = ({ assets }) => {
   return (
     <Table
       data={rows}
-      columns={[
-        { key: 'asset', label: t('xvs.columns.asset'), orderable: false, align: 'left' },
-        { key: 'xvsPerDay', label: t('xvs.columns.xvsPerDay'), orderable: true, align: 'right' },
-        {
-          key: 'supplyXvsApy',
-          label: t('xvs.columns.supplyXvsApy'),
-          orderable: true,
-          align: 'right',
-        },
-        {
-          key: 'borrowXvsApy',
-          label: t('xvs.columns.borrowXvsApy'),
-          orderable: true,
-          align: 'right',
-        },
-      ]}
+      columns={columns}
       renderCell={renderCell}
       initialOrder={{
         orderBy: 'xvsPerDay',
