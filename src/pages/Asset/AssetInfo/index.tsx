@@ -7,20 +7,20 @@ import Card from '../Card';
 import { Stat } from '../types';
 import { useStyles } from './styles';
 
-export interface MarketInfoProps {
+export interface AssetInfoProps {
   stats: Stat[];
   testId?: string;
 }
 
-const MarketInfo: React.FC<MarketInfoProps> = ({ stats, testId }) => {
+const AssetInfo: React.FC<AssetInfoProps> = ({ stats, testId }) => {
   const { t } = useTranslation();
   const styles = useStyles();
 
   return (
-    <Card title={t('asset.marketInfo.title')} testId={testId}>
+    <Card title={t('asset.assetInfo.title')} testId={testId}>
       <ul css={styles.itemList}>
         {stats.map(stat => (
-          <li css={styles.item} key={`market-info-stat-${stat.label}`}>
+          <li css={styles.item} key={`asset-info-stat-${stat.label}`}>
             <LabeledInlineContent label={stat.label}>
               <span css={styles.value}>{stat.value}</span>
             </LabeledInlineContent>
@@ -31,4 +31,4 @@ const MarketInfo: React.FC<MarketInfoProps> = ({ stats, testId }) => {
   );
 };
 
-export default MarketInfo;
+export default AssetInfo;

@@ -67,7 +67,7 @@
       "supplyApy": "Supply APY",
       "utilizationRate": "Utilization rate"
     },
-    "marketInfo": {
+    "assetInfo": {
       "stats": {
         "borrowCapLabel": "Borrow cap",
         "borrowerCountLabel": "# of borrowers",
@@ -77,7 +77,7 @@
         "dailySupplyingInterestsLabel": "Daily supplying interests",
         "exchangeRateLabel": "Exchange rate",
         "exchangeRateValue": "1 {{tokenSymbol}}={{rate}} {{vTokenSymbol}}",
-        "marketLiquidityLabel": "Market liquidity",
+        "liquidityLabel": "Liquidity",
         "mintedTokensLabel": "{{vTokenSymbol}} minted",
         "priceLabel": "Price",
         "reserveFactorLabel": "Reserve factor",
@@ -85,7 +85,7 @@
         "supplierCountLabel": "# of suppliers",
         "unlimitedBorrowCap": "Uncapped"
       },
-      "title": "Market info"
+      "title": "Asset info"
     },
     "supplyButtonLabel": "Supply",
     "supplyInfo": {

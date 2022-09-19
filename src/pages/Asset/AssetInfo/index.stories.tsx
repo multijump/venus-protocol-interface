@@ -3,20 +3,20 @@ import React from 'react';
 
 import { withCenterStory, withRouter } from 'stories/decorators';
 
-import MarketInfo, { MarketInfoProps } from '.';
+import AssetInfo, { AssetInfoProps } from '.';
 
 export default {
-  title: 'Pages/MarketDetail/MarketInfo',
-  component: MarketInfo,
+  title: 'Pages/MarketDetail/AssetInfo',
+  component: AssetInfo,
   decorators: [withRouter, withCenterStory({ width: 400 })],
   parameters: {
     backgrounds: {
       default: 'Primary',
     },
   },
-} as ComponentMeta<typeof MarketInfo>;
+} as ComponentMeta<typeof AssetInfo>;
 
-const stats: MarketInfoProps['stats'] = [
+const stats: AssetInfoProps['stats'] = [
   {
     label: 'Fake stat 1',
     value: '100%',
@@ -27,4 +27,4 @@ const stats: MarketInfoProps['stats'] = [
   },
 ];
 
-export const Default = () => <MarketInfo stats={stats} />;
+export const Default = () => <AssetInfo stats={stats} />;

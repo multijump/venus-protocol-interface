@@ -35,12 +35,12 @@ import useBorrowRepayModal from 'hooks/useBorrowRepayModal';
 import useSupplyWithdrawModal from 'hooks/useSupplyWithdrawModal';
 import useUpdateBreadcrumbNavigation from 'hooks/useUpdateBreadcrumbNavigation';
 
+import AssetInfo, { AssetInfoProps } from './AssetInfo';
 import Card, { CardProps } from './Card';
-import MarketInfo, { MarketInfoProps } from './MarketInfo';
 import { useStyles } from './styles';
 import TEST_IDS from './testIds';
+import useGetAssetData from './useGetAssetData';
 import useGetChartData from './useGetChartData';
-import useGetMarketData from './useGetMarketData';
 
 export interface AssetUiProps {
   isUserConnected: boolean;
@@ -211,31 +211,31 @@ export const AssetUi: React.FC<AssetUiProps> = ({
     },
   ];
 
-  const marketInfoStats: MarketInfoProps['stats'] = React.useMemo(
+  const assetInfoStats: AssetInfoProps['stats'] = React.useMemo(
     () => [
       {
-        label: t('asset.marketInfo.stats.priceLabel'),
+        label: t('asset.assetInfo.stats.priceLabel'),
         value:
           tokenPriceDollars === undefined ? PLACEHOLDER_KEY : `$${tokenPriceDollars.toFormat(2)}`,
       },
       {
-        label: t('asset.marketInfo.stats.marketLiquidityLabel'),
+        label: t('asset.assetInfo.stats.liquidityLabel'),
         value: formatCentsToReadableValue({
           value: liquidityCents,
         }),
       },
       {
-        label: t('asset.marketInfo.stats.supplierCountLabel'),
+        label: t('asset.assetInfo.stats.supplierCountLabel'),
         value: supplierCount ?? '-',
       },
       {
-        label: t('asset.marketInfo.stats.borrowerCountLabel'),
+        label: t('asset.assetInfo.stats.borrowerCountLabel'),
         value: borrowerCount ?? '-',
       },
       {
-        label: t('asset.marketInfo.stats.borrowCapLabel'),
+        label: t('asset.assetInfo.stats.borrowCapLabel'),
         value: borrowCapTokens?.isEqualTo(0)
-          ? t('asset.marketInfo.stats.unlimitedBorrowCap')
+          ? t('asset.assetInfo.stats.unlimitedBorrowCap')
           : formatTokensToReadableValue({
               value: borrowCapTokens,
               minimizeDecimals: true,
@@ -243,19 +243,19 @@ export const AssetUi: React.FC<AssetUiProps> = ({
             }),
       },
       {
-        label: t('asset.marketInfo.stats.dailySupplyingInterestsLabel'),
+        label: t('asset.assetInfo.stats.dailySupplyingInterestsLabel'),
         value: formatCentsToReadableValue({
           value: dailySupplyingInterestsCents,
         }),
       },
       {
-        label: t('asset.marketInfo.stats.dailyBorrowingInterestsLabel'),
+        label: t('asset.assetInfo.stats.dailyBorrowingInterestsLabel'),
         value: formatCentsToReadableValue({
           value: dailyBorrowingInterestsCents,
         }),
       },
       {
-        label: t('asset.marketInfo.stats.dailyDistributionXvs'),
+        label: t('asset.assetInfo.stats.dailyDistributionXvs'),
         value: formatTokensToReadableValue({
           value: dailyDistributionXvs,
           minimizeDecimals: true,
@@ -264,7 +264,7 @@ export const AssetUi: React.FC<AssetUiProps> = ({
         }),
       },
       {
-        label: t('asset.marketInfo.stats.reserveTokensLabel'),
+        label: t('asset.assetInfo.stats.reserveTokensLabel'),
         value: formatTokensToReadableValue({
           value: reserveTokens,
           minimizeDecimals: true,
@@ -272,15 +272,15 @@ export const AssetUi: React.FC<AssetUiProps> = ({
         }),
       },
       {
-        label: t('asset.marketInfo.stats.reserveFactorLabel'),
+        label: t('asset.assetInfo.stats.reserveFactorLabel'),
         value: formatToReadablePercentage(reserveFactor),
       },
       {
-        label: t('asset.marketInfo.stats.collateralFactorLabel'),
+        label: t('asset.assetInfo.stats.collateralFactorLabel'),
         value: formatToReadablePercentage(collateralFactor),
       },
       {
-        label: t('asset.marketInfo.stats.mintedTokensLabel', {
+        label: t('asset.assetInfo.stats.mintedTokensLabel', {
           vTokenSymbol: vToken.symbol,
         }),
         value: formatTokensToReadableValue({
@@ -291,9 +291,9 @@ export const AssetUi: React.FC<AssetUiProps> = ({
         }),
       },
       {
-        label: t('asset.marketInfo.stats.exchangeRateLabel'),
+        label: t('asset.assetInfo.stats.exchangeRateLabel'),
         value: exchangeRateVTokens
-          ? t('asset.marketInfo.stats.exchangeRateValue', {
+          ? t('asset.assetInfo.stats.exchangeRateValue', {
               tokenSymbol: token.symbol,
               vTokenSymbol: vToken.symbol,
               rate: exchangeRateVTokens.dp(6).toFixed(),
@@ -393,7 +393,7 @@ export const AssetUi: React.FC<AssetUiProps> = ({
         <div css={[styles.column, styles.statsColumn]}>
           <Paper css={[styles.statsColumnButtonContainer, hideXlDownCss]}>{buttonsDom}</Paper>
 
-          <MarketInfo stats={marketInfoStats} testId={TEST_IDS.marketInfo} />
+          <AssetInfo stats={assetInfoStats} testId={TEST_IDS.assetInfo} />
         </div>
       </div>
 
@@ -421,7 +421,7 @@ const Asset: React.FC<AssetProps> = ({
     return <Redirect to={Path.MARKETS} />;
   }
 
-  const { reserveFactorMantissa, ...marketData } = useGetMarketData({
+  const { reserveFactorMantissa, ...marketData } = useGetAssetData({
     vTokenId,
   });
 

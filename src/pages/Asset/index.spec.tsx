@@ -74,7 +74,7 @@ describe('pages/Asset', () => {
     expect(getByTestId(TEST_IDS.borrowInfo).textContent).toMatchSnapshot();
     // Check interest rate model displays correctly
     expect(getByTestId(TEST_IDS.interestRateModel).textContent).toMatchSnapshot();
-    // Check market info displays correctly
-    expect(getByTestId(TEST_IDS.marketInfo).textContent).toMatchSnapshot();
+    // Check asset info displays correctly
+    expect(getByTestId(TEST_IDS.assetInfo).textContent).toMatchSnapshot();
   });
 });
