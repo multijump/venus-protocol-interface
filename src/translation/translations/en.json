@@ -26,8 +26,8 @@
           "title": "Sort by"
         },
         "supplyTableTitle": "Supplied assets",
-        "tabletBorrowMarketTabTitle": "Borrow",
-        "tabletSupplyMarketTabTitle": "Supplied",
+        "tabletborrowTabTitle": "Borrow",
+        "tabletsupplyTabTitle": "Supplied",
         "tabletTitle": "Assets"
       }
     }
@@ -193,7 +193,7 @@
     "youWillReceive": "You will receive"
   },
   "dashboard": {
-    "borrowMarketTabTitle": "Borrow market",
+    "borrowTabTitle": "Borrow",
     "higherRiskTokensNotice": {
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ",
       "title": "What are higher risk tokens?"
@@ -208,7 +208,7 @@
     "searchInput": {
       "placeholder": "Search asset or market"
     },
-    "supplyMarketTabTitle": "Supply market"
+    "supplyTabTitle": "Supply"
   },
   "enableToken": {
     "enableButtonLabel": "Enable"

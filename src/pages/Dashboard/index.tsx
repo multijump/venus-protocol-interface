@@ -64,7 +64,7 @@ const DashboardUi: React.FC<DashboardUiProps> = ({
         <ButtonGroup
           css={[styles.tabletButtonGroup, showXlDownCss]}
           fullWidth
-          buttonLabels={[t('dashboard.supplyMarketTabTitle'), t('dashboard.borrowMarketTabTitle')]}
+          buttonLabels={[t('dashboard.supplyTabTitle'), t('dashboard.borrowTabTitle')]}
           activeButtonIndex={activeTabIndex}
           onButtonClick={setActiveTabIndex}
         />
@@ -83,10 +83,7 @@ const DashboardUi: React.FC<DashboardUiProps> = ({
 
           <ButtonGroup
             css={hideXlDownCss}
-            buttonLabels={[
-              t('dashboard.supplyMarketTabTitle'),
-              t('dashboard.borrowMarketTabTitle'),
-            ]}
+            buttonLabels={[t('dashboard.supplyTabTitle'), t('dashboard.borrowTabTitle')]}
             activeButtonIndex={activeTabIndex}
             onButtonClick={setActiveTabIndex}
           />
@@ -115,7 +112,7 @@ const DashboardUi: React.FC<DashboardUiProps> = ({
       {activeTabIndex === 0 ? (
         // TODO: handle sorting on mobile
         <MarketTable
-          key="dashboard-supply-market-table"
+          key="dashboard-supply-table"
           assets={assets}
           marketType="supply"
           breakpoint="lg"
@@ -128,7 +125,7 @@ const DashboardUi: React.FC<DashboardUiProps> = ({
       ) : (
         // TODO: handle sorting on mobile
         <MarketTable
-          key="dashboard-borrow-market-table"
+          key="dashboard-borrow-table"
           assets={assets}
           marketType="borrow"
           breakpoint="lg"
