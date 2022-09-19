@@ -1,12 +1,12 @@
 import { VError } from 'errors';
-import { MarketSnapshot } from 'types';
+import { AssetSnapshot } from 'types';
 import { restService } from 'utilities';
 
-import getMarketHistory from '.';
+import getAssetHistory from '.';
 
 jest.mock('utilities/restService');
 
-const marketSnapshot: MarketSnapshot = {
+const marketSnapshot: AssetSnapshot = {
   id: '18d50fb4-ebe8-4dd6-b0d6-0e052b968ec6',
   asset: '0xd5c4c2e2facbeb59d0216d0595d63fcdc6f9a1a7',
   blockNumber: 1,
@@ -23,7 +23,7 @@ const marketSnapshot: MarketSnapshot = {
   priceUSD: '1.00028324',
 };
 
-describe('api/queries/getMarketHistory', () => {
+describe('api/queries/getAssetHistory', () => {
   test('throws an error when request fails', async () => {
     const fakeErrorMessage = 'Fake error message';
 
@@ -34,11 +34,11 @@ describe('api/queries/getMarketHistory', () => {
     }));
 
     try {
-      await getMarketHistory({
+      await getAssetHistory({
         vTokenId: 'aave',
       });
 
-      throw new Error('getMarketHistory should have thrown an error but did not');
+      throw new Error('getAssetHistory should have thrown an error but did not');
     } catch (error) {
       expect(error).toBeInstanceOf(VError);
       if (error instanceof VError) {
@@ -54,12 +54,12 @@ describe('api/queries/getMarketHistory', () => {
       data: { data: { result: [marketSnapshot] } },
     }));
 
-    const response = await getMarketHistory({
+    const response = await getAssetHistory({
       vTokenId: 'aave',
     });
 
     expect(response).toEqual({
-      marketSnapshots: [marketSnapshot],
+      assetSnapshots: [marketSnapshot],
     });
   });
 
@@ -69,7 +69,7 @@ describe('api/queries/getMarketHistory', () => {
       data: { data: { result: [marketSnapshot] } },
     }));
 
-    await getMarketHistory({
+    await getAssetHistory({
       vTokenId: 'aave',
       type: 'fake-type',
       limit: 6,

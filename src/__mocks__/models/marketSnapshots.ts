@@ -1,6 +1,6 @@
-import { MarketSnapshot } from 'types';
+import { AssetSnapshot } from 'types';
 
-export const marketSnapshots: MarketSnapshot[] = [
+export const assetSnapshots: AssetSnapshot[] = [
   {
     id: 'a3cf4ff0-9ba3-43c1-8c42-f274134d5e47',
     asset: '0xd5c4c2e2facbeb59d0216d0595d63fcdc6f9a1a7',

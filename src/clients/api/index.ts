@@ -194,9 +194,9 @@ export { default as useGetUserMarketInfo } from './queries/useGetUserMarketInfo'
 
 export { default as useGetTreasuryTotals } from './queries/useGetTreasuryTotals';
 
-export { default as getMarketHistory } from './queries/getMarketHistory';
-export * from './queries/getMarketHistory';
-export { default as useGetMarketHistory } from './queries/getMarketHistory/useGetMarketHistory';
+export { default as getAssetHistory } from './queries/getAssetHistory';
+export * from './queries/getAssetHistory';
+export { default as useGetAssetHistory } from './queries/getAssetHistory/useGetAssetHistory';
 
 export { default as getVTokenCash } from './queries/getVTokenCash';
 export * from './queries/getVTokenCash';

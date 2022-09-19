@@ -3,10 +3,10 @@ import BigNumber from 'bignumber.js';
 import { createMemoryHistory } from 'history';
 import React from 'react';
 
-import { marketSnapshots } from '__mocks__/models/marketSnapshots';
+import { assetSnapshots } from '__mocks__/models/assetSnapshots';
 import { markets } from '__mocks__/models/markets';
 import { vTokenApySimulations } from '__mocks__/models/vTokenApySimulations';
-import { getMarketHistory, getMarkets, getVTokenApySimulations } from 'clients/api';
+import { getAssetHistory, getMarkets, getVTokenApySimulations } from 'clients/api';
 import renderComponent from 'testUtils/renderComponent';
 
 import Asset from '.';
@@ -19,8 +19,8 @@ jest.mock('clients/api');
 
 describe('pages/Asset', () => {
   beforeEach(() => {
-    (getMarketHistory as jest.Mock).mockImplementation(() => ({
-      marketSnapshots,
+    (getAssetHistory as jest.Mock).mockImplementation(() => ({
+      assetSnapshots,
     }));
     (getMarkets as jest.Mock).mockImplementation(() => ({
       markets,

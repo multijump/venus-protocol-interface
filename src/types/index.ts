@@ -209,7 +209,7 @@ export interface Market {
   treasuryTotalSupplyCents: BigNumber;
 }
 
-export interface MarketSnapshot {
+export interface AssetSnapshot {
   asset: string;
   blockNumber: number;
   blockTimestamp: number;

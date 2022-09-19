@@ -1,28 +1,28 @@
 import { VError } from 'errors';
-import { MarketSnapshot, VTokenId } from 'types';
+import { AssetSnapshot, VTokenId } from 'types';
 import { getVBepToken, restService } from 'utilities';
 
-export interface GetMarketHistoryResponse {
+export interface GetAssetHistoryResponse {
   limit: number;
   total: number;
-  result: MarketSnapshot[];
+  result: AssetSnapshot[];
 }
 
-export interface GetMarketHistoryInput {
+export interface GetAssetHistoryInput {
   vTokenId: VTokenId;
   limit?: number;
   type?: string;
 }
 
-export type GetMarketHistoryOutput = {
-  marketSnapshots: MarketSnapshot[];
+export type GetAssetHistoryOutput = {
+  assetSnapshots: AssetSnapshot[];
 };
 
-const getMarketHistory = async ({
+const getAssetHistory = async ({
   vTokenId,
   limit = 30,
   type = '1day',
-}: GetMarketHistoryInput): Promise<GetMarketHistoryOutput> => {
+}: GetAssetHistoryInput): Promise<GetAssetHistoryOutput> => {
   const tokenAddress = getVBepToken(vTokenId).address;
 
   let endpoint = `/market_history/graph?asset=${tokenAddress}&type=${type}`;
@@ -30,7 +30,7 @@ const getMarketHistory = async ({
     endpoint += `&limit=${limit}`;
   }
 
-  const response = await restService<GetMarketHistoryResponse>({
+  const response = await restService<GetAssetHistoryResponse>({
     endpoint,
     method: 'GET',
   });
@@ -45,8 +45,8 @@ const getMarketHistory = async ({
   }
 
   return {
-    marketSnapshots: response.data?.data.result || [],
+    assetSnapshots: response.data?.data.result || [],
   };
 };
 
-export default getMarketHistory;
+export default getAssetHistory;

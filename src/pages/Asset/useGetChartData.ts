@@ -4,14 +4,14 @@ import React from 'react';
 import { VBepToken } from 'types';
 import { formatPercentage } from 'utilities';
 
-import { useGetMarketHistory } from 'clients/api';
+import { useGetAssetHistory } from 'clients/api';
 
 const useGetChartData = ({ vTokenId }: { vTokenId: VBepToken['id'] }) => {
   const {
-    data: marketSnapshotsData = {
-      marketSnapshots: [],
+    data: assetSnapshotsData = {
+      assetSnapshots: [],
     },
-  } = useGetMarketHistory({
+  } = useGetAssetHistory({
     vTokenId,
   });
 
@@ -19,7 +19,7 @@ const useGetChartData = ({ vTokenId }: { vTokenId: VBepToken['id'] }) => {
     const supplyChartData: ApyChartProps['data'] = [];
     const borrowChartData: ApyChartProps['data'] = [];
 
-    [...marketSnapshotsData.marketSnapshots]
+    [...assetSnapshotsData.assetSnapshots]
       // Snapshots are returned from earliest to oldest, so we reverse them to
       // pass them to the charts in the right order
       .reverse()
@@ -47,7 +47,7 @@ const useGetChartData = ({ vTokenId }: { vTokenId: VBepToken['id'] }) => {
       supplyChartData,
       borrowChartData,
     };
-  }, [JSON.stringify(marketSnapshotsData?.marketSnapshots)]);
+  }, [JSON.stringify(assetSnapshotsData?.assetSnapshots)]);
 };
 
 export default useGetChartData;
