@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { VError } from 'errors';
 import React, { useCallback, useContext, useState } from 'react';
-import { Asset, VTokenId } from 'types';
+import { UserAsset, VTokenId } from 'types';
 
 import {
   getHypotheticalAccountLiquidity,
@@ -24,7 +24,7 @@ const useCollateral = () => {
   const web3 = useWeb3();
   const comptrollerContract = useComptrollerContract();
 
-  const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>(undefined);
+  const [selectedAsset, setSelectedAsset] = useState<UserAsset | undefined>(undefined);
 
   const { hasLunaOrUstCollateralEnabled } = useContext(DisableLunaUstWarningContext);
 
@@ -36,7 +36,7 @@ const useCollateral = () => {
     onSettled: () => setSelectedAsset(undefined),
   });
 
-  const toggleCollateral = async (asset: Asset) => {
+  const toggleCollateral = async (asset: UserAsset) => {
     // Prevent action if user has UST or LUNA enabled as collateral while trying
     // to enable/disable a different token
     if (

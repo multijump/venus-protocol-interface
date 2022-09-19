@@ -3,9 +3,9 @@ import BigNumber from 'bignumber.js';
 import { ButtonGroup, Select, TextField, Toggle } from 'components';
 import React, { InputHTMLAttributes, useContext, useState } from 'react';
 import { useTranslation } from 'translation';
-import { Asset } from 'types';
+import { UserAsset } from 'types';
 
-import { useGetUserMarketInfo } from 'clients/api';
+import { useGetUserAssets } from 'clients/api';
 import { MarketTable } from 'containers/MarketTable';
 import { AuthContext } from 'context/AuthContext';
 import { useHideXlDownCss, useShowXlDownCss } from 'hooks/responsive';
@@ -19,7 +19,7 @@ interface DashboardUiProps {
   onHigherRiskTokensToggleChange: (newValue: boolean) => void;
   searchValue: string;
   onSearchInputChange: (newValue: string) => void;
-  assets: Asset[];
+  assets: UserAsset[];
 }
 
 const DashboardUi: React.FC<DashboardUiProps> = ({
@@ -150,7 +150,7 @@ const Dashboard: React.FC = () => {
   // TODO: handle loading state (see VEN-591)
   const {
     data: { assets, userTotalBorrowLimitCents },
-  } = useGetUserMarketInfo({
+  } = useGetUserAssets({
     accountAddress,
   });
 

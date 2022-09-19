@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useState } from 'react';
-import { Asset } from 'types';
+import { UserAsset } from 'types';
 
 import { IncludeXvsContext } from 'context/IncludeXvsContext';
 
@@ -7,7 +7,7 @@ import Modal from './Modal';
 
 const useSupplyWithdrawModal = () => {
   const { includeXvs } = useContext(IncludeXvsContext);
-  const [selectedAssetId, setSelectedAssetId] = useState<undefined | Asset['id']>();
+  const [selectedAssetId, setSelectedAssetId] = useState<undefined | UserAsset['id']>();
 
   const SupplyWithdrawModal: React.FC = useCallback(() => {
     if (!selectedAssetId) {
@@ -24,7 +24,7 @@ const useSupplyWithdrawModal = () => {
   }, [selectedAssetId]);
 
   return {
-    openSupplyWithdrawModal: (assetId: Asset['id']) => setSelectedAssetId(assetId),
+    openSupplyWithdrawModal: (assetId: UserAsset['id']) => setSelectedAssetId(assetId),
     closeSupplyWithdrawModal: () => setSelectedAssetId(undefined),
     SupplyWithdrawModal,
   };

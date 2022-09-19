@@ -2,9 +2,9 @@ import BigNumber from 'bignumber.js';
 import { MutationObserverOptions, useMutation, useQuery } from 'react-query';
 
 import fakeAddress from '__mocks__/models/address';
-import { assetData } from '__mocks__/models/asset';
 import proposals from '__mocks__/models/proposals';
 import transactionReceipt from '__mocks__/models/transactionReceipt';
+import { userAssets } from '__mocks__/models/userAssets';
 import voters from '__mocks__/models/voters';
 import FunctionKey from 'constants/functionKey';
 
@@ -23,7 +23,7 @@ export const useGetAssetsInAccount = () =>
 export const getHypotheticalAccountLiquidity = jest.fn();
 
 export const getMarkets = jest.fn();
-export const useGetMarkets = () => useQuery(FunctionKey.GET_MARKETS, getMarkets);
+export const useGetAssets = () => useQuery(FunctionKey.GET_ASSETS, getMarkets);
 
 export const getAssetHistory = jest.fn();
 export const useGetAssetHistory = () => useQuery(FunctionKey.GET_ASSET_HISTORY, getAssetHistory);
@@ -98,10 +98,10 @@ export const useGetXvsVaultPoolCount = () =>
 
 export const useGetTreasuryTotals = jest.fn();
 
-export const useGetUserMarketInfo = jest.fn(() => ({
+export const useGetUserAssets = jest.fn(() => ({
   isLoading: false,
   data: {
-    assets: assetData,
+    assets: userAssets,
   },
 }));
 

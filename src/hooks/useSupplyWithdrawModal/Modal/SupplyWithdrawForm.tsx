@@ -14,7 +14,7 @@ import {
 import { VError, formatVErrorToReadableString } from 'errors';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'translation';
-import { Asset, TokenId } from 'types';
+import { TokenId, UserAsset } from 'types';
 import {
   calculateCollateralValue,
   calculateDailyEarningsCents,
@@ -31,8 +31,8 @@ import { AmountForm, AmountFormProps, ErrorCode } from 'containers/AmountForm';
 import { useStyles } from './styles';
 
 interface SupplyWithdrawFormUiProps {
-  asset: Asset;
-  assets: Asset[];
+  asset: UserAsset;
+  assets: UserAsset[];
   type: 'supply' | 'withdraw';
   tokenInfo: LabeledInlineContentProps[];
   maxInput: BigNumber;

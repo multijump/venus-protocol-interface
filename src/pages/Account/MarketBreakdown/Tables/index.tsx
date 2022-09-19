@@ -4,7 +4,7 @@ import Paper from '@mui/material/Paper';
 import { ButtonGroup, Select } from 'components';
 import React, { useState } from 'react';
 import { useTranslation } from 'translation';
-import { Asset } from 'types';
+import { UserAsset } from 'types';
 
 import { MarketTable, MarketTableProps } from 'containers/MarketTable';
 import {
@@ -18,7 +18,7 @@ import TEST_IDS from '../testIds';
 import { useStyles } from './styles';
 
 export interface TablesProps {
-  assets: Asset[];
+  assets: UserAsset[];
 }
 
 export const Tables: React.FC<TablesProps> = ({ assets }) => {

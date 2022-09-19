@@ -5,7 +5,7 @@ import { useTranslation } from 'translation';
 import { Market } from 'types';
 import { formatCentsToReadableValue } from 'utilities';
 
-import { useGetMarkets } from 'clients/api';
+import { useGetAssets } from 'clients/api';
 import Path from 'constants/path';
 import { useShowXxlDownCss } from 'hooks/responsive';
 
@@ -141,7 +141,7 @@ export const MarketTableUi: React.FC<MarketTableProps> = ({ markets }) => {
 const MarketTable = () => {
   // TODO: fetch isolated lending markets
 
-  const { data: { markets } = { markets: [], dailyVenusWei: undefined } } = useGetMarkets({
+  const { data: { markets } = { markets: [], dailyVenusWei: undefined } } = useGetAssets({
     placeholderData: { markets: [], dailyVenusWei: undefined },
   });
 

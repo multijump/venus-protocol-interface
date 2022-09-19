@@ -1,7 +1,7 @@
 import { ComponentMeta } from '@storybook/react';
 import React from 'react';
 
-import { assetData } from '__mocks__/models/asset';
+import { userAssets } from '__mocks__/models/userAssets';
 import { withCenterStory } from 'stories/decorators';
 import { PALETTE } from 'theme/MuiThemeProvider/muiTheme';
 
@@ -19,5 +19,5 @@ export default {
 } as ComponentMeta<typeof MarketBreakdown>;
 
 export const Default = () => (
-  <MarketBreakdown assets={assetData} riskLevel="MINIMAL" marketName="Venus" includeXvs />
+  <MarketBreakdown assets={userAssets} riskLevel="MINIMAL" marketName="Venus" includeXvs />
 );

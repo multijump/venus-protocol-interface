@@ -10,7 +10,7 @@ import {
 import { VError } from 'errors';
 import React from 'react';
 import { useTranslation } from 'translation';
-import { Asset, VTokenId } from 'types';
+import { UserAsset, VTokenId } from 'types';
 import {
   convertTokensToWei,
   formatToReadablePercentage,
@@ -20,7 +20,7 @@ import {
 } from 'utilities';
 import type { TransactionReceipt } from 'web3-core/types';
 
-import { useBorrowVToken, useGetUserMarketInfo } from 'clients/api';
+import { useBorrowVToken, useGetUserAssets } from 'clients/api';
 import { SAFE_BORROW_LIMIT_PERCENTAGE } from 'constants/safeBorrowLimitPercentage';
 import { AmountForm, AmountFormProps, ErrorCode } from 'containers/AmountForm';
 import { AuthContext } from 'context/AuthContext';
@@ -31,7 +31,7 @@ import { useStyles } from '../styles';
 import TEST_IDS from './testIds';
 
 export interface BorrowFormProps {
-  asset: Asset;
+  asset: UserAsset;
   limitTokens: string;
   safeBorrowLimitPercentage: number;
   safeLimitTokens: string;
@@ -150,7 +150,7 @@ export const BorrowForm: React.FC<BorrowFormProps> = ({
 };
 
 export interface BorrowProps {
-  asset: Asset;
+  asset: UserAsset;
   includeXvs: boolean;
   onClose: () => void;
 }
@@ -163,7 +163,7 @@ const Borrow: React.FC<BorrowProps> = ({ asset, onClose, includeXvs }) => {
 
   const {
     data: { userTotalBorrowBalanceCents, userTotalBorrowLimitCents, assets },
-  } = useGetUserMarketInfo({
+  } = useGetUserAssets({
     accountAddress: account?.address,
   });
 

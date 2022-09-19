@@ -4,8 +4,8 @@ import { TokenId, Vault } from 'types';
 import { convertWeiToTokens, getContractAddress } from 'utilities';
 
 import {
+  useGetAssets,
   useGetBalanceOf,
-  useGetMarkets,
   useGetVaiVaultPendingXvs,
   useGetVaiVaultUserInfo,
   useGetVenusVaiVaultDailyRate,
@@ -55,7 +55,7 @@ const useGetVaiVault = ({ accountAddress }: { accountAddress?: string }): UseGet
   const { data: vaiVaultDailyRateData, isLoading: isGetVaiVaultDailyRateWeiLoading } =
     useGetVenusVaiVaultDailyRate();
 
-  const { data: getMarketsData, isLoading: isGetMarketsLoading } = useGetMarkets();
+  const { data: getMarketsData, isLoading: isGetAssetsLoading } = useGetAssets();
   const xvsPriceDollars: BigNumber | undefined = useMemo(
     () => (getMarketsData?.markets || []).find(market => market.id === TOKENS.xvs.id)?.tokenPrice,
     [JSON.stringify(getMarketsData?.markets)],
@@ -101,7 +101,7 @@ const useGetVaiVault = ({ accountAddress }: { accountAddress?: string }): UseGet
   const isLoading =
     isGetTotalVaiStakedWeiLoading ||
     isGetVaiVaultDailyRateWeiLoading ||
-    isGetMarketsLoading ||
+    isGetAssetsLoading ||
     isGetVaiVaultUserInfoLoading ||
     isGetUserPendingVaiRewardWeiLoading;
 

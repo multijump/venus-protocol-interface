@@ -8,7 +8,7 @@ import {
 } from 'components';
 import React, { useContext } from 'react';
 import { useTranslation } from 'translation';
-import { Asset } from 'types';
+import { UserAsset } from 'types';
 import {
   calculateDailyEarningsCents as calculateDailyEarningsCentsUtil,
   calculatePercentage,
@@ -16,14 +16,14 @@ import {
   formatToReadablePercentage,
 } from 'utilities';
 
-import { useGetUserMarketInfo } from 'clients/api';
+import { useGetUserAssets } from 'clients/api';
 import { SAFE_BORROW_LIMIT_PERCENTAGE } from 'constants/safeBorrowLimitPercentage';
 import { AuthContext } from 'context/AuthContext';
 
 import { useStyles as useSharedStyles } from '../styles';
 
 export interface AccountDataProps {
-  asset: Asset;
+  asset: UserAsset;
   hypotheticalBorrowAmountTokens: number;
   includeXvs: boolean;
 }
@@ -40,7 +40,7 @@ const AccountData: React.FC<AccountDataProps> = ({
   // TODO: handle loading state (see VEN-591)
   const {
     data: { assets, userTotalBorrowBalanceCents, userTotalBorrowLimitCents },
-  } = useGetUserMarketInfo({
+  } = useGetUserAssets({
     accountAddress,
   });
 
@@ -72,12 +72,12 @@ const AccountData: React.FC<AccountDataProps> = ({
 
   const calculateDailyEarningsCents = React.useCallback(
     (tokenAmount: BigNumber) => {
-      const updatedAssets = assets.map(assetData => ({
-        ...assetData,
+      const updatedAssets = assets.map(userAssets => ({
+        ...userAssets,
         borrowBalance:
-          assetData.id === asset.id
-            ? assetData.borrowBalance.plus(tokenAmount)
-            : assetData.borrowBalance,
+          userAssets.id === asset.id
+            ? userAssets.borrowBalance.plus(tokenAmount)
+            : userAssets.borrowBalance,
       }));
 
       const yearlyEarningsCents = calculateYearlyEarningsForAssets({

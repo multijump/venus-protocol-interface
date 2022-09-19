@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { Market } from 'types';
 import { indexBy } from 'utilities';
 
-import { IGetVTokenBalancesAllOutput, useGetMarkets, useGetVTokenBalancesAll } from 'clients/api';
+import { IGetVTokenBalancesAllOutput, useGetAssets, useGetVTokenBalancesAll } from 'clients/api';
 import { DEFAULT_REFETCH_INTERVAL_MS } from 'constants/defaultRefetchInterval';
 import { VBEP_TOKENS } from 'constants/tokens';
 
@@ -41,8 +41,8 @@ const useGetTreasuryTotals = (): UseGetTreasuryTotalsOutput => {
     data: getMarketsData = {
       markets: [] as Market[],
     },
-    isLoading: isGetMarketsLoading,
-  } = useGetMarkets({
+    isLoading: isGetAssetsLoading,
+  } = useGetAssets({
     placeholderData: {
       markets: [],
       dailyVenusWei: new BigNumber(0),
@@ -121,7 +121,7 @@ const useGetTreasuryTotals = (): UseGetTreasuryTotalsOutput => {
       treasuryTotalBalanceCents,
       treasuryTotalAvailableLiquidityBalanceCents,
     },
-    isLoading: isGetVTokenBalancesTreasuryLoading || isGetMarketsLoading,
+    isLoading: isGetVTokenBalancesTreasuryLoading || isGetAssetsLoading,
   };
 };
 

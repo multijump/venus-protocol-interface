@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { assetData } from '__mocks__/models/asset';
+import { userAssets } from '__mocks__/models/userAssets';
 import renderComponent from 'testUtils/renderComponent';
 
 import MarketBreakdown, { MarketBreakdownProps } from '.';
@@ -9,7 +9,7 @@ import TEST_IDS from './testIds';
 jest.mock('clients/api');
 
 const baseProps: MarketBreakdownProps = {
-  assets: assetData,
+  assets: userAssets,
   includeXvs: true,
   marketName: 'Fake market name',
   riskLevel: 'VERY_HIGH',

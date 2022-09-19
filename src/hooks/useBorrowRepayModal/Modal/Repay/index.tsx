@@ -13,7 +13,7 @@ import {
 import { VError, formatVErrorToReadableString } from 'errors';
 import React from 'react';
 import { useTranslation } from 'translation';
-import { Asset, VTokenId } from 'types';
+import { UserAsset, VTokenId } from 'types';
 import {
   convertTokensToWei,
   formatToReadablePercentage,
@@ -34,7 +34,7 @@ import TEST_IDS from './testIds';
 export const PRESET_PERCENTAGES = [25, 50, 75, 100];
 
 export interface RepayFormProps {
-  asset: Asset;
+  asset: UserAsset;
   repay: (amountWei: BigNumber) => Promise<string | undefined>;
   isRepayLoading: boolean;
   includeXvs: boolean;
@@ -206,7 +206,7 @@ export const RepayForm: React.FC<RepayFormProps> = ({
 };
 
 export interface RepayProps {
-  asset: Asset;
+  asset: UserAsset;
   includeXvs: boolean;
   onClose: () => void;
 }

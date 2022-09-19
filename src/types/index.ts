@@ -11,7 +11,7 @@ export interface User {
   Token: string;
 }
 
-export interface Asset {
+export interface UserAsset {
   id: TokenId;
   tokenPrice: BigNumber;
   symbol: string;
@@ -19,17 +19,17 @@ export interface Asset {
   decimals: number;
   walletBalance: BigNumber;
   vtokenAddress: string;
+  img: string;
+  liquidity: BigNumber;
   borrowApy: BigNumber;
   xvsBorrowApy: BigNumber;
   xvsBorrowApr: BigNumber;
-  img: string;
   borrowCaps: BigNumber;
-  liquidity: BigNumber;
+  supplyApy: BigNumber;
   xvsSupplyApy: BigNumber;
   xvsSupplyApr: BigNumber;
-  supplyApy: BigNumber;
-  collateralFactor: BigNumber;
   collateral: boolean;
+  collateralFactor: BigNumber;
   supplyBalance: BigNumber;
   key: number;
   percentOfLimit: string;

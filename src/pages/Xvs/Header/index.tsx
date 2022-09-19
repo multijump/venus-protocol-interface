@@ -12,7 +12,7 @@ import {
   getToken,
 } from 'utilities';
 
-import { useGetBalanceOf, useGetUserMarketInfo, useGetVenusVaiVaultDailyRate } from 'clients/api';
+import { useGetBalanceOf, useGetUserAssets, useGetVenusVaiVaultDailyRate } from 'clients/api';
 import { AuthContext } from 'context/AuthContext';
 import useCopyToClipboard from 'hooks/useCopyToClipboard';
 
@@ -126,7 +126,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
   const { data: venusVaiVaultDailyRateData } = useGetVenusVaiVaultDailyRate();
   const {
     data: { dailyVenusWei, totalXvsDistributedWei },
-  } = useGetUserMarketInfo({
+  } = useGetUserAssets({
     accountAddress: account?.address,
   });
   const { data: xvsRemainingDistributionData } = useGetBalanceOf({

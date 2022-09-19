@@ -1,5 +1,5 @@
 import { MutationObserverOptions } from 'react-query';
-import { Asset, VTokenId } from 'types';
+import { UserAsset, VTokenId } from 'types';
 
 import {
   SupplyBnbInput,
@@ -13,7 +13,7 @@ import {
 } from 'clients/api';
 
 interface UseSupplyArgs {
-  assetId: Asset['id'];
+  assetId: UserAsset['id'];
   account: string;
 }
 

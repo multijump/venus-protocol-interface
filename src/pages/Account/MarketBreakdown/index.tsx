@@ -10,7 +10,7 @@ import {
 } from 'components';
 import React from 'react';
 import { useTranslation } from 'translation';
-import { Asset, MarketRiskLevel } from 'types';
+import { MarketRiskLevel, UserAsset } from 'types';
 import { formatCentsToReadableValue, formatToReadablePercentage } from 'utilities';
 
 import { SAFE_BORROW_LIMIT_PERCENTAGE } from 'constants/safeBorrowLimitPercentage';
@@ -24,7 +24,7 @@ export interface MarketBreakdownProps {
   marketName: string;
   riskLevel: MarketRiskLevel;
   includeXvs: boolean;
-  assets: Asset[];
+  assets: UserAsset[];
   className?: string;
 }
 

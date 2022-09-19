@@ -145,9 +145,9 @@ export { default as useGetAssetsInAccount } from './queries/getAssetsInAccount/u
 export { default as getHypotheticalAccountLiquidity } from './queries/getHypotheticalAccountLiquidity';
 export * from './queries/getHypotheticalAccountLiquidity';
 
-export { default as getMarkets } from './queries/getMarkets';
-export * from './queries/getMarkets';
-export { default as useGetMarkets } from './queries/getMarkets/useGetMarkets';
+export { default as getMarkets } from './queries/getAssets';
+export * from './queries/getAssets';
+export { default as useGetAssets } from './queries/getAssets/useGetAssets';
 
 export { default as getVTokenBalancesAll } from './queries/getVTokenBalancesAll';
 export * from './queries/getVTokenBalancesAll';
@@ -190,7 +190,7 @@ export * from './queries/getXvsWithdrawableAmount';
 
 export { default as useGetXvsWithdrawableAmount } from './queries/getXvsWithdrawableAmount/useGetXvsWithdrawableAmount';
 
-export { default as useGetUserMarketInfo } from './queries/useGetUserMarketInfo';
+export { default as useGetUserAssets } from './queries/useGetUserAssets';
 
 export { default as useGetTreasuryTotals } from './queries/useGetTreasuryTotals';
 

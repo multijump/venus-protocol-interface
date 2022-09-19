@@ -6,7 +6,7 @@ import { VTokenId } from 'types';
 import { getVBepToken } from 'utilities';
 
 import fakeAddress from '__mocks__/models/address';
-import { assetData } from '__mocks__/models/asset';
+import { userAssets } from '__mocks__/models/userAssets';
 import { withAuthContext, withCenterStory, withEnabledToken } from 'stories/decorators';
 
 import { SupplyWithdrawProps, SupplyWithdrawUi, SupplyWithdrawUiProps } from '.';
@@ -38,8 +38,8 @@ const context = {
 
 export const DisconnectedSupply = Template.bind({});
 DisconnectedSupply.args = {
-  asset: assetData[0],
-  assets: assetData,
+  asset: userAssets[0],
+  assets: userAssets,
   onClose: noop,
   userTotalBorrowBalanceCents: new BigNumber('16'),
   userTotalBorrowLimitCents: new BigNumber('42.38'),
@@ -50,8 +50,8 @@ DisconnectedSupply.args = {
 export const DisabledSupply = Template.bind({});
 DisabledSupply.decorators = [withAuthContext(context)];
 DisabledSupply.args = {
-  asset: assetData[0],
-  assets: assetData,
+  asset: userAssets[0],
+  assets: userAssets,
   onClose: noop,
   userTotalBorrowBalanceCents: new BigNumber('16'),
   userTotalBorrowLimitCents: new BigNumber('42.38'),
@@ -65,14 +65,14 @@ export const Supply = Template.bind({});
 Supply.decorators = [
   withAuthContext(context),
   withEnabledToken({
-    tokenId: assetData[0].id,
+    tokenId: userAssets[0].id,
     accountAddress: fakeAddress,
-    spenderAddress: getVBepToken(assetData[0].id as VTokenId).address,
+    spenderAddress: getVBepToken(userAssets[0].id as VTokenId).address,
   }),
 ];
 Supply.args = {
-  asset: assetData[0],
-  assets: assetData,
+  asset: userAssets[0],
+  assets: userAssets,
   onClose: noop,
   userTotalBorrowBalanceCents: new BigNumber('16'),
   userTotalBorrowLimitCents: new BigNumber('42.38'),

@@ -4,9 +4,9 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 
 import fakeAccountAddress from '__mocks__/models/address';
-import { assetData } from '__mocks__/models/asset';
 import transactionReceipt from '__mocks__/models/transactionReceipt';
-import { getAllowance, useGetUserMarketInfo } from 'clients/api';
+import { userAssets } from '__mocks__/models/userAssets';
+import { getAllowance, useGetUserAssets } from 'clients/api';
 import MAX_UINT256 from 'constants/maxUint256';
 import { AuthContext } from 'context/AuthContext';
 import renderComponent from 'testUtils/renderComponent';
@@ -26,9 +26,9 @@ describe('pages/ConvertVRT/Convert', () => {
     (getAllowance as jest.Mock).mockImplementation(() => ({
       allowanceWei: MAX_UINT256,
     }));
-    (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
+    (useGetUserAssets as jest.Mock).mockImplementation(() => ({
       data: {
-        assets: assetData,
+        assets: userAssets,
         userTotalBorrowLimit: new BigNumber('111'),
         userTotalBorrowBalance: new BigNumber('91'),
         userTotalSupplyBalance: new BigNumber('910'),

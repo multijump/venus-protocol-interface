@@ -2,12 +2,12 @@ import { fireEvent, waitFor } from '@testing-library/react';
 import BigNumber from 'bignumber.js';
 import noop from 'noop-ts';
 import React from 'react';
-import { Asset } from 'types';
+import { UserAsset } from 'types';
 
 import fakeAccountAddress from '__mocks__/models/address';
-import { assetData } from '__mocks__/models/asset';
 import fakeTransactionReceipt from '__mocks__/models/transactionReceipt';
-import { getAllowance, repayNonBnbVToken, useGetUserMarketInfo } from 'clients/api';
+import { userAssets } from '__mocks__/models/userAssets';
+import { getAllowance, repayNonBnbVToken, useGetUserAssets } from 'clients/api';
 import MAX_UINT256 from 'constants/maxUint256';
 import useSuccessfulTransactionModal from 'hooks/useSuccessfulTransactionModal';
 import renderComponent from 'testUtils/renderComponent';
@@ -16,8 +16,8 @@ import en from 'translation/translations/en.json';
 import Repay, { PRESET_PERCENTAGES } from '.';
 import TEST_IDS from './testIds';
 
-const fakeAsset: Asset = {
-  ...assetData[0],
+const fakeAsset: UserAsset = {
+  ...userAssets[0],
   tokenPrice: new BigNumber(1),
   borrowBalance: new BigNumber(1000),
   walletBalance: new BigNumber(10000000),
@@ -32,7 +32,7 @@ describe('hooks/useBorrowRepayModal/Repay', () => {
     (getAllowance as jest.Mock).mockImplementation(() => ({
       allowanceWei: MAX_UINT256,
     }));
-    (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
+    (useGetUserAssets as jest.Mock).mockImplementation(() => ({
       data: {
         assets: [],
         userTotalBorrowLimitCents: new BigNumber(100000),
@@ -71,7 +71,7 @@ describe('hooks/useBorrowRepayModal/Repay', () => {
   });
 
   it('disables submit button if an amount entered in input is higher than token borrow balance', async () => {
-    const customFakeAsset: Asset = {
+    const customFakeAsset: UserAsset = {
       ...fakeAsset,
       walletBalance: new BigNumber(1),
     };
@@ -138,7 +138,7 @@ describe('hooks/useBorrowRepayModal/Repay', () => {
   });
 
   it('updates input value to token wallet balance when pressing on max button if token wallet balance is lower than token borrow balance', async () => {
-    const customFakeAsset: Asset = {
+    const customFakeAsset: UserAsset = {
       ...fakeAsset,
       borrowBalance: new BigNumber(100),
       walletBalance: new BigNumber(10),
@@ -172,7 +172,7 @@ describe('hooks/useBorrowRepayModal/Repay', () => {
   });
 
   it('updates input value to token borrow balance when pressing on max button if token borrow balance is lower than token wallet balance', async () => {
-    const customFakeAsset: Asset = {
+    const customFakeAsset: UserAsset = {
       ...fakeAsset,
       borrowBalance: new BigNumber(10),
       walletBalance: new BigNumber(100),
@@ -206,7 +206,7 @@ describe('hooks/useBorrowRepayModal/Repay', () => {
   });
 
   it('updates input value to correct value when pressing on preset percentage buttons', async () => {
-    const customFakeAsset: Asset = {
+    const customFakeAsset: UserAsset = {
       ...fakeAsset,
       borrowBalance: new BigNumber(100),
       walletBalance: new BigNumber(100),
@@ -348,7 +348,7 @@ describe('hooks/useBorrowRepayModal/Repay', () => {
   it('lets user repay full loan that is in BNB', async () => {
     (repayNonBnbVToken as jest.Mock).mockImplementationOnce(async () => fakeTransactionReceipt);
 
-    const fakeBnbAsset: Asset = {
+    const fakeBnbAsset: UserAsset = {
       ...fakeAsset,
       id: 'bnb',
     };

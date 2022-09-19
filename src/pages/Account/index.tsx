@@ -3,20 +3,21 @@ import { Typography } from '@mui/material';
 import { Cell, CellGroup, Toggle } from 'components';
 import React, { useContext } from 'react';
 import { useTranslation } from 'translation';
-import { Asset, MarketRiskLevel } from 'types';
+import { MarketRiskLevel, UserAsset } from 'types';
 import { formatCentsToReadableValue, formatToReadablePercentage } from 'utilities';
 
-import { assetData } from '__mocks__/models/asset';
+import { userAssets } from '__mocks__/models/userAssets';
 import { IncludeXvsContext } from 'context/IncludeXvsContext';
 
 import MarketBreakdown from './MarketBreakdown';
 import { useStyles } from './styles';
 import TEST_IDS from './testIds';
 
+// TODO: move to types file
 export interface Market {
   name: string;
   riskLevel: MarketRiskLevel;
-  assets: Asset[];
+  assets: UserAsset[];
 }
 
 export interface AccountUiProps {
@@ -108,17 +109,17 @@ const Account: React.FC = () => {
 
   const markets: Market[] = [
     {
-      assets: assetData,
+      assets: userAssets,
       name: 'Venus',
       riskLevel: 'MINIMAL',
     },
     {
-      assets: assetData,
+      assets: userAssets,
       name: 'Metaverse',
       riskLevel: 'VERY_HIGH',
     },
     {
-      assets: assetData,
+      assets: userAssets,
       name: 'Gaming',
       riskLevel: 'MEDIUM',
     },

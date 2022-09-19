@@ -13,7 +13,7 @@ import {
 import React, { useContext, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'translation';
-import { Asset } from 'types';
+import { UserAsset } from 'types';
 import {
   calculateCollateralValue,
   calculatePercentage,
@@ -34,9 +34,9 @@ const useGenerateData = ({
   columns,
   collateralOnChange,
 }: {
-  assets: Asset[];
+  assets: UserAsset[];
   columns: ColumnName[];
-  collateralOnChange: (asset: Asset) => void;
+  collateralOnChange: (asset: UserAsset) => void;
 }) => {
   const { t } = useTranslation();
   const styles = useStyles();

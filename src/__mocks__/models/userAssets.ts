@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
-import { Asset } from 'types';
+import { UserAsset } from 'types';
 
-export const assetData: Asset[] = [
+export const userAssets: UserAsset[] = [
   {
     key: 0,
     id: 'sxp',

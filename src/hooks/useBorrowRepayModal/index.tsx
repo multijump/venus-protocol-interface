@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useState } from 'react';
-import { Asset } from 'types';
+import { UserAsset } from 'types';
 
 import { IncludeXvsContext } from 'context/IncludeXvsContext';
 
@@ -7,7 +7,7 @@ import Modal from './Modal';
 
 const useBorrowRepayModal = () => {
   const { includeXvs } = useContext(IncludeXvsContext);
-  const [selectedAssetId, setSelectedAssetId] = useState<undefined | Asset['id']>();
+  const [selectedAssetId, setSelectedAssetId] = useState<undefined | UserAsset['id']>();
 
   const BorrowRepayModal: React.FC = useCallback(() => {
     if (!selectedAssetId) {
@@ -24,7 +24,7 @@ const useBorrowRepayModal = () => {
   }, [selectedAssetId]);
 
   return {
-    openBorrowRepayModal: (assetId: Asset['id']) => setSelectedAssetId(assetId),
+    openBorrowRepayModal: (assetId: UserAsset['id']) => setSelectedAssetId(assetId),
     closeBorrowRepayModal: () => setSelectedAssetId(undefined),
     BorrowRepayModal,
   };

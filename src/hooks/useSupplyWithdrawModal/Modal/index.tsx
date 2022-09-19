@@ -14,7 +14,7 @@ import {
 } from 'components';
 import React, { useContext } from 'react';
 import { useTranslation } from 'translation';
-import { Asset, TokenId, VTokenId } from 'types';
+import { TokenId, UserAsset, VTokenId } from 'types';
 import {
   convertTokensToWei,
   formatToReadablePercentage,
@@ -23,7 +23,7 @@ import {
 } from 'utilities';
 
 import {
-  useGetUserMarketInfo,
+  useGetUserAssets,
   useGetVTokenBalanceOf,
   useRedeem,
   useRedeemUnderlying,
@@ -39,13 +39,13 @@ import { useStyles } from './styles';
 export interface SupplyWithdrawProps {
   onClose: ModalProps['handleClose'];
   includeXvs: boolean;
-  assetId: Asset['id'];
+  assetId: UserAsset['id'];
 }
 
 export interface SupplyWithdrawUiProps extends Omit<SupplyWithdrawProps, 'assetId'> {
   className?: string;
   onClose: ModalProps['handleClose'];
-  assets: Asset[];
+  assets: UserAsset[];
   includeXvs: boolean;
   userTotalBorrowBalanceCents: BigNumber;
   userTotalBorrowLimitCents: BigNumber;
@@ -53,7 +53,7 @@ export interface SupplyWithdrawUiProps extends Omit<SupplyWithdrawProps, 'assetI
   onSubmitWithdraw: AmountFormProps['onSubmit'];
   isSupplyLoading: boolean;
   isWithdrawLoading: boolean;
-  asset?: Asset;
+  asset?: UserAsset;
 }
 
 /**
@@ -238,7 +238,7 @@ const SupplyWithdrawModal: React.FC<SupplyWithdrawProps> = ({ assetId, includeXv
 
   const {
     data: { assets, userTotalBorrowBalanceCents, userTotalBorrowLimitCents },
-  } = useGetUserMarketInfo({
+  } = useGetUserAssets({
     accountAddress,
   });
 

@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 import { Table, TableProps, Token } from 'components';
 import React, { useContext, useMemo } from 'react';
 import { useTranslation } from 'translation';
-import { Asset } from 'types';
+import { UserAsset } from 'types';
 import {
   convertWeiToTokens,
   formatToReadablePercentage,
@@ -11,17 +11,17 @@ import {
   getContractAddress,
 } from 'utilities';
 
-import { useGetBalanceOf, useGetUserMarketInfo, useGetVenusVaiVaultDailyRate } from 'clients/api';
+import { useGetBalanceOf, useGetUserAssets, useGetVenusVaiVaultDailyRate } from 'clients/api';
 import { DAYS_PER_YEAR } from 'constants/daysPerYear';
 import { DEFAULT_REFETCH_INTERVAL_MS } from 'constants/defaultRefetchInterval';
 import { AuthContext } from 'context/AuthContext';
 
 import { useStyles } from '../styles';
 
-type TableAsset = Pick<Asset, 'id' | 'symbol'> & {
-  xvsPerDay: Asset['xvsPerDay'] | undefined;
-  xvsSupplyApy: Asset['xvsSupplyApy'] | undefined;
-  xvsBorrowApy: Asset['xvsBorrowApy'] | undefined;
+type TableAsset = Pick<UserAsset, 'id' | 'symbol'> & {
+  xvsPerDay: UserAsset['xvsPerDay'] | undefined;
+  xvsSupplyApy: UserAsset['xvsSupplyApy'] | undefined;
+  xvsBorrowApy: UserAsset['xvsBorrowApy'] | undefined;
 };
 
 interface XvsTableProps {
@@ -116,7 +116,7 @@ const XvsTable: React.FC = () => {
   // TODO: handle loading state (see VEN-591)
   const {
     data: { assets },
-  } = useGetUserMarketInfo({
+  } = useGetUserAssets({
     accountAddress: account?.address,
   });
 

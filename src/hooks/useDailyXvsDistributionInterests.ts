@@ -2,7 +2,7 @@ import { BigNumber } from 'bignumber.js';
 import { useContext, useMemo } from 'react';
 import { convertWeiToTokens } from 'utilities';
 
-import { useGetDailyXvs, useGetMarkets } from 'clients/api';
+import { useGetAssets, useGetDailyXvs } from 'clients/api';
 import { XVS_TOKEN_ID } from 'constants/xvs';
 import { AuthContext } from 'context/AuthContext';
 
@@ -13,7 +13,7 @@ const useDailyXvsDistributionInterests = () => {
     { enabled: !!account?.address },
   );
 
-  const { data: getMarketsData, isLoading: isGetMarketsLoading } = useGetMarkets();
+  const { data: getMarketsData, isLoading: isGetAssetsLoading } = useGetAssets();
   const xvsPriceDollars: BigNumber | undefined = useMemo(
     () => (getMarketsData?.markets || []).find(market => market.id === XVS_TOKEN_ID)?.tokenPrice,
     [JSON.stringify(getMarketsData?.markets)],
@@ -40,7 +40,7 @@ const useDailyXvsDistributionInterests = () => {
   ]);
 
   return {
-    isLoading: isGetDailyXvsLoading || isGetMarketsLoading,
+    isLoading: isGetDailyXvsLoading || isGetAssetsLoading,
     dailyXvsDistributionInterestsCents,
   };
 };

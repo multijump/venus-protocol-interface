@@ -2,7 +2,7 @@
 import { Select, TableRowProps } from 'components';
 import React from 'react';
 import { useTranslation } from 'translation';
-import { Asset } from 'types';
+import { UserAsset } from 'types';
 
 import Path from 'constants/path';
 import { MarketTable } from 'containers/MarketTable';
@@ -11,7 +11,7 @@ import { useShowMdDownCss } from 'hooks/responsive';
 import { useStyles } from './styles';
 
 export interface TableProps {
-  assets: Asset[];
+  assets: UserAsset[];
 }
 
 export const Table: React.FC<TableProps> = ({ assets }) => {

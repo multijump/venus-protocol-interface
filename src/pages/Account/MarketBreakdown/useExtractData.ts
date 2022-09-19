@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { useMemo } from 'react';
-import { Asset } from 'types';
+import { UserAsset } from 'types';
 import {
   calculateCollateralValue,
   calculateDailyEarningsCents,
@@ -13,7 +13,7 @@ import {
 
 import { SAFE_BORROW_LIMIT_PERCENTAGE } from 'constants/safeBorrowLimitPercentage';
 
-const useExtractData = ({ assets, includeXvs }: { assets: Asset[]; includeXvs: boolean }) =>
+const useExtractData = ({ assets, includeXvs }: { assets: UserAsset[]; includeXvs: boolean }) =>
   useMemo(() => {
     const { totalBorrowCents, totalSupplyCents, borrowLimitCents } = assets.reduce(
       (acc, asset) => ({

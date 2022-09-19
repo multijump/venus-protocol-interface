@@ -4,20 +4,20 @@ import { restService } from 'utilities';
 
 import { VBEP_TOKENS } from 'constants/tokens';
 
-export interface GetMarketsResponse {
+export interface GetAssetsResponse {
   dailyVenus: number;
   markets: Market[];
   request: { addresses: string[] };
   venusRate: string;
 }
 
-export interface GetMarketsOutput {
+export interface GetAssetsOutput {
   markets: Market[];
   dailyVenusWei: BigNumber | undefined;
 }
 
-const getMarkets = async (): Promise<GetMarketsOutput> => {
-  const response = await restService<GetMarketsResponse>({
+const getAssets = async (): Promise<GetAssetsOutput> => {
+  const response = await restService<GetAssetsResponse>({
     endpoint: '/governance/venus',
     method: 'GET',
   });
@@ -62,4 +62,4 @@ const getMarkets = async (): Promise<GetMarketsOutput> => {
   return { markets, dailyVenusWei };
 };
 
-export default getMarkets;
+export default getAssets;

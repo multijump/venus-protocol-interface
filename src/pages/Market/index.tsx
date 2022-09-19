@@ -3,10 +3,10 @@ import { Typography } from '@mui/material';
 import { Cell, CellGroup, Icon } from 'components';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'translation';
-import { Asset } from 'types';
+import { UserAsset } from 'types';
 import { formatCentsToReadableValue } from 'utilities';
 
-import { assetData } from '__mocks__/models/asset';
+import { userAssets } from '__mocks__/models/userAssets';
 import useUpdateBreadcrumbNavigation from 'hooks/useUpdateBreadcrumbNavigation';
 
 import Table from './Table';
@@ -14,7 +14,7 @@ import { useStyles } from './styles';
 
 export interface MarketUiProps {
   marketName: string;
-  assets: Asset[];
+  assets: UserAsset[];
   isIsolatedLendingMarket: boolean;
   totalSupplyCents: number;
   totalBorrowCents: number;
@@ -114,7 +114,7 @@ export const MarketUi: React.FC<MarketUiProps> = ({
 const Market: React.FC = () => {
   // TODO: fetch actual values (see VEN-546)
   const marketName = 'Venus';
-  const assets = assetData;
+  const assets = userAssets;
   const isIsolatedLendingMarket = true;
   const totalSupplyCents = 1000000000;
   const totalBorrowCents = 100000000;

@@ -2,12 +2,12 @@ import { fireEvent, waitFor } from '@testing-library/react';
 import BigNumber from 'bignumber.js';
 import noop from 'noop-ts';
 import React from 'react';
-import { Asset } from 'types';
+import { UserAsset } from 'types';
 
 import fakeAccountAddress from '__mocks__/models/address';
-import { assetData } from '__mocks__/models/asset';
 import fakeTransactionReceipt from '__mocks__/models/transactionReceipt';
-import { borrowVToken, getAllowance, useGetUserMarketInfo } from 'clients/api';
+import { userAssets } from '__mocks__/models/userAssets';
+import { borrowVToken, getAllowance, useGetUserAssets } from 'clients/api';
 import MAX_UINT256 from 'constants/maxUint256';
 import { SAFE_BORROW_LIMIT_PERCENTAGE } from 'constants/safeBorrowLimitPercentage';
 import useSuccessfulTransactionModal from 'hooks/useSuccessfulTransactionModal';
@@ -17,8 +17,8 @@ import en from 'translation/translations/en.json';
 import Borrow from '.';
 import TEST_IDS from './testIds';
 
-const fakeAsset: Asset = {
-  ...assetData[0],
+const fakeAsset: UserAsset = {
+  ...userAssets[0],
   tokenPrice: new BigNumber(1),
   walletBalance: new BigNumber(10000000),
   liquidity: new BigNumber(10000),
@@ -36,9 +36,9 @@ describe('hooks/useBorrowRepayModal/Borrow', () => {
     (getAllowance as jest.Mock).mockImplementation(() => ({
       allowanceWei: MAX_UINT256,
     }));
-    (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
+    (useGetUserAssets as jest.Mock).mockImplementation(() => ({
       data: {
-        assets: [...assetData, fakeAsset],
+        assets: [...userAssets, fakeAsset],
         userTotalBorrowLimitCents: fakeUserTotalBorrowLimitCents,
         userTotalBorrowBalanceCents: fakeUserTotalBorrowBalanceCents,
       },
@@ -51,7 +51,7 @@ describe('hooks/useBorrowRepayModal/Borrow', () => {
   });
 
   it('renders correct token borrowable amount when asset liquidity is higher than maximum amount of tokens user can borrow before reaching their borrow limit', async () => {
-    const customFakeAsset: Asset = {
+    const customFakeAsset: UserAsset = {
       ...fakeAsset,
       liquidity: new BigNumber(100000000),
     };
@@ -76,7 +76,7 @@ describe('hooks/useBorrowRepayModal/Borrow', () => {
   });
 
   it('renders correct token borrowable amount when asset liquidity is lower than maximum amount of tokens user can borrow before reaching their borrow limit', async () => {
-    const customFakeAsset: Asset = {
+    const customFakeAsset: UserAsset = {
       ...fakeAsset,
       liquidity: new BigNumber(200),
     };
@@ -98,7 +98,7 @@ describe('hooks/useBorrowRepayModal/Borrow', () => {
   });
 
   it('displays warning message and disables form if user has not supplied and collateralize any tokens yet', async () => {
-    (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
+    (useGetUserAssets as jest.Mock).mockImplementation(() => ({
       data: {
         assets: [],
         userTotalBorrowLimitCents: new BigNumber(0),
@@ -107,7 +107,7 @@ describe('hooks/useBorrowRepayModal/Borrow', () => {
       isLoading: false,
     }));
 
-    const customFakeAsset: Asset = {
+    const customFakeAsset: UserAsset = {
       ...fakeAsset,
       liquidity: new BigNumber(200),
     };
@@ -143,7 +143,7 @@ describe('hooks/useBorrowRepayModal/Borrow', () => {
   });
 
   it('disables submit button if an amount entered in input is higher than asset liquidity', async () => {
-    const customFakeAsset: Asset = {
+    const customFakeAsset: UserAsset = {
       ...fakeAsset,
       liquidity: new BigNumber(200),
     };

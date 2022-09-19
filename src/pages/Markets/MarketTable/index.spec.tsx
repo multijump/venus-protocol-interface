@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js';
 import React from 'react';
 
-import { assetData } from '__mocks__/models/asset';
-import { useGetUserMarketInfo } from 'clients/api';
+import { userAssets } from '__mocks__/models/userAssets';
+import { useGetUserAssets } from 'clients/api';
 import renderComponent from 'testUtils/renderComponent';
 
 import MarketTable from '.';
@@ -11,9 +11,9 @@ jest.mock('clients/api');
 
 describe('pages/Markets/MarketTable', () => {
   beforeEach(() => {
-    (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
+    (useGetUserAssets as jest.Mock).mockImplementation(() => ({
       data: {
-        assets: assetData,
+        assets: userAssets,
         userTotalBorrowLimitCents: new BigNumber('111'),
         userTotalBorrowBalanceCents: new BigNumber('91'),
         userTotalSupplyBalanceCents: new BigNumber('910'),

@@ -3,7 +3,7 @@ import React from 'react';
 import { TokenId, VBepToken } from 'types';
 import { convertPercentageFromSmartContract, convertWeiToTokens, getToken } from 'utilities';
 
-import { useGetMarkets, useGetVTokenCash } from 'clients/api';
+import { useGetAssets, useGetVTokenCash } from 'clients/api';
 import { BLOCKS_PER_DAY } from 'constants/bsc';
 import { COMPOUND_MANTISSA } from 'constants/compoundMantissa';
 import { TOKENS, VTOKEN_DECIMALS } from 'constants/tokens';
@@ -13,7 +13,7 @@ const useGetAssetData = ({ vTokenId }: { vTokenId: VBepToken['id'] }) => {
     vTokenId,
   });
 
-  const { data: getMarketsData } = useGetMarkets();
+  const { data: getMarketsData } = useGetAssets();
   const asset = (getMarketsData?.markets || []).find(market => market.id === vTokenId);
 
   return React.useMemo(() => {

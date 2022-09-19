@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { useMemo } from 'react';
-import { Asset, Market, TokenId } from 'types';
+import { Market, TokenId, UserAsset } from 'types';
 import {
   calculateCollateralValue,
   convertTokensToWei,
@@ -12,15 +12,15 @@ import {
 
 import {
   IGetVTokenBalancesAllOutput,
+  useGetAssets,
   useGetAssetsInAccount,
-  useGetMarkets,
   useGetMintedVai,
   useGetVTokenBalancesAll,
 } from 'clients/api';
 import { TOKENS, VBEP_TOKENS } from 'constants/tokens';
 
 export interface Data {
-  assets: Asset[];
+  assets: UserAsset[];
   userTotalBorrowLimitCents: BigNumber;
   userTotalBorrowBalanceCents: BigNumber;
   userTotalSupplyBalanceCents: BigNumber;
@@ -28,7 +28,7 @@ export interface Data {
   dailyVenusWei: BigNumber;
 }
 
-export interface UseGetUserMarketInfoOutput {
+export interface UseGetUserAssetsOutput {
   isLoading: boolean;
   data: Data;
 }
@@ -39,11 +39,11 @@ const vTokenAddresses: string[] = Object.values(VBEP_TOKENS).reduce(
 );
 
 // TODO: decouple, this hook handles too many things (see https://app.clickup.com/t/2d4rfx6)
-const useGetUserMarketInfo = ({
+const useGetUserAssets = ({
   accountAddress,
 }: {
   accountAddress?: string;
-}): UseGetUserMarketInfoOutput => {
+}): UseGetUserAssetsOutput => {
   const { data: userMintedVaiData, isLoading: isGetUserMintedVaiLoading } = useGetMintedVai(
     {
       accountAddress: accountAddress || '',
@@ -58,8 +58,8 @@ const useGetUserMarketInfo = ({
       markets: [],
       dailyVenusWei: new BigNumber(0),
     },
-    isLoading: isGetMarketsLoading,
-  } = useGetMarkets({
+    isLoading: isGetAssetsLoading,
+  } = useGetAssets({
     placeholderData: {
       markets: [],
       dailyVenusWei: new BigNumber(0),
@@ -108,7 +108,7 @@ const useGetUserMarketInfo = ({
   );
 
   const isLoading =
-    isGetMarketsLoading ||
+    isGetAssetsLoading ||
     isGetAssetsInAccountLoading ||
     isGetVTokenBalancesAccountLoading ||
     isGetUserMintedVaiLoading;
@@ -234,7 +234,7 @@ const useGetUserMarketInfo = ({
     );
 
     // percent of limit
-    assetList = assetList.map((item: Asset) => ({
+    assetList = assetList.map((item: UserAsset) => ({
       ...item,
       percentOfLimit: new BigNumber(userTotalBorrowLimitCents).isZero()
         ? '0'
@@ -269,4 +269,4 @@ const useGetUserMarketInfo = ({
   };
 };
 
-export default useGetUserMarketInfo;
+export default useGetUserAssets;

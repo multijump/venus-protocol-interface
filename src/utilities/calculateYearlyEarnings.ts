@@ -1,11 +1,11 @@
 import BigNumber from 'bignumber.js';
-import { Asset } from 'types';
+import { UserAsset } from 'types';
 
 export const calculateYearlyEarningsForAsset = ({
   asset,
   includeXvs,
 }: {
-  asset: Asset;
+  asset: UserAsset;
   includeXvs: boolean;
 }) => {
   const assetBorrowBalanceCents = asset.borrowBalance
@@ -48,7 +48,7 @@ export const calculateYearlyEarningsForAssets = ({
   assets,
   includeXvs,
 }: {
-  assets: Asset[];
+  assets: UserAsset[];
   includeXvs: boolean;
 }) => {
   // We use the yearly earnings to calculate the daily earnings the net APY

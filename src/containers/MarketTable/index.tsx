@@ -3,7 +3,7 @@ import { Table, TableProps, TableRowProps, switchAriaLabel, toast } from 'compon
 import { VError, formatVErrorToReadableString } from 'errors';
 import React, { useContext, useMemo } from 'react';
 import { useTranslation } from 'translation';
-import { Asset, VTokenId } from 'types';
+import { UserAsset, VTokenId } from 'types';
 
 import { TOKENS } from 'constants/tokens';
 import { DisableLunaUstWarningContext } from 'context/DisableLunaUstWarning';
@@ -35,7 +35,7 @@ import useGenerateData from './useGenerateData';
 export interface MarketTableProps
   extends Partial<Omit<TableProps, 'columns' | 'rowKeyIndex' | 'breakpoint'>>,
     Pick<TableProps, 'breakpoint'> {
-  assets: Asset[];
+  assets: UserAsset[];
   columns: ColumnName[];
   marketType?: 'supply' | 'borrow';
   className?: string;
@@ -59,7 +59,7 @@ export const MarketTable: React.FC<MarketTableProps> = ({
     DisableLunaUstWarningContext,
   );
 
-  const handleCollateralChange = async (assetToUpdate: Asset) => {
+  const handleCollateralChange = async (assetToUpdate: UserAsset) => {
     try {
       await toggleCollateral(assetToUpdate);
     } catch (e) {

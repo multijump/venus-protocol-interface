@@ -2,10 +2,10 @@
 import { Modal, ModalProps, Spinner, TabContent, Tabs, Token } from 'components';
 import React from 'react';
 import { useTranslation } from 'translation';
-import { Asset } from 'types';
+import { UserAsset } from 'types';
 import { isAssetEnabled } from 'utilities';
 
-import { useGetUserMarketInfo } from 'clients/api';
+import { useGetUserAssets } from 'clients/api';
 import { AuthContext } from 'context/AuthContext';
 
 import Borrow from './Borrow';
@@ -15,7 +15,7 @@ import { useStyles } from './styles';
 export interface BorrowRepayProps {
   onClose: ModalProps['handleClose'];
   includeXvs: boolean;
-  assetId: Asset['id'];
+  assetId: UserAsset['id'];
 }
 
 const BorrowRepay: React.FC<BorrowRepayProps> = ({ onClose, assetId, includeXvs }) => {
@@ -25,7 +25,7 @@ const BorrowRepay: React.FC<BorrowRepayProps> = ({ onClose, assetId, includeXvs 
 
   const {
     data: { assets },
-  } = useGetUserMarketInfo({
+  } = useGetUserAssets({
     accountAddress: account?.address,
   });
 

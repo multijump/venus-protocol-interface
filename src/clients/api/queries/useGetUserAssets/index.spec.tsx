@@ -10,13 +10,13 @@ import { vTokenBalancesAccount } from '__mocks__/models/vTokenBalancesAccount';
 import { getAssetsInAccount, getMarkets, getMintedVai, useGetVTokenBalancesAll } from 'clients/api';
 import renderComponent from 'testUtils/renderComponent';
 
-import useGetUserMarketInfo, { UseGetUserMarketInfoOutput } from '.';
+import useGetUserAssets, { UseGetUserAssetsOutput } from '.';
 
 jest.mock('clients/api');
 
 const fakeUserVaiMintedWei = new BigNumber('10000000000000000');
 
-describe('api/queries/useGetUserMarketInfo', () => {
+describe('api/queries/useGetUserAssets', () => {
   beforeEach(() => {
     (getMarkets as jest.Mock).mockImplementation(() => ({ markets }));
     (getAssetsInAccount as jest.Mock).mockImplementation(() => ({
@@ -35,7 +35,7 @@ describe('api/queries/useGetUserMarketInfo', () => {
   });
 
   it('calculates totals correctly', async () => {
-    let data: UseGetUserMarketInfoOutput['data'] = {
+    let data: UseGetUserAssetsOutput['data'] = {
       assets: [],
       userTotalBorrowBalanceCents: new BigNumber(0),
       userTotalBorrowLimitCents: new BigNumber(0),
@@ -45,7 +45,7 @@ describe('api/queries/useGetUserMarketInfo', () => {
     };
 
     const CallMarketContext = () => {
-      ({ data } = useGetUserMarketInfo({ accountAddress: fakeAddress }));
+      ({ data } = useGetUserAssets({ accountAddress: fakeAddress }));
       return <div />;
     };
 

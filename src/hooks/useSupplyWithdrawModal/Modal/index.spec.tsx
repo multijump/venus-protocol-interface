@@ -1,12 +1,12 @@
 import { act, fireEvent, waitFor } from '@testing-library/react';
 import BigNumber from 'bignumber.js';
 import React from 'react';
-import { Asset, TokenId } from 'types';
+import { TokenId, UserAsset } from 'types';
 import { DISABLED_TOKENS } from 'utilities';
 
 import fakeAccountAddress from '__mocks__/models/address';
-import { assetData } from '__mocks__/models/asset';
 import fakeTransactionReceipt from '__mocks__/models/transactionReceipt';
+import { userAssets } from '__mocks__/models/userAssets';
 import {
   getAllowance,
   getVTokenBalanceOf,
@@ -14,7 +14,7 @@ import {
   redeemUnderlying,
   supplyBnb,
   supplyNonBnb,
-  useGetUserMarketInfo,
+  useGetUserAssets,
 } from 'clients/api';
 import MAX_UINT256 from 'constants/maxUint256';
 import useSuccessfulTransactionModal from 'hooks/useSuccessfulTransactionModal';
@@ -23,11 +23,11 @@ import en from 'translation/translations/en.json';
 
 import SupplyWithdraw from '.';
 
-const asset = assetData[1];
+const asset = userAssets[1];
 const fakeGetVTokenBalance = new BigNumber('111');
 
-const fakeAsset: Asset = {
-  ...assetData[0],
+const fakeAsset: UserAsset = {
+  ...userAssets[0],
   tokenPrice: new BigNumber(1),
   supplyBalance: new BigNumber(1000),
   walletBalance: new BigNumber(10000000),
@@ -46,9 +46,9 @@ describe('hooks/useSupplyWithdrawModal', () => {
       allowanceWei: MAX_UINT256,
     }));
 
-    (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
+    (useGetUserAssets as jest.Mock).mockImplementation(() => ({
       data: {
-        assets: assetData,
+        assets: userAssets,
         userTotalBorrowLimitCents: fakeUserTotalBorrowLimitDollars,
         userTotalBorrowBalanceCents: fakeUserTotalBorrowBalanceDollars,
       },
@@ -95,7 +95,7 @@ describe('hooks/useSupplyWithdrawModal', () => {
 
   describe('Supply form', () => {
     beforeEach(() => {
-      (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
+      (useGetUserAssets as jest.Mock).mockImplementation(() => ({
         data: {
           assets: [fakeAsset],
           userTotalBorrowLimitCents: fakeUserTotalBorrowLimitDollars,
@@ -111,7 +111,7 @@ describe('hooks/useSupplyWithdrawModal', () => {
         id: tokenId as TokenId,
       };
 
-      (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
+      (useGetUserAssets as jest.Mock).mockImplementation(() => ({
         data: {
           assets: [customFakeAsset],
           userTotalBorrowLimitCents: fakeUserTotalBorrowLimitDollars,
@@ -165,12 +165,12 @@ describe('hooks/useSupplyWithdrawModal', () => {
     });
 
     it('disables submit button if an amount entered in input is higher than token wallet balance', async () => {
-      const customFakeAsset: Asset = {
+      const customFakeAsset: UserAsset = {
         ...fakeAsset,
         walletBalance: new BigNumber(1),
       };
 
-      (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
+      (useGetUserAssets as jest.Mock).mockImplementation(() => ({
         data: {
           assets: [customFakeAsset],
           userTotalBorrowLimitCents: fakeUserTotalBorrowLimitDollars,
@@ -228,7 +228,7 @@ describe('hooks/useSupplyWithdrawModal', () => {
     });
 
     it('lets user supply BNB, then displays successful transaction modal and calls onClose callback on success', async () => {
-      const customFakeAsset: Asset = {
+      const customFakeAsset: UserAsset = {
         ...fakeAsset,
         id: 'bnb' as TokenId,
         symbol: 'BNB',
@@ -236,7 +236,7 @@ describe('hooks/useSupplyWithdrawModal', () => {
         walletBalance: new BigNumber('11'),
       };
 
-      (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
+      (useGetUserAssets as jest.Mock).mockImplementation(() => ({
         data: {
           assets: [customFakeAsset],
           userTotalBorrowLimitCents: fakeUserTotalBorrowLimitDollars,
@@ -290,7 +290,7 @@ describe('hooks/useSupplyWithdrawModal', () => {
     });
 
     it('lets user supply non-BNB tokens, then displays successful transaction modal and calls onClose callback on success', async () => {
-      const customFakeAsset: Asset = {
+      const customFakeAsset: UserAsset = {
         ...fakeAsset,
         id: 'eth' as TokenId,
         symbol: 'ETH',
@@ -298,7 +298,7 @@ describe('hooks/useSupplyWithdrawModal', () => {
         walletBalance: new BigNumber('11'),
       };
 
-      (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
+      (useGetUserAssets as jest.Mock).mockImplementation(() => ({
         data: {
           assets: [customFakeAsset],
           userTotalBorrowLimitCents: fakeUserTotalBorrowLimitDollars,

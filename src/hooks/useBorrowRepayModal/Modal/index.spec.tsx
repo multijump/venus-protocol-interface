@@ -4,22 +4,22 @@ import React from 'react';
 import { TokenId } from 'types';
 import { DISABLED_TOKENS } from 'utilities';
 
-import { assetData } from '__mocks__/models/asset';
-import { useGetUserMarketInfo } from 'clients/api';
+import { userAssets } from '__mocks__/models/userAssets';
+import { useGetUserAssets } from 'clients/api';
 import renderComponent from 'testUtils/renderComponent';
 import en from 'translation/translations/en.json';
 
 import BorrowRepay from '.';
 
-const asset = assetData[1];
+const asset = userAssets[1];
 
 jest.mock('clients/api');
 
 describe('hooks/useBorrowRepayModal', () => {
   beforeEach(() => {
-    (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
+    (useGetUserAssets as jest.Mock).mockImplementation(() => ({
       data: {
-        assets: assetData,
+        assets: userAssets,
         userTotalBorrowLimitCents: new BigNumber('111'),
         userTotalBorrowBalanceCents: new BigNumber('91'),
       },
