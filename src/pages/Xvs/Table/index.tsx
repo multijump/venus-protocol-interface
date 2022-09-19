@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { Typography } from '@mui/material';
+import BigNumber from 'bignumber.js';
 import { Table, TableProps, Token } from 'components';
 import React, { useContext, useMemo } from 'react';
 import { useTranslation } from 'translation';
-import { UserAsset } from 'types';
+import { TokenId, UserAsset } from 'types';
 import {
   convertWeiToTokens,
   formatToReadablePercentage,
@@ -14,12 +15,14 @@ import {
 import { useGetBalanceOf, useGetUserAssets, useGetVenusVaiVaultDailyRate } from 'clients/api';
 import { DAYS_PER_YEAR } from 'constants/daysPerYear';
 import { DEFAULT_REFETCH_INTERVAL_MS } from 'constants/defaultRefetchInterval';
+import { TOKENS } from 'constants/tokens';
 import { AuthContext } from 'context/AuthContext';
 
 import { useStyles } from '../styles';
 
 type TableAsset = Pick<UserAsset, 'id' | 'symbol'> & {
-  xvsPerDay: UserAsset['xvsPerDay'] | undefined;
+  supplyDailyXvsWei: UserAsset['supplyDailyXvsWei'] | undefined;
+  borrowDailyXvsWei: UserAsset['borrowDailyXvsWei'] | undefined;
   xvsSupplyApy: UserAsset['xvsSupplyApy'] | undefined;
   xvsBorrowApy: UserAsset['xvsBorrowApy'] | undefined;
 };
@@ -53,48 +56,57 @@ const XvsTableUi: React.FC<XvsTableProps> = ({ assets }) => {
   );
 
   // Format assets to rows
-  const rows: TableProps['data'] = assets.map(asset => [
-    {
-      key: 'asset',
-      render: () => <Token tokenId={asset.id} />,
-      value: asset.id,
-      align: 'left',
-    },
-    {
-      key: 'xvsPerDay',
-      render: () => (
-        <Typography variant="small1" css={[styles.whiteText, styles.fontWeight400]}>
-          {formatTokensToReadableValue({
-            value: asset.xvsPerDay,
-            tokenId: 'xvs',
-            minimizeDecimals: true,
-          })}
-        </Typography>
+  const rows: TableProps['data'] = assets.map(asset => {
+    const xvsPerDay = convertWeiToTokens({
+      valueWei: new BigNumber(asset?.supplyDailyXvsWei || 0).plus(
+        new BigNumber(asset?.borrowDailyXvsWei || 0),
       ),
-      value: asset.xvsPerDay?.toFixed() || 0,
-      align: 'right',
-    },
-    {
-      key: 'supplyXvsApy',
-      render: () => (
-        <Typography variant="small1" css={[styles.whiteText, styles.fontWeight400]}>
-          {formatToReadablePercentage(asset.xvsSupplyApy)}
-        </Typography>
-      ),
-      value: asset.xvsSupplyApy?.toFixed() || 0,
-      align: 'right',
-    },
-    {
-      key: 'borrowXvsApy',
-      render: () => (
-        <Typography variant="small1" css={[styles.whiteText, styles.fontWeight400]}>
-          {formatToReadablePercentage(asset.xvsBorrowApy)}
-        </Typography>
-      ),
-      value: asset.xvsBorrowApy?.toFixed() || 0,
-      align: 'right',
-    },
-  ]);
+      tokenId: TOKENS.xvs.id as TokenId,
+    });
+
+    return [
+      {
+        key: 'asset',
+        render: () => <Token tokenId={asset.id} />,
+        value: asset.id,
+        align: 'left',
+      },
+      {
+        key: 'xvsPerDay',
+        render: () => (
+          <Typography variant="small1" css={[styles.whiteText, styles.fontWeight400]}>
+            {formatTokensToReadableValue({
+              value: xvsPerDay,
+              tokenId: 'xvs',
+              minimizeDecimals: true,
+            })}
+          </Typography>
+        ),
+        value: xvsPerDay?.toFixed() || 0,
+        align: 'right',
+      },
+      {
+        key: 'supplyXvsApy',
+        render: () => (
+          <Typography variant="small1" css={[styles.whiteText, styles.fontWeight400]}>
+            {formatToReadablePercentage(asset.xvsSupplyApy)}
+          </Typography>
+        ),
+        value: asset.xvsSupplyApy?.toFixed() || 0,
+        align: 'right',
+      },
+      {
+        key: 'borrowXvsApy',
+        render: () => (
+          <Typography variant="small1" css={[styles.whiteText, styles.fontWeight400]}>
+            {formatToReadablePercentage(asset.xvsBorrowApy)}
+          </Typography>
+        ),
+        value: asset.xvsBorrowApy?.toFixed() || 0,
+        align: 'right',
+      },
+    ];
+  });
 
   return (
     <Table
@@ -148,15 +160,17 @@ const XvsTable: React.FC = () => {
       });
 
       const vaiApy = venusVaiVaultDailyRateTokens
-        .times(xvsAsset.tokenPrice)
+        .times(xvsAsset.tokenPriceDollars)
         .times(DAYS_PER_YEAR)
         .times(100)
-        .div(vaultVaiStakedTokens);
+        .div(vaultVaiStakedTokens)
+        .toNumber();
 
       allAssets.unshift({
         id: 'vai',
         symbol: 'VAI',
-        xvsPerDay: venusVaiVaultDailyRateTokens,
+        supplyDailyXvsWei: venusVaiVaultDailyRateData.dailyRateWei,
+        borrowDailyXvsWei: undefined,
         xvsSupplyApy: vaiApy,
         xvsBorrowApy: undefined,
       });

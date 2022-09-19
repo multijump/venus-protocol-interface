@@ -3,11 +3,11 @@ import BigNumber from 'bignumber.js';
 import React from 'react';
 
 import fakeAddress from '__mocks__/models/address';
+import { assets } from '__mocks__/models/assets';
 import { assetsInAccount } from '__mocks__/models/assetsInAccount';
-import { markets } from '__mocks__/models/markets';
 import { vTokenBalanceTreasury } from '__mocks__/models/vTokenBalanceTreasury';
 import { vTokenBalancesAccount } from '__mocks__/models/vTokenBalancesAccount';
-import { getAssetsInAccount, getMarkets, getMintedVai, useGetVTokenBalancesAll } from 'clients/api';
+import { getAssets, getAssetsInAccount, getMintedVai, useGetVTokenBalancesAll } from 'clients/api';
 import renderComponent from 'testUtils/renderComponent';
 
 import useGetUserAssets, { UseGetUserAssetsOutput } from '.';
@@ -18,7 +18,10 @@ const fakeUserVaiMintedWei = new BigNumber('10000000000000000');
 
 describe('api/queries/useGetUserAssets', () => {
   beforeEach(() => {
-    (getMarkets as jest.Mock).mockImplementation(() => ({ markets }));
+    (getAssets as jest.Mock).mockImplementation(() => ({
+      assets,
+      dailyXvsDistributedWei: new BigNumber('17289362561374812321'),
+    }));
     (getAssetsInAccount as jest.Mock).mockImplementation(() => ({
       tokenAddresses: assetsInAccount,
     }));
@@ -34,14 +37,14 @@ describe('api/queries/useGetUserAssets', () => {
     });
   });
 
-  it('calculates totals correctly', async () => {
+  it('calculates totals and formats user assets correctly', async () => {
     let data: UseGetUserAssetsOutput['data'] = {
       assets: [],
-      userTotalBorrowBalanceCents: new BigNumber(0),
-      userTotalBorrowLimitCents: new BigNumber(0),
-      userTotalSupplyBalanceCents: new BigNumber(0),
+      userTotalBorrowBalanceCents: 0,
+      userTotalBorrowLimitCents: 0,
+      userTotalSupplyBalanceCents: 0,
       totalXvsDistributedWei: new BigNumber(0),
-      dailyVenusWei: new BigNumber(0),
+      dailyXvsDistributedWei: new BigNumber(0),
     };
 
     const CallMarketContext = () => {

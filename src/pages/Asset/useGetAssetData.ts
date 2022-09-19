@@ -13,28 +13,17 @@ const useGetAssetData = ({ vTokenId }: { vTokenId: VBepToken['id'] }) => {
     vTokenId,
   });
 
-  const { data: getMarketsData } = useGetAssets();
-  const asset = (getMarketsData?.markets || []).find(market => market.id === vTokenId);
+  const { data: getAssetsData } = useGetAssets();
+  const asset = (getAssetsData?.assets || []).find(item => item.id === vTokenId);
 
   return React.useMemo(() => {
-    const totalBorrowBalanceCents = asset && +asset.totalBorrowsUsd * 100;
-    const totalSupplyBalanceCents = asset && +asset.totalSupplyUsd * 100;
-    const borrowApyPercentage = asset?.borrowApy;
-    const supplyApyPercentage = asset?.supplyApy;
-    const borrowDistributionApyPercentage = asset && +asset.borrowVenusApy;
-    const supplyDistributionApyPercentage = asset && +asset.supplyVenusApy;
-    const tokenPriceDollars = asset?.tokenPrice;
-    const liquidityCents = asset && new BigNumber(asset.liquidity).multipliedBy(100);
-    const supplierCount = asset?.supplierCount;
-    const borrowerCount = asset?.borrowerCount;
-    const borrowCapTokens = asset && new BigNumber(asset.borrowCaps);
-    const mintedTokens = asset && new BigNumber(asset.totalSupply2);
+    // const mintedTokens = asset && new BigNumber(asset.totalSupply2);
     const reserveFactorMantissa = asset && new BigNumber(asset.reserveFactor);
 
     const dailyDistributionXvs =
       asset &&
       convertWeiToTokens({
-        valueWei: new BigNumber(asset.supplierDailyVenus).plus(asset.borrowerDailyVenus),
+        valueWei: new BigNumber(asset.supplyDailyXvsWei).plus(asset.borrowDailyXvsWei),
         tokenId: TOKENS.xvs.id as TokenId,
       });
 
@@ -52,7 +41,7 @@ const useGetAssetData = ({ vTokenId }: { vTokenId: VBepToken['id'] }) => {
       asset &&
       formattedSupplyRatePerBlock &&
       // prettier-ignore
-      +asset.totalSupplyUsd * (((1 + formattedSupplyRatePerBlock) ** BLOCKS_PER_DAY) - 1) *
+      (+asset.totalSupplyCents / 100) * (((1 + formattedSupplyRatePerBlock) ** BLOCKS_PER_DAY) - 1) *
       // Convert to cents
       100;
 
@@ -60,7 +49,7 @@ const useGetAssetData = ({ vTokenId }: { vTokenId: VBepToken['id'] }) => {
       asset &&
       formattedBorrowRatePerBlock &&
       // prettier-ignore
-      +asset.totalBorrowsUsd * (((1 + formattedBorrowRatePerBlock) ** BLOCKS_PER_DAY) - 1)
+      (+asset.totalBorrowsCents / 100) * (((1 + formattedBorrowRatePerBlock) ** BLOCKS_PER_DAY) - 1)
         // Convert to cents
         * 100;
 
@@ -71,7 +60,7 @@ const useGetAssetData = ({ vTokenId }: { vTokenId: VBepToken['id'] }) => {
     const reserveTokens =
       asset &&
       convertWeiToTokens({
-        valueWei: new BigNumber(asset.totalReserves),
+        valueWei: new BigNumber(asset.totalReservesWei),
         tokenId: vTokenId,
       });
 
@@ -90,26 +79,17 @@ const useGetAssetData = ({ vTokenId }: { vTokenId: VBepToken['id'] }) => {
         tokenId: vTokenId,
       });
 
-      currentUtilizationRate = new BigNumber(asset.totalBorrows2)
-        .div(vTokenCashTokens.plus(asset.totalBorrows2).minus(reserveTokens))
+      currentUtilizationRate = new BigNumber(asset.totalBorrowsTokens)
+        .div(vTokenCashTokens.plus(asset.totalBorrowsTokens).minus(reserveTokens))
         .multipliedBy(100)
         .dp(0)
         .toNumber();
     }
 
     return {
-      totalBorrowBalanceCents,
-      totalSupplyBalanceCents,
-      borrowApyPercentage,
-      supplyApyPercentage,
-      borrowDistributionApyPercentage,
-      supplyDistributionApyPercentage,
-      tokenPriceDollars,
-      liquidityCents,
-      supplierCount,
-      borrowerCount,
-      borrowCapTokens,
-      mintedTokens,
+      ...asset,
+      mintedTokens: asset?.totalSupplyTokens,
+      borrowCapTokens: asset?.borrowCapTokens,
       dailyDistributionXvs,
       dailySupplyingInterestsCents,
       dailyBorrowingInterestsCents,

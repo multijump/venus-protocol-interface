@@ -10,7 +10,7 @@ import {
 } from 'components';
 import React from 'react';
 import { useTranslation } from 'translation';
-import { MarketRiskLevel, UserAsset } from 'types';
+import { UserMarket } from 'types';
 import { formatCentsToReadableValue, formatToReadablePercentage } from 'utilities';
 
 import { SAFE_BORROW_LIMIT_PERCENTAGE } from 'constants/safeBorrowLimitPercentage';
@@ -21,18 +21,14 @@ import TEST_IDS from './testIds';
 import useExtractData from './useExtractData';
 
 export interface MarketBreakdownProps {
-  marketName: string;
-  riskLevel: MarketRiskLevel;
+  market: UserMarket;
   includeXvs: boolean;
-  assets: UserAsset[];
   className?: string;
 }
 
 export const MarketBreakdown: React.FC<MarketBreakdownProps> = ({
-  marketName,
-  assets,
+  market,
   includeXvs,
-  riskLevel,
   className,
 }) => {
   const { t } = useTranslation();
@@ -47,7 +43,7 @@ export const MarketBreakdown: React.FC<MarketBreakdownProps> = ({
     dailyEarningsCents,
     netApyPercentage,
   } = useExtractData({
-    assets,
+    assets: market.assets,
     includeXvs,
   });
 
@@ -76,10 +72,10 @@ export const MarketBreakdown: React.FC<MarketBreakdownProps> = ({
     <div className={className}>
       <div css={styles.title}>
         <Typography css={styles.marketName} variant="h3">
-          {marketName}
+          {market.name}
         </Typography>
 
-        <RiskLevel variant={riskLevel} />
+        <RiskLevel variant={market.riskLevel} />
       </div>
 
       <Paper css={styles.statsContainer} data-testid={TEST_IDS.stats}>
@@ -120,7 +116,7 @@ export const MarketBreakdown: React.FC<MarketBreakdownProps> = ({
         </div>
       </Paper>
 
-      <Tables assets={assets} />
+      <Tables assets={market.assets} />
     </div>
   );
 };

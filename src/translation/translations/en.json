@@ -50,23 +50,6 @@
     }
   },
   "asset": {
-    "borrowButtonLabel": "Borrow",
-    "borrowInfo": {
-      "stats": {
-        "apy": "APY",
-        "distributionApy": "Distribution APY",
-        "totalBorrow": "Total borrow"
-      },
-      "title": "Borrow info"
-    },
-    "interestRateModel": {
-      "title": "Interest Rate Model"
-    },
-    "legends": {
-      "borrowApy": "Borrow APY",
-      "supplyApy": "Supply APY",
-      "utilizationRate": "Utilization rate"
-    },
     "assetInfo": {
       "stats": {
         "borrowCapLabel": "Borrow cap",
@@ -86,6 +69,23 @@
         "unlimitedBorrowCap": "Uncapped"
       },
       "title": "Asset info"
+    },
+    "borrowButtonLabel": "Borrow",
+    "borrowInfo": {
+      "stats": {
+        "apy": "APY",
+        "distributionApy": "Distribution APY",
+        "totalBorrow": "Total borrow"
+      },
+      "title": "Borrow info"
+    },
+    "interestRateModel": {
+      "title": "Interest Rate Model"
+    },
+    "legends": {
+      "borrowApy": "Borrow APY",
+      "supplyApy": "Supply APY",
+      "utilizationRate": "Utilization rate"
     },
     "supplyButtonLabel": "Supply",
     "supplyInfo": {
@@ -297,14 +297,6 @@
   "market": {
     "availableLiquidity": "Available Liquidity",
     "bannerText": "You are currently looking at an isolated lending market. Supplying tokens to an isolated lending market will increase your borrow limit for this market only, effectively enabling you to borrow tokens from this market only. See <Link>our FAQ</Link> to learn more.",
-    "columns": {
-      "assets": "Assets",
-      "liquidity": "Liquidity",
-      "market": "Market",
-      "riskLevel": "Risk level",
-      "totalBorrow": "Total borrow",
-      "totalSupply": "Total supply"
-    },
     "header": {
       "assetsLabel": "Assets",
       "availableLiquidityLabel": "Available Liquidity",
@@ -338,6 +330,16 @@
       "ariaLabelFor": "sort by",
       "label": "Sort by:",
       "title": "Sort by"
+    },
+    "table": {
+      "columns": {
+        "assets": "Assets",
+        "liquidity": "Liquidity",
+        "market": "Market",
+        "riskLevel": "Risk level",
+        "totalBorrow": "Total borrow",
+        "totalSupply": "Total supply"
+      }
     }
   },
   "marketTable": {

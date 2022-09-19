@@ -6,7 +6,7 @@ import getAssetHistory from '.';
 
 jest.mock('utilities/restService');
 
-const marketSnapshot: AssetSnapshot = {
+const assetSnapshot: AssetSnapshot = {
   id: '18d50fb4-ebe8-4dd6-b0d6-0e052b968ec6',
   asset: '0xd5c4c2e2facbeb59d0216d0595d63fcdc6f9a1a7',
   blockNumber: 1,
@@ -51,7 +51,7 @@ describe('api/queries/getAssetHistory', () => {
   test('returns market history on success', async () => {
     (restService as jest.Mock).mockImplementationOnce(async () => ({
       status: 200,
-      data: { data: { result: [marketSnapshot] } },
+      data: { data: { result: [assetSnapshot] } },
     }));
 
     const response = await getAssetHistory({
@@ -59,14 +59,14 @@ describe('api/queries/getAssetHistory', () => {
     });
 
     expect(response).toEqual({
-      assetSnapshots: [marketSnapshot],
+      assetSnapshots: [assetSnapshot],
     });
   });
 
   test('calls correct endpoint when passing limit and type params', async () => {
     (restService as jest.Mock).mockImplementationOnce(async () => ({
       status: 200,
-      data: { data: { result: [marketSnapshot] } },
+      data: { data: { result: [assetSnapshot] } },
     }));
 
     await getAssetHistory({

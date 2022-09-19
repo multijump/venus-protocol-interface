@@ -1,6 +1,8 @@
 import { restService } from 'utilities';
 
-import getMarkets from '.';
+import governanceResponse from '__mocks__/api/governance.json';
+
+import getAssets from '.';
 
 jest.mock('utilities/restService');
 
@@ -45,7 +47,7 @@ const supportedMarket = {
   venusSupplyIndex: '18116117080571365091301617497156799904494329',
 };
 
-describe('api/queries/getMarkets', () => {
+describe('api/queries/getAssets', () => {
   test('throws an error when request fails', async () => {
     const fakeErrorMessage = 'Fake error message';
 
@@ -56,34 +58,45 @@ describe('api/queries/getMarkets', () => {
     }));
 
     try {
-      await getMarkets();
+      await getAssets();
 
-      throw new Error('getMarkets should have thrown an error but did not');
+      throw new Error('getAssets should have thrown an error but did not');
     } catch (error) {
       expect(error).toMatchInlineSnapshot('[Error: Fake error message]');
     }
   });
 
-  test('returns supported markets', async () => {
+  test('returns supported assets', async () => {
     (restService as jest.Mock).mockImplementationOnce(async () => ({
       status: 200,
       data: { data: { markets: [supportedMarket] } },
     }));
 
-    const { markets } = await getMarkets();
+    const { assets } = await getAssets();
 
-    expect(markets).toHaveLength(1);
+    expect(assets).toHaveLength(1);
   });
 
-  test('filters unsupported markets', async () => {
+  test('filters unsupported assets', async () => {
     const unsupportedMarket = { ...supportedMarket, underlyingSymbol: 'NOPE' };
     (restService as jest.Mock).mockImplementationOnce(async () => ({
       status: 200,
       data: { data: { markets: [unsupportedMarket] } },
     }));
 
-    const { markets } = await getMarkets();
+    const { assets } = await getAssets();
 
-    expect(markets).toHaveLength(0);
+    expect(assets).toHaveLength(0);
+  });
+
+  test('it fetches and formats assets correctly', async () => {
+    (restService as jest.Mock).mockImplementationOnce(async () => ({
+      status: 200,
+      data: governanceResponse,
+    }));
+
+    const response = await getAssets();
+
+    expect(response).toMatchSnapshot();
   });
 });

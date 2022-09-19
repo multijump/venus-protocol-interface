@@ -1,11 +1,12 @@
 /** @jsxImportSource @emotion/react */
+import BigNumber from 'bignumber.js';
 import { RiskLevel, Select, Table, TableProps, TokenGroup } from 'components';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'translation';
 import { Market } from 'types';
 import { formatCentsToReadableValue } from 'utilities';
 
-import { useGetAssets } from 'clients/api';
+import { markets as fakeMarkets } from '__mocks__/models/markets';
 import Path from 'constants/path';
 import { useShowXxlDownCss } from 'hooks/responsive';
 
@@ -31,81 +32,106 @@ export const MarketTableUi: React.FC<MarketTableProps> = ({ markets }) => {
 
   const columns = useMemo(
     () => [
-      { key: 'assets', label: t('market.columns.assets'), orderable: false },
-      { key: 'market', label: t('market.columns.market'), orderable: true, align: 'right' },
-      { key: 'riskLevel', label: t('market.columns.riskLevel'), orderable: true, align: 'right' },
+      { key: 'assets', label: t('markets.table.columns.assets'), orderable: false },
+      { key: 'market', label: t('markets.table.columns.market'), orderable: true, align: 'right' },
+      {
+        key: 'riskLevel',
+        label: t('markets.table.columns.riskLevel'),
+        orderable: true,
+        align: 'right',
+      },
       {
         key: 'totalSupply',
-        label: t('market.columns.totalSupply'),
+        label: t('markets.table.columns.totalSupply'),
         orderable: true,
         align: 'right',
       },
       {
         key: 'totalBorrow',
-        label: t('market.columns.totalBorrow'),
+        label: t('markets.table.columns.totalBorrow'),
         orderable: true,
         align: 'right',
       },
-      { key: 'liquidity', label: t('market.columns.liquidity'), orderable: true, align: 'right' },
+      {
+        key: 'liquidity',
+        label: t('markets.table.columns.liquidityCents'),
+        orderable: true,
+        align: 'right',
+      },
     ],
     [],
   );
 
-  // Format markets to rows
+  // Format assets to rows
   const rows: TableProps['data'] = useMemo(
     () =>
-      markets.map(market => [
-        {
-          key: 'assets',
-          render: () => (
-            // TODO: wire up
-            <TokenGroup tokenIds={['usdt', 'eth', 'usdc', 'xrp', 'bnb', 'aave']} limit={4} />
-          ),
-          value: market.id, // TODO: wire up
-        },
-        {
-          key: 'market',
-          render: () => 'Venus', // TODO: wire up
-          value: 'Venus', // TODO: wire up
-          align: 'right',
-        },
-        {
-          key: 'riskLevel',
-          render: () => <RiskLevel variant="MINIMAL" />, // TODO: wire up
-          value: 'MINIMAL', // TODO: wire up
-          align: 'right',
-        },
-        {
-          key: 'totalSupply',
-          render: () =>
-            formatCentsToReadableValue({
-              value: market.treasuryTotalSupplyCents,
-              shortenLargeValue: true,
+      markets.map(market => {
+        const { treasuryTotalSupplyCents, treasuryTotalBorrowsCents, liquidityCents } =
+          market.assets.reduce(
+            (acc, asset) => ({
+              treasuryTotalSupplyCents: acc.treasuryTotalSupplyCents.plus(asset.totalSupplyCents),
+              treasuryTotalBorrowsCents: acc.treasuryTotalBorrowsCents.plus(
+                asset.totalBorrowsCents,
+              ),
+              liquidityCents: acc.liquidityCents.plus(asset.liquidityCents * 100),
             }),
-          align: 'right',
-          value: market.treasuryTotalSupplyCents.toFixed(),
-        },
-        {
-          key: 'totalBorrow',
-          render: () =>
-            formatCentsToReadableValue({
-              value: market.treasuryTotalBorrowsCents,
-              shortenLargeValue: true,
-            }),
-          value: market.treasuryTotalBorrowsCents.toFixed(),
-          align: 'right',
-        },
-        {
-          key: 'liquidity',
-          render: () =>
-            formatCentsToReadableValue({
-              value: market.liquidity.multipliedBy(100),
-              shortenLargeValue: true,
-            }),
-          value: market.liquidity.toFixed(),
-          align: 'right',
-        },
-      ]),
+            {
+              treasuryTotalSupplyCents: new BigNumber(0),
+              treasuryTotalBorrowsCents: new BigNumber(0),
+              liquidityCents: new BigNumber(0),
+            },
+          );
+
+        return [
+          {
+            key: 'assets',
+            render: () => <TokenGroup tokenIds={market.assets.map(asset => asset.id)} limit={4} />,
+            value: market.id,
+          },
+          {
+            key: 'market',
+            render: () => market.name,
+            value: market.name,
+            align: 'right',
+          },
+          {
+            key: 'riskLevel',
+            render: () => <RiskLevel variant={market.riskLevel} />,
+            value: market.riskLevel,
+            align: 'right',
+          },
+          {
+            key: 'totalSupply',
+            render: () =>
+              formatCentsToReadableValue({
+                value: treasuryTotalSupplyCents,
+                shortenLargeValue: true,
+              }),
+            align: 'right',
+            value: treasuryTotalSupplyCents.toFixed(),
+          },
+          {
+            key: 'totalBorrow',
+            render: () =>
+              formatCentsToReadableValue({
+                value: treasuryTotalBorrowsCents,
+                shortenLargeValue: true,
+              }),
+            value: treasuryTotalBorrowsCents.toFixed(),
+            align: 'right',
+          },
+          {
+            key: 'liquidity',
+            render: () =>
+              formatCentsToReadableValue({
+                value: liquidityCents,
+                shortenLargeValue: true,
+              }),
+            value: liquidityCents.toFixed(),
+            align: 'right',
+          },
+        ];
+      }),
     [JSON.stringify(markets)],
   );
 
@@ -130,7 +156,7 @@ export const MarketTableUi: React.FC<MarketTableProps> = ({ markets }) => {
           orderDirection: 'desc',
         }}
         rowKeyExtractor={row => `${row[0].value}`}
-        getRowHref={() => Path.MARKET.replace(':marketId', 'FAKE_MARKET_ID')} // TODO: wire up
+        getRowHref={row => Path.MARKET.replace(':marketId', `${row[0].value}`)}
         breakpoint="xxl"
         css={styles.cardContentGrid}
       />
@@ -138,14 +164,7 @@ export const MarketTableUi: React.FC<MarketTableProps> = ({ markets }) => {
   );
 };
 
-const MarketTable = () => {
-  // TODO: fetch isolated lending markets
-
-  const { data: { markets } = { markets: [], dailyVenusWei: undefined } } = useGetAssets({
-    placeholderData: { markets: [], dailyVenusWei: undefined },
-  });
-
-  return <MarketTableUi markets={markets} />;
-};
+// TODO: fetch isolated lending assets
+const MarketTable = () => <MarketTableUi markets={fakeMarkets} />;
 
 export default MarketTable;

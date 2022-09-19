@@ -22,8 +22,8 @@ export const useGetAssetsInAccount = () =>
 
 export const getHypotheticalAccountLiquidity = jest.fn();
 
-export const getMarkets = jest.fn();
-export const useGetAssets = () => useQuery(FunctionKey.GET_ASSETS, getMarkets);
+export const getAssets = jest.fn();
+export const useGetAssets = () => useQuery(FunctionKey.GET_ASSETS, getAssets);
 
 export const getAssetHistory = jest.fn();
 export const useGetAssetHistory = () => useQuery(FunctionKey.GET_ASSET_HISTORY, getAssetHistory);

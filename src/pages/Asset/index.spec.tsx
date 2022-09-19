@@ -4,9 +4,9 @@ import { createMemoryHistory } from 'history';
 import React from 'react';
 
 import { assetSnapshots } from '__mocks__/models/assetSnapshots';
-import { markets } from '__mocks__/models/markets';
+import { assets } from '__mocks__/models/assets';
 import { vTokenApySimulations } from '__mocks__/models/vTokenApySimulations';
-import { getAssetHistory, getMarkets, getVTokenApySimulations } from 'clients/api';
+import { getAssetHistory, getAssets, getVTokenApySimulations } from 'clients/api';
 import renderComponent from 'testUtils/renderComponent';
 
 import Asset from '.';
@@ -22,9 +22,9 @@ describe('pages/Asset', () => {
     (getAssetHistory as jest.Mock).mockImplementation(() => ({
       assetSnapshots,
     }));
-    (getMarkets as jest.Mock).mockImplementation(() => ({
-      markets,
-      dailyVenusWei: new BigNumber(0),
+    (getAssets as jest.Mock).mockImplementation(() => ({
+      assets,
+      dailyXvsDistributedWei: new BigNumber(0),
     }));
     (getVTokenApySimulations as jest.Mock).mockImplementation(() => ({
       apySimulations: vTokenApySimulations,

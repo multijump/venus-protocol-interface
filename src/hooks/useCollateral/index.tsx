@@ -54,7 +54,7 @@ const useCollateral = () => {
       });
     }
 
-    if (!asset || !asset.borrowBalance.isZero()) {
+    if (!asset || !asset.borrowBalanceTokens.isZero()) {
       throw new VError({
         type: 'interaction',
         code: 'collateralRequired',
@@ -75,12 +75,12 @@ const useCollateral = () => {
         const assetHypotheticalLiquidity = await getHypotheticalAccountLiquidity({
           comptrollerContract,
           accountAddress,
-          vTokenAddress: asset.vtokenAddress,
+          vTokenAddress: asset.address,
           vTokenBalanceOfWei: new BigNumber(vTokenBalanceOf.balanceWei),
         });
 
         if (+assetHypotheticalLiquidity['1'] > 0 || +assetHypotheticalLiquidity['2'] === 0) {
-          await exitMarket({ vtokenAddress: asset.vtokenAddress, accountAddress });
+          await exitMarket({ vtokenAddress: asset.address, accountAddress });
         }
       } catch (error) {
         if (error instanceof VError) {
@@ -97,7 +97,7 @@ const useCollateral = () => {
       }
     } else {
       try {
-        await enterMarkets({ vTokenAddresses: [asset.vtokenAddress], accountAddress });
+        await enterMarkets({ vTokenAddresses: [asset.address], accountAddress });
       } catch (error) {
         if (error instanceof VError) {
           throw error;

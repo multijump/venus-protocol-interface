@@ -23,22 +23,22 @@ const useGetChartData = ({ vTokenId }: { vTokenId: VBepToken['id'] }) => {
       // Snapshots are returned from earliest to oldest, so we reverse them to
       // pass them to the charts in the right order
       .reverse()
-      .forEach(marketSnapshot => {
-        const timestampMs = new Date(marketSnapshot.createdAt).getTime();
+      .forEach(assetSnapshot => {
+        const timestampMs = new Date(assetSnapshot.createdAt).getTime();
 
         supplyChartData.push({
-          apyPercentage: formatPercentage(marketSnapshot.supplyApy),
+          apyPercentage: formatPercentage(assetSnapshot.supplyApy),
           timestampMs,
-          balanceCents: new BigNumber(marketSnapshot.totalSupply).multipliedBy(
-            marketSnapshot.priceUSD,
+          balanceCents: new BigNumber(assetSnapshot.totalSupply).multipliedBy(
+            assetSnapshot.priceUSD,
           ),
         });
 
         borrowChartData.push({
-          apyPercentage: formatPercentage(marketSnapshot.borrowApy),
+          apyPercentage: formatPercentage(assetSnapshot.borrowApy),
           timestampMs,
-          balanceCents: new BigNumber(marketSnapshot.totalBorrow).multipliedBy(
-            marketSnapshot.priceUSD,
+          balanceCents: new BigNumber(assetSnapshot.totalBorrow).multipliedBy(
+            assetSnapshot.priceUSD,
           ),
         });
       });

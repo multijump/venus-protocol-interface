@@ -28,9 +28,9 @@ const fakeGetVTokenBalance = new BigNumber('111');
 
 const fakeAsset: UserAsset = {
   ...userAssets[0],
-  tokenPrice: new BigNumber(1),
-  supplyBalance: new BigNumber(1000),
-  walletBalance: new BigNumber(10000000),
+  tokenPriceDollars: 1,
+  supplyBalanceTokens: new BigNumber(1000),
+  walletBalanceTokens: new BigNumber(10000000),
 };
 
 const fakeUserTotalBorrowLimitDollars = new BigNumber(1000);
@@ -135,6 +135,15 @@ describe('hooks/useSupplyWithdrawModal', () => {
     });
 
     it('displays correct token wallet balance', async () => {
+      (useGetUserAssets as jest.Mock).mockImplementation(() => ({
+        data: {
+          assets: [fakeAsset],
+          userTotalBorrowLimitCents: fakeUserTotalBorrowLimitDollars,
+          userTotalBorrowBalanceCents: fakeUserTotalBorrowBalanceDollars,
+        },
+        isLoading: false,
+      }));
+
       const { getByText } = renderComponent(
         <SupplyWithdraw onClose={jest.fn()} assetId={fakeAsset.id} includeXvs />,
         {
@@ -167,7 +176,7 @@ describe('hooks/useSupplyWithdrawModal', () => {
     it('disables submit button if an amount entered in input is higher than token wallet balance', async () => {
       const customFakeAsset: UserAsset = {
         ...fakeAsset,
-        walletBalance: new BigNumber(1),
+        walletBalanceTokens: new BigNumber(1),
       };
 
       (useGetUserAssets as jest.Mock).mockImplementation(() => ({
@@ -194,7 +203,7 @@ describe('hooks/useSupplyWithdrawModal', () => {
       // Check submit button is disabled
       expect(getByText(en.supplyWithdraw.enterValidAmountSupply).closest('button')).toBeDisabled();
 
-      const incorrectValueTokens = customFakeAsset.walletBalance.plus(1).toFixed();
+      const incorrectValueTokens = customFakeAsset.walletBalanceTokens.plus(1).toFixed();
 
       // Enter amount in input
       const tokenTextInput = document.querySelector('input') as HTMLInputElement;
@@ -232,8 +241,7 @@ describe('hooks/useSupplyWithdrawModal', () => {
         ...fakeAsset,
         id: 'bnb' as TokenId,
         symbol: 'BNB',
-        vsymbol: 'vBNB',
-        walletBalance: new BigNumber('11'),
+        walletBalanceTokens: new BigNumber('11'),
       };
 
       (useGetUserAssets as jest.Mock).mockImplementation(() => ({
@@ -294,8 +302,7 @@ describe('hooks/useSupplyWithdrawModal', () => {
         ...fakeAsset,
         id: 'eth' as TokenId,
         symbol: 'ETH',
-        vsymbol: 'vETH',
-        walletBalance: new BigNumber('11'),
+        walletBalanceTokens: new BigNumber('11'),
       };
 
       (useGetUserAssets as jest.Mock).mockImplementation(() => ({
@@ -357,7 +364,7 @@ describe('hooks/useSupplyWithdrawModal', () => {
   });
 
   describe('Withdraw form', () => {
-    it('redeem is called when full amount is withdrawn', async () => {
+    it.only('redeem is called when full amount is withdrawn', async () => {
       (getVTokenBalanceOf as jest.Mock).mockImplementationOnce(async () => ({
         balanceWei: fakeGetVTokenBalance,
       }));

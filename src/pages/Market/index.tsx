@@ -3,27 +3,25 @@ import { Typography } from '@mui/material';
 import { Cell, CellGroup, Icon } from 'components';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'translation';
-import { UserAsset } from 'types';
+import { Market } from 'types';
 import { formatCentsToReadableValue } from 'utilities';
 
-import { userAssets } from '__mocks__/models/userAssets';
+import { markets } from '__mocks__/models/markets';
 import useUpdateBreadcrumbNavigation from 'hooks/useUpdateBreadcrumbNavigation';
 
 import Table from './Table';
 import { useStyles } from './styles';
 
-export interface MarketUiProps {
-  marketName: string;
-  assets: UserAsset[];
+export interface MarketPageUiProps {
+  market: Market;
   isIsolatedLendingMarket: boolean;
   totalSupplyCents: number;
   totalBorrowCents: number;
   description: string;
 }
 
-export const MarketUi: React.FC<MarketUiProps> = ({
-  marketName,
-  assets,
+export const MarketPageUi: React.FC<MarketPageUiProps> = ({
+  market,
   isIsolatedLendingMarket,
   totalSupplyCents,
   totalBorrowCents,
@@ -36,7 +34,7 @@ export const MarketUi: React.FC<MarketUiProps> = ({
     currentPathNodes =>
       currentPathNodes.concat([
         {
-          dom: marketName,
+          dom: market.name,
         },
       ]),
     [],
@@ -64,10 +62,10 @@ export const MarketUi: React.FC<MarketUiProps> = ({
       },
       {
         label: t('market.header.assetsLabel'),
-        value: assets.length,
+        value: market.assets.length,
       },
     ],
-    [totalSupplyCents, totalBorrowCents, assets.length],
+    [totalSupplyCents, totalBorrowCents, market.assets.length],
   );
 
   return (
@@ -106,15 +104,13 @@ export const MarketUi: React.FC<MarketUiProps> = ({
         </div>
       )}
 
-      <Table assets={assets} />
+      <Table assets={market.assets} />
     </>
   );
 };
 
-const Market: React.FC = () => {
+const MarketPage: React.FC = () => {
   // TODO: fetch actual values (see VEN-546)
-  const marketName = 'Venus';
-  const assets = userAssets;
   const isIsolatedLendingMarket = true;
   const totalSupplyCents = 1000000000;
   const totalBorrowCents = 100000000;
@@ -122,9 +118,9 @@ const Market: React.FC = () => {
     'The Metaverse pool offers increased LTV to allow  a leveraged SOL position up to 10x. Higher leverage comes at the cost of increased liquidation risk so proceed with caution.';
 
   return (
-    <MarketUi
-      marketName={marketName}
-      assets={assets}
+    <MarketPageUi
+      // TODO: fetch actual market (see VEN-546)
+      market={markets[0]}
       isIsolatedLendingMarket={isIsolatedLendingMarket}
       totalSupplyCents={totalSupplyCents}
       totalBorrowCents={totalBorrowCents}
@@ -133,4 +129,4 @@ const Market: React.FC = () => {
   );
 };
 
-export default Market;
+export default MarketPage;

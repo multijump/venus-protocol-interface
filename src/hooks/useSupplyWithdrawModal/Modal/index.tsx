@@ -47,8 +47,8 @@ export interface SupplyWithdrawUiProps extends Omit<SupplyWithdrawProps, 'assetI
   onClose: ModalProps['handleClose'];
   assets: UserAsset[];
   includeXvs: boolean;
-  userTotalBorrowBalanceCents: BigNumber;
-  userTotalBorrowLimitCents: BigNumber;
+  userTotalBorrowBalanceCents: number;
+  userTotalBorrowLimitCents: number;
   onSubmitSupply: AmountFormProps['onSubmit'];
   onSubmitWithdraw: AmountFormProps['onSubmit'];
   isSupplyLoading: boolean;
@@ -119,37 +119,40 @@ export const SupplyWithdrawUi: React.FC<SupplyWithdrawUiProps> = ({
     }
 
     const maxInput = React.useMemo(() => {
-      let maxInputTokens = asset.walletBalance;
+      let maxInputTokens = asset.walletBalanceTokens;
 
       // If asset isn't used as collateral user can withdraw the entire supply
       // balance without affecting their borrow limit
       if (type === 'withdraw' && !asset.collateral) {
-        maxInputTokens = asset.supplyBalance;
+        console.log('THIS?', asset.supplyBalanceTokens.toFixed());
+
+        maxInputTokens = asset.supplyBalanceTokens;
       } else if (type === 'withdraw') {
         // Calculate how much token user can withdraw before they risk getting
         // liquidated (if their borrow balance goes above their borrow limit)
 
         // Return 0 if borrow limit has already been reached
-        if (userTotalBorrowBalanceCents.isGreaterThanOrEqualTo(userTotalBorrowLimitCents)) {
+        if (userTotalBorrowBalanceCents >= userTotalBorrowLimitCents) {
           return new BigNumber(0);
         }
 
-        const marginWithBorrowLimitDollars = userTotalBorrowLimitCents
-          .minus(userTotalBorrowBalanceCents)
-          .dividedBy(100);
+        const marginWithBorrowLimitDollars =
+          (userTotalBorrowLimitCents - userTotalBorrowBalanceCents) / 100;
 
-        const collateralAmountPerTokenDollars = asset.tokenPrice.multipliedBy(
-          asset.collateralFactor,
+        const collateralAmountPerTokenDollars = asset.collateralFactor.multipliedBy(
+          asset.tokenPriceDollars,
         );
-        const maxTokensBeforeLiquidation = marginWithBorrowLimitDollars
+        const maxTokensBeforeLiquidation = new BigNumber(marginWithBorrowLimitDollars)
           .dividedBy(collateralAmountPerTokenDollars)
           .dp(asset.decimals, BigNumber.ROUND_DOWN);
 
-        maxInputTokens = BigNumber.minimum(maxTokensBeforeLiquidation, asset.supplyBalance);
+        maxInputTokens = BigNumber.minimum(maxTokensBeforeLiquidation, asset.supplyBalanceTokens);
       }
 
       return maxInputTokens;
     }, []);
+
+    console.log('HERE', maxInput.toFixed());
 
     return (
       <div className={className} css={styles.container}>
@@ -255,6 +258,8 @@ const SupplyWithdrawModal: React.FC<SupplyWithdrawProps> = ({ assetId, includeXv
     { enabled: !!accountAddress },
   );
 
+  console.log('vTokenBalanceWei', vTokenBalanceData?.balanceWei.toFixed());
+
   const { mutateAsync: supply, isLoading: isSupplyLoading } = useSupply({
     assetId,
     account: accountAddress,
@@ -282,6 +287,7 @@ const SupplyWithdrawModal: React.FC<SupplyWithdrawProps> = ({ assetId, includeXv
     const res = await supply({
       amountWei: supplyAmount,
     });
+
     onClose();
 
     openSuccessfulTransactionModal({
@@ -301,7 +307,7 @@ const SupplyWithdrawModal: React.FC<SupplyWithdrawProps> = ({ assetId, includeXv
     }
 
     const amount = new BigNumber(value);
-    const amountEqualsSupplyBalance = amount.eq(asset.supplyBalance);
+    const amountEqualsSupplyBalance = amount.eq(asset.supplyBalanceTokens);
     let transactionHash;
 
     if (amountEqualsSupplyBalance && vTokenBalanceData?.balanceWei) {

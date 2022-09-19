@@ -46,28 +46,27 @@ const AccountData: React.FC<AccountDataProps> = ({
 
   const hypotheticalTotalBorrowBalanceCents =
     hypotheticalBorrowAmountTokens !== 0
-      ? userTotalBorrowBalanceCents.plus(
-          asset.tokenPrice
-            .multipliedBy(hypotheticalBorrowAmountTokens)
-            // Convert dollars to cents
-            .multipliedBy(100),
-        )
+      ? userTotalBorrowBalanceCents +
+        asset.tokenPriceDollars *
+          hypotheticalBorrowAmountTokens *
+          // Convert dollars to cents
+          100
       : undefined;
 
   const borrowLimitUsedPercentage = React.useMemo(
     () =>
       calculatePercentage({
-        numerator: userTotalBorrowBalanceCents.toNumber(),
-        denominator: userTotalBorrowLimitCents.toNumber(),
+        numerator: userTotalBorrowBalanceCents,
+        denominator: userTotalBorrowLimitCents,
       }),
-    [userTotalBorrowBalanceCents.toNumber(), userTotalBorrowLimitCents.toNumber()],
+    [userTotalBorrowBalanceCents, userTotalBorrowLimitCents],
   );
 
   const hypotheticalBorrowLimitUsedPercentage =
     hypotheticalTotalBorrowBalanceCents &&
     calculatePercentage({
-      numerator: hypotheticalTotalBorrowBalanceCents.toNumber(),
-      denominator: userTotalBorrowLimitCents.toNumber(),
+      numerator: hypotheticalTotalBorrowBalanceCents,
+      denominator: userTotalBorrowLimitCents,
     });
 
   const calculateDailyEarningsCents = React.useCallback(
@@ -76,8 +75,8 @@ const AccountData: React.FC<AccountDataProps> = ({
         ...userAssets,
         borrowBalance:
           userAssets.id === asset.id
-            ? userAssets.borrowBalance.plus(tokenAmount)
-            : userAssets.borrowBalance,
+            ? userAssets.borrowBalanceTokens.plus(tokenAmount)
+            : userAssets.borrowBalanceTokens,
       }));
 
       const yearlyEarningsCents = calculateYearlyEarningsForAssets({
@@ -108,9 +107,9 @@ const AccountData: React.FC<AccountDataProps> = ({
   return (
     <>
       <BorrowBalanceAccountHealth
-        borrowBalanceCents={userTotalBorrowBalanceCents.toNumber()}
-        borrowLimitCents={userTotalBorrowLimitCents.toNumber()}
-        hypotheticalBorrowBalanceCents={hypotheticalTotalBorrowBalanceCents?.toNumber()}
+        borrowBalanceCents={userTotalBorrowBalanceCents}
+        borrowLimitCents={userTotalBorrowLimitCents}
+        hypotheticalBorrowBalanceCents={hypotheticalTotalBorrowBalanceCents}
         safeBorrowLimitPercentage={SAFE_BORROW_LIMIT_PERCENTAGE}
         css={sharedStyles.getRow({ isLast: true })}
       />
@@ -132,8 +131,8 @@ const AccountData: React.FC<AccountDataProps> = ({
         css={sharedStyles.getRow({ isLast: true })}
       >
         <ValueUpdate
-          original={userTotalBorrowBalanceCents.toNumber()}
-          update={hypotheticalTotalBorrowBalanceCents?.toNumber()}
+          original={userTotalBorrowBalanceCents}
+          update={hypotheticalTotalBorrowBalanceCents}
           positiveDirection="desc"
         />
       </LabeledInlineContent>
@@ -162,10 +161,7 @@ const AccountData: React.FC<AccountDataProps> = ({
         label={t('borrowRepayModal.borrow.dailyEarnings')}
         css={sharedStyles.getRow({ isLast: true })}
       >
-        <ValueUpdate
-          original={dailyEarningsCents?.toNumber()}
-          update={hypotheticalDailyEarningsCents?.toNumber()}
-        />
+        <ValueUpdate original={dailyEarningsCents} update={hypotheticalDailyEarningsCents} />
       </LabeledInlineContent>
     </>
   );

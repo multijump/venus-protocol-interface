@@ -1,24 +1,24 @@
-import { Market } from 'types';
+import { UserMarket } from 'types';
 
-import { assets } from './assets';
+import { userAssets } from './userAssets';
 
-export const markets: Market[] = [
+export const userMarkets: UserMarket[] = [
   {
     id: '1',
     riskLevel: 'MINIMAL',
     name: 'Venus',
-    assets,
+    assets: userAssets,
   },
   {
     id: '2',
     riskLevel: 'VERY_HIGH',
     name: 'Gaming',
-    assets,
+    assets: userAssets,
   },
   {
     id: '3',
     riskLevel: 'MEDIUM',
     name: 'MetaVerse',
-    assets,
+    assets: userAssets,
   },
 ];

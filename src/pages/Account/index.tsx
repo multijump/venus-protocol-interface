@@ -3,25 +3,18 @@ import { Typography } from '@mui/material';
 import { Cell, CellGroup, Toggle } from 'components';
 import React, { useContext } from 'react';
 import { useTranslation } from 'translation';
-import { MarketRiskLevel, UserAsset } from 'types';
+import { UserMarket } from 'types';
 import { formatCentsToReadableValue, formatToReadablePercentage } from 'utilities';
 
-import { userAssets } from '__mocks__/models/userAssets';
+import { userMarkets } from '__mocks__/models/userMarkets';
 import { IncludeXvsContext } from 'context/IncludeXvsContext';
 
 import MarketBreakdown from './MarketBreakdown';
 import { useStyles } from './styles';
 import TEST_IDS from './testIds';
 
-// TODO: move to types file
-export interface Market {
-  name: string;
-  riskLevel: MarketRiskLevel;
-  assets: UserAsset[];
-}
-
 export interface AccountUiProps {
-  markets: Market[];
+  markets: UserMarket[];
   netApyPercentage: number;
   dailyEarningsCents: number;
   totalSupplyCents: number;
@@ -84,13 +77,11 @@ export const AccountUi: React.FC<AccountUiProps> = ({
         <CellGroup cells={cells} data-testid={TEST_IDS.stats} />
       </div>
 
-      {markets.map(({ assets, name, riskLevel }) => (
+      {markets.map(market => (
         <MarketBreakdown
-          key={`market-breakdown-${name}`}
+          key={`market-breakdown-${market.id}`}
           css={styles.section}
-          assets={assets}
-          marketName={name}
-          riskLevel={riskLevel}
+          market={market}
           includeXvs={includeXvs}
         />
       ))}
@@ -107,24 +98,6 @@ const Account: React.FC = () => {
   const totalSupplyCents = 100000000;
   const totalBorrowCents = 10000000;
 
-  const markets: Market[] = [
-    {
-      assets: userAssets,
-      name: 'Venus',
-      riskLevel: 'MINIMAL',
-    },
-    {
-      assets: userAssets,
-      name: 'Metaverse',
-      riskLevel: 'VERY_HIGH',
-    },
-    {
-      assets: userAssets,
-      name: 'Gaming',
-      riskLevel: 'MEDIUM',
-    },
-  ];
-
   return (
     <AccountUi
       netApyPercentage={netApyPercentage}
@@ -133,7 +106,7 @@ const Account: React.FC = () => {
       totalBorrowCents={totalBorrowCents}
       includeXvs={includeXvs}
       onIncludeXvsToggleChange={setIncludeXvs}
-      markets={markets}
+      markets={userMarkets}
     />
   );
 };

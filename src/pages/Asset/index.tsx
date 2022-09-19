@@ -42,6 +42,8 @@ import TEST_IDS from './testIds';
 import useGetAssetData from './useGetAssetData';
 import useGetChartData from './useGetChartData';
 
+// TODO: fix
+
 export interface AssetUiProps {
   isUserConnected: boolean;
   marketId: string;
@@ -52,12 +54,12 @@ export interface AssetUiProps {
   interestRateChartData: InterestRateChartProps['data'];
   totalBorrowBalanceCents?: number;
   totalSupplyBalanceCents?: number;
-  borrowApyPercentage?: BigNumber;
-  supplyApyPercentage?: BigNumber;
+  borrowApyPercentage?: number;
+  supplyApyPercentage?: number;
   borrowDistributionApyPercentage?: number;
   supplyDistributionApyPercentage?: number;
-  tokenPriceDollars?: BigNumber;
-  liquidityCents?: BigNumber;
+  tokenPriceDollars?: number;
+  liquidityCents?: number;
   supplierCount?: number;
   borrowerCount?: number;
   borrowCapTokens?: BigNumber;
@@ -216,7 +218,9 @@ export const AssetUi: React.FC<AssetUiProps> = ({
       {
         label: t('asset.assetInfo.stats.priceLabel'),
         value:
-          tokenPriceDollars === undefined ? PLACEHOLDER_KEY : `$${tokenPriceDollars.toFormat(2)}`,
+          tokenPriceDollars === undefined
+            ? PLACEHOLDER_KEY
+            : `$${new BigNumber(tokenPriceDollars).toFormat(2)}`,
       },
       {
         label: t('asset.assetInfo.stats.liquidityLabel'),

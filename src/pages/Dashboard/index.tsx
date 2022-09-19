@@ -1,5 +1,4 @@
 /** @jsxImportSource @emotion/react */
-import BigNumber from 'bignumber.js';
 import { ButtonGroup, Select, TextField, Toggle } from 'components';
 import React, { InputHTMLAttributes, useContext, useState } from 'react';
 import { useTranslation } from 'translation';
@@ -14,7 +13,6 @@ import HigherRiskTokensNotice from './HigherRiskTokensNotice';
 import { useStyles } from './styles';
 
 interface DashboardUiProps {
-  userTotalBorrowLimitCents: BigNumber;
   areHigherRiskTokensDisplayed: boolean;
   onHigherRiskTokensToggleChange: (newValue: boolean) => void;
   searchValue: string;
@@ -149,7 +147,7 @@ const Dashboard: React.FC = () => {
 
   // TODO: handle loading state (see VEN-591)
   const {
-    data: { assets, userTotalBorrowLimitCents },
+    data: { assets },
   } = useGetUserAssets({
     accountAddress,
   });
@@ -157,7 +155,6 @@ const Dashboard: React.FC = () => {
   return (
     <DashboardUi
       assets={assets}
-      userTotalBorrowLimitCents={userTotalBorrowLimitCents}
       areHigherRiskTokensDisplayed={areHigherRiskTokensDisplayed}
       onHigherRiskTokensToggleChange={setAreHigherRiskTokensDisplayed}
       searchValue={searchValue}

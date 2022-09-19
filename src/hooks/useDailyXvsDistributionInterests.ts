@@ -13,10 +13,10 @@ const useDailyXvsDistributionInterests = () => {
     { enabled: !!account?.address },
   );
 
-  const { data: getMarketsData, isLoading: isGetAssetsLoading } = useGetAssets();
-  const xvsPriceDollars: BigNumber | undefined = useMemo(
-    () => (getMarketsData?.markets || []).find(market => market.id === XVS_TOKEN_ID)?.tokenPrice,
-    [JSON.stringify(getMarketsData?.markets)],
+  const { data: getAssetsData, isLoading: isGetAssetsLoading } = useGetAssets();
+  const xvsPriceDollars: number | undefined = useMemo(
+    () => (getAssetsData?.assets || []).find(asset => asset.id === XVS_TOKEN_ID)?.tokenPriceDollars,
+    [JSON.stringify(getAssetsData?.assets)],
   );
 
   const { dailyXvsDistributionInterestsCents } = useMemo(() => {
@@ -35,7 +35,7 @@ const useDailyXvsDistributionInterests = () => {
     };
   }, [
     JSON.stringify(getDailyXvsData?.dailyXvsWei),
-    JSON.stringify(getMarketsData?.markets),
+    JSON.stringify(getAssetsData?.assets),
     account?.address,
   ]);
 

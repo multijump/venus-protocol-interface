@@ -36,8 +36,8 @@ interface SupplyWithdrawFormUiProps {
   type: 'supply' | 'withdraw';
   tokenInfo: LabeledInlineContentProps[];
   maxInput: BigNumber;
-  userTotalBorrowBalanceCents: BigNumber;
-  userTotalBorrowLimitCents: BigNumber;
+  userTotalBorrowBalanceCents: number;
+  userTotalBorrowLimitCents: number;
   inputLabel: string;
   enabledButtonKey: string;
   disabledButtonKey: string;
@@ -72,24 +72,28 @@ export const SupplyWithdrawContent: React.FC<SupplyWithdrawFormUiProps> = ({
   const amount = new BigNumber(amountValue || 0);
   const validAmount = amount && !amount.isZero() && !amount.isNaN();
 
+  console.log('validAmount', amount.toFixed());
+
   const hypotheticalTokenSupplyBalance = amountValue
-    ? calculateNewBalance(asset.supplyBalance, amount)
+    ? calculateNewBalance(asset.supplyBalanceTokens, amount)
     : undefined;
 
   const hypotheticalBorrowLimitCents = useMemo(() => {
-    const tokenPrice = getBigNumber(asset?.tokenPrice);
+    const tokenPrice = getBigNumber(asset?.tokenPriceDollars);
     let updateBorrowLimitCents;
 
     if (tokenPrice && validAmount) {
       const amountInCents = calculateCollateralValue({
         amountWei: convertTokensToWei({ value: amount, tokenId: asset.id }),
         tokenId: asset.id,
-        tokenPriceTokens: asset.tokenPrice,
+        tokenPriceDollars: asset.tokenPriceDollars,
         collateralFactor: asset.collateralFactor,
-      }).times(100);
+      })
+        .times(100)
+        .toNumber();
 
-      const temp = calculateNewBalance(userTotalBorrowLimitCents, amountInCents);
-      updateBorrowLimitCents = BigNumber.maximum(temp, 0);
+      const temp = userTotalBorrowLimitCents - amountInCents;
+      updateBorrowLimitCents = BigNumber.maximum(temp, 0).toNumber();
     }
 
     return updateBorrowLimitCents;
@@ -111,7 +115,7 @@ export const SupplyWithdrawContent: React.FC<SupplyWithdrawFormUiProps> = ({
     if (validAmount) {
       const hypotheticalAsset = {
         ...asset,
-        supplyBalance: calculateNewBalance(asset.supplyBalance, amount),
+        supplyBalance: calculateNewBalance(asset.supplyBalanceTokens, amount),
       };
 
       const currentIndex = assets.findIndex(a => a.id === asset.id);
@@ -132,6 +136,8 @@ export const SupplyWithdrawContent: React.FC<SupplyWithdrawFormUiProps> = ({
   // Prevent users from supplying LUNA tokens. This is a temporary hotfix
   // following the crash of the LUNA token
   const isSupplyingLuna = type === 'supply' && asset.id === 'luna';
+
+  console.log('maxInput.toFixed()', maxInput.toFixed());
 
   return (
     <>
@@ -179,10 +185,8 @@ export const SupplyWithdrawContent: React.FC<SupplyWithdrawFormUiProps> = ({
 
       <BorrowBalanceAccountHealth
         css={styles.getRow({ isLast: true })}
-        borrowBalanceCents={userTotalBorrowBalanceCents.toNumber()}
-        borrowLimitCents={
-          hypotheticalBorrowLimitCents?.toNumber() || userTotalBorrowLimitCents.toNumber()
-        }
+        borrowBalanceCents={userTotalBorrowBalanceCents}
+        borrowLimitCents={hypotheticalBorrowLimitCents ?? userTotalBorrowLimitCents}
         safeBorrowLimitPercentage={SAFE_BORROW_LIMIT_PERCENTAGE}
       />
 
@@ -207,7 +211,7 @@ export const SupplyWithdrawContent: React.FC<SupplyWithdrawFormUiProps> = ({
         className="info-row"
       >
         <ValueUpdate
-          original={asset.supplyBalance}
+          original={asset.supplyBalanceTokens}
           update={hypotheticalTokenSupplyBalance}
           format={(value: BigNumber | undefined) =>
             formatTokensToReadableValue({

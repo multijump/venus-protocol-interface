@@ -7,41 +7,51 @@ export enum BscChainId {
   'TESTNET' = 97,
 }
 
-export interface User {
-  Token: string;
+export interface Asset {
+  id: TokenId;
+  name: string;
+  symbol: string;
+  address: string;
+  decimals: number;
+  tokenPriceDollars: number;
+  borrowApy: number;
+  borrowCapTokens: BigNumber;
+  borrowRatePerBlock: BigNumber;
+  xvsBorrowApr: number;
+  xvsBorrowApy: number;
+  borrowerCount: number;
+  borrowDailyXvsWei: BigNumber;
+  collateralFactor: BigNumber;
+  exchangeRate: BigNumber;
+  liquidityCents: number;
+  reserveFactor: BigNumber;
+  supplierCount: number;
+  supplyDailyXvsWei: BigNumber;
+  supplyApy: number;
+  supplyRatePerBlock: BigNumber;
+  xvsSupplyApy: number;
+  xvsSupplyApr: number;
+  totalBorrowsWei: BigNumber;
+  totalBorrowsTokens: BigNumber;
+  totalBorrowsCents: number;
+  totalXvsDistributedWei: BigNumber;
+  totalReservesWei: BigNumber;
+  totalSupplyWei: BigNumber;
+  totalSupplyTokens: BigNumber;
+  totalSupplyCents: number;
+  underlyingDecimals: number;
+  underlyingName: string;
+  underlyingPrice: number;
+  underlyingSymbol: string;
+  underlyingAddress?: string;
 }
 
-export interface UserAsset {
-  id: TokenId;
-  tokenPrice: BigNumber;
-  symbol: string;
-  borrowBalance: BigNumber;
-  decimals: number;
-  walletBalance: BigNumber;
-  vtokenAddress: string;
-  img: string;
-  liquidity: BigNumber;
-  borrowApy: BigNumber;
-  xvsBorrowApy: BigNumber;
-  xvsBorrowApr: BigNumber;
-  borrowCaps: BigNumber;
-  supplyApy: BigNumber;
-  xvsSupplyApy: BigNumber;
-  xvsSupplyApr: BigNumber;
+export interface UserAsset extends Asset {
   collateral: boolean;
-  collateralFactor: BigNumber;
-  supplyBalance: BigNumber;
-  key: number;
-  percentOfLimit: string;
-  tokenAddress: string;
-  treasuryBalance: BigNumber;
-  vimg: string | undefined;
-  vsymbol: string;
-  treasuryTotalBorrowsCents: BigNumber;
-  treasuryTotalSupplyCents: BigNumber;
-  treasuryTotalSupply: BigNumber;
-  treasuryTotalBorrows: BigNumber;
-  xvsPerDay: BigNumber;
+  borrowBalanceTokens: BigNumber;
+  walletBalanceTokens: BigNumber;
+  supplyBalanceTokens: BigNumber;
+  percentOfLimit: number;
 }
 
 export type TokenId = keyof typeof TOKENS;
@@ -161,52 +171,6 @@ export interface VoteTransaction {
   amount: string;
   to: string;
   votes: string;
-}
-
-export interface Market {
-  id: TokenId;
-  address: string;
-  borrowApy: BigNumber;
-  borrowCaps: string;
-  borrowRatePerBlock: string;
-  borrowVenusApr: BigNumber;
-  borrowVenusApy: BigNumber;
-  borrowerCount: number;
-  borrowerDailyVenus: string;
-  cash: string;
-  collateralFactor: string;
-  exchangeRate: string;
-  lastCalculatedBlockNumber: number;
-  liquidity: BigNumber;
-  name: string;
-  reserveFactor: string;
-  supplierCount: number;
-  supplierDailyVenus: string;
-  supplyApy: BigNumber;
-  supplyRatePerBlock: string;
-  supplyVenusApy: BigNumber;
-  supplyVenusApr: BigNumber;
-  symbol: string;
-  tokenPrice: BigNumber;
-  totalBorrows: string;
-  totalBorrows2: string;
-  totalBorrowsUsd: string;
-  totalDistributed: string;
-  totalDistributed2: string;
-  totalReserves: string;
-  totalSupply: string;
-  totalSupply2: string;
-  totalSupplyUsd: string;
-  underlyingAddress: string;
-  underlyingDecimal: number;
-  underlyingName: string;
-  underlyingPrice: string;
-  underlyingSymbol: string;
-  venusBorrowIndex: string;
-  venusSpeeds: string;
-  venusSupplyIndex: string;
-  treasuryTotalBorrowsCents: BigNumber;
-  treasuryTotalSupplyCents: BigNumber;
 }
 
 export interface AssetSnapshot {
@@ -346,3 +310,17 @@ export interface VoterHistory {
 }
 
 export type MarketRiskLevel = 'MINIMAL' | 'LOW' | 'MEDIUM' | 'HIGH' | 'VERY_HIGH';
+
+export interface Market {
+  id: string;
+  name: string;
+  riskLevel: MarketRiskLevel;
+  assets: Asset[];
+}
+
+export interface UserMarket {
+  id: string;
+  name: string;
+  riskLevel: MarketRiskLevel;
+  assets: UserAsset[];
+}

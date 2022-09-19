@@ -1,5 +1,4 @@
 import { ComponentMeta, Story } from '@storybook/react';
-import { BigNumber } from 'bignumber.js';
 import noop from 'noop-ts';
 import React from 'react';
 import { VTokenId } from 'types';
@@ -41,8 +40,8 @@ DisconnectedSupply.args = {
   asset: userAssets[0],
   assets: userAssets,
   onClose: noop,
-  userTotalBorrowBalanceCents: new BigNumber('16'),
-  userTotalBorrowLimitCents: new BigNumber('42.38'),
+  userTotalBorrowBalanceCents: 16,
+  userTotalBorrowLimitCents: 42.38,
   isSupplyLoading: false,
   isWithdrawLoading: false,
 };
@@ -53,8 +52,8 @@ DisabledSupply.args = {
   asset: userAssets[0],
   assets: userAssets,
   onClose: noop,
-  userTotalBorrowBalanceCents: new BigNumber('16'),
-  userTotalBorrowLimitCents: new BigNumber('42.38'),
+  userTotalBorrowBalanceCents: 16,
+  userTotalBorrowLimitCents: 42.38,
   onSubmitSupply: noop,
   onSubmitWithdraw: noop,
   isSupplyLoading: false,
@@ -74,8 +73,8 @@ Supply.args = {
   asset: userAssets[0],
   assets: userAssets,
   onClose: noop,
-  userTotalBorrowBalanceCents: new BigNumber('16'),
-  userTotalBorrowLimitCents: new BigNumber('42.38'),
+  userTotalBorrowBalanceCents: 16,
+  userTotalBorrowLimitCents: 42.38,
   onSubmitSupply: noop,
   onSubmitWithdraw: noop,
   isSupplyLoading: false,

@@ -145,7 +145,7 @@ export { default as useGetAssetsInAccount } from './queries/getAssetsInAccount/u
 export { default as getHypotheticalAccountLiquidity } from './queries/getHypotheticalAccountLiquidity';
 export * from './queries/getHypotheticalAccountLiquidity';
 
-export { default as getMarkets } from './queries/getAssets';
+export { default as getAssets } from './queries/getAssets';
 export * from './queries/getAssets';
 export { default as useGetAssets } from './queries/getAssets/useGetAssets';
 

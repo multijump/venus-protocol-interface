@@ -14,7 +14,7 @@ describe('utilities/calculateYearlyEarnings', () => {
       includeXvs: false,
     });
 
-    expect(earnings.toFixed()).toMatchInlineSnapshot('"6.01347989955426636283938"');
+    expect(earnings.toFixed()).toMatchInlineSnapshot('"-20.275471661046025201747490072808"');
   });
 
   test('calculates yearly Earnings for single asset, including XVS distribution', () => {
@@ -24,7 +24,7 @@ describe('utilities/calculateYearlyEarnings', () => {
     });
 
     expect(earnings.toFixed()).toMatchInlineSnapshot(
-      '"6.014514624212835039288069236840175305250048"',
+      '"-20.297949999843323494392992231102703076314522528"',
     );
   });
 
@@ -33,7 +33,9 @@ describe('utilities/calculateYearlyEarnings', () => {
       assets: assets as UserAsset[],
       includeXvs: false,
     });
-    expect(earnings?.toFixed()).toMatchInlineSnapshot('"-6.8460208090305522483859"');
+    expect(earnings?.toFixed()).toMatchInlineSnapshot(
+      '"3434846512.239314931063164396694169724808921405039255"',
+    );
   });
 
   test('calculates yearly Earnings for array of assets, including XVS distribution', () => {
@@ -43,7 +45,7 @@ describe('utilities/calculateYearlyEarnings', () => {
     });
 
     expect(earnings?.toFixed()).toMatchInlineSnapshot(
-      '"-4.1235060802240148531257692837859376156813296"',
+      '"3435202090.4485490373637295288358258243723818387679114173567980261331849"',
     );
   });
 });

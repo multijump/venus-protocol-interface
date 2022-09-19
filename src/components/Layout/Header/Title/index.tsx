@@ -19,10 +19,10 @@ const Title: React.FC = () => {
     <Typography component="h1" variant="h3">
       {pathNodes.map((pathNode, index) =>
         pathNodes.length > 0 && index < pathNodes.length - 1 ? (
-          <>
+          <span key={`title-path-node-${pathNode}`}>
             <Link to={pathNode.href}>{pathNode.dom}</Link>
             <span css={styles.separator}>/</span>
-          </>
+          </span>
         ) : (
           pathNode.dom
         ),

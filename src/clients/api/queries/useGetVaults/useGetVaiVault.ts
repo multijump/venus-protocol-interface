@@ -1,4 +1,3 @@
-import BigNumber from 'bignumber.js';
 import { useMemo } from 'react';
 import { TokenId, Vault } from 'types';
 import { convertWeiToTokens, getContractAddress } from 'utilities';
@@ -55,10 +54,11 @@ const useGetVaiVault = ({ accountAddress }: { accountAddress?: string }): UseGet
   const { data: vaiVaultDailyRateData, isLoading: isGetVaiVaultDailyRateWeiLoading } =
     useGetVenusVaiVaultDailyRate();
 
-  const { data: getMarketsData, isLoading: isGetAssetsLoading } = useGetAssets();
-  const xvsPriceDollars: BigNumber | undefined = useMemo(
-    () => (getMarketsData?.markets || []).find(market => market.id === TOKENS.xvs.id)?.tokenPrice,
-    [JSON.stringify(getMarketsData?.markets)],
+  const { data: getAssetsData, isLoading: isGetAssetsLoading } = useGetAssets();
+  const xvsPriceDollars: number | undefined = useMemo(
+    () =>
+      (getAssetsData?.assets || []).find(asset => asset.id === TOKENS.xvs.id)?.tokenPriceDollars,
+    [JSON.stringify(getAssetsData?.assets)],
   );
 
   const data: Vault | undefined = useMemo(() => {
@@ -93,7 +93,7 @@ const useGetVaiVault = ({ accountAddress }: { accountAddress?: string }): UseGet
   }, [
     totalVaiStakedData?.balanceWei.toFixed(),
     vaiVaultDailyRateData?.dailyRateWei.toFixed(),
-    xvsPriceDollars?.toFixed(),
+    xvsPriceDollars,
     JSON.stringify(vaiVaultUserInfo),
     userPendingVaiRewardData?.pendingXvsWei.toFixed(),
   ]);

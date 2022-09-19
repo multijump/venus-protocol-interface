@@ -19,9 +19,9 @@ import TEST_IDS from './testIds';
 
 const fakeAsset: UserAsset = {
   ...userAssets[0],
-  tokenPrice: new BigNumber(1),
-  walletBalance: new BigNumber(10000000),
-  liquidity: new BigNumber(10000),
+  tokenPriceDollars: 1,
+  walletBalanceTokens: new BigNumber(10000000),
+  liquidityCents: 10000,
 };
 
 const fakeUserTotalBorrowLimitCents = new BigNumber(100000);
@@ -53,7 +53,7 @@ describe('hooks/useBorrowRepayModal/Borrow', () => {
   it('renders correct token borrowable amount when asset liquidity is higher than maximum amount of tokens user can borrow before reaching their borrow limit', async () => {
     const customFakeAsset: UserAsset = {
       ...fakeAsset,
-      liquidity: new BigNumber(100000000),
+      liquidityCents: 100000000,
     };
 
     const { getByText } = renderComponent(
@@ -70,7 +70,7 @@ describe('hooks/useBorrowRepayModal/Borrow', () => {
     const borrowDeltaDollars = fakeUserTotalBorrowLimitCents
       .minus(fakeUserTotalBorrowBalanceCents)
       .dividedBy(100);
-    const borrowDeltaTokens = borrowDeltaDollars.dividedBy(fakeAsset.tokenPrice);
+    const borrowDeltaTokens = borrowDeltaDollars.dividedBy(fakeAsset.tokenPriceDollars);
 
     await waitFor(() => getByText(`${borrowDeltaTokens.toFixed()} ${customFakeAsset.symbol}`));
   });
@@ -78,7 +78,7 @@ describe('hooks/useBorrowRepayModal/Borrow', () => {
   it('renders correct token borrowable amount when asset liquidity is lower than maximum amount of tokens user can borrow before reaching their borrow limit', async () => {
     const customFakeAsset: UserAsset = {
       ...fakeAsset,
-      liquidity: new BigNumber(200),
+      liquidityCents: 200,
     };
 
     const { getByText } = renderComponent(
@@ -93,7 +93,7 @@ describe('hooks/useBorrowRepayModal/Borrow', () => {
     );
 
     await waitFor(() =>
-      getByText(`${customFakeAsset.liquidity.toFixed()} ${customFakeAsset.symbol}`),
+      getByText(`${customFakeAsset.liquidityCents.toFixed()} ${customFakeAsset.symbol}`),
     );
   });
 
@@ -109,7 +109,7 @@ describe('hooks/useBorrowRepayModal/Borrow', () => {
 
     const customFakeAsset: UserAsset = {
       ...fakeAsset,
-      liquidity: new BigNumber(200),
+      liquidityCents: 200,
     };
 
     const { getByText, getByTestId } = renderComponent(
@@ -145,7 +145,7 @@ describe('hooks/useBorrowRepayModal/Borrow', () => {
   it('disables submit button if an amount entered in input is higher than asset liquidity', async () => {
     const customFakeAsset: UserAsset = {
       ...fakeAsset,
-      liquidity: new BigNumber(200),
+      liquidityCents: 200,
     };
 
     const { getByText, getByTestId } = renderComponent(
@@ -164,8 +164,8 @@ describe('hooks/useBorrowRepayModal/Borrow', () => {
       getByText(en.borrowRepayModal.borrow.submitButtonDisabled).closest('button'),
     ).toBeDisabled();
 
-    const incorrectValueTokens = customFakeAsset.liquidity
-      .dividedBy(customFakeAsset.tokenPrice)
+    const incorrectValueTokens = new BigNumber(customFakeAsset.liquidityCents)
+      .dividedBy(customFakeAsset.tokenPriceDollars)
       // Add one token more than the available liquidity
       .plus(1)
       .dp(customFakeAsset.decimals, BigNumber.ROUND_DOWN)
@@ -205,7 +205,7 @@ describe('hooks/useBorrowRepayModal/Borrow', () => {
       .dividedBy(100);
 
     const incorrectValueTokens = fakeBorrowDeltaDollars
-      .dividedBy(fakeAsset.tokenPrice)
+      .dividedBy(fakeAsset.tokenPriceDollars)
       // Add one token more than the maximum
       .plus(1)
       .dp(fakeAsset.decimals, BigNumber.ROUND_DOWN)
@@ -249,7 +249,7 @@ describe('hooks/useBorrowRepayModal/Borrow', () => {
     const safeBorrowDeltaDollars = safeUserBorrowLimitCents
       .minus(fakeUserTotalBorrowBalanceCents)
       .dividedBy(100);
-    const safeBorrowDeltaTokens = safeBorrowDeltaDollars.dividedBy(fakeAsset.tokenPrice);
+    const safeBorrowDeltaTokens = safeBorrowDeltaDollars.dividedBy(fakeAsset.tokenPriceDollars);
     const expectedInputValue = safeBorrowDeltaTokens.dp(fakeAsset.decimals).toFixed();
 
     await waitFor(() => expect(input.value).toBe(expectedInputValue));

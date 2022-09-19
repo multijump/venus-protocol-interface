@@ -25,7 +25,7 @@ interface HeaderProps {
 
 interface HeaderContainerProps {
   remainingDistributionWei: BigNumber;
-  dailyVenusWei: BigNumber;
+  dailyXvsDistributedWei: BigNumber;
   venusVaiVaultDailyRateWei: BigNumber;
   totalXvsDistributedWei: BigNumber;
 }
@@ -33,7 +33,7 @@ interface HeaderContainerProps {
 export const HeaderUi: React.FC<HeaderProps & HeaderContainerProps> = ({
   className,
   remainingDistributionWei,
-  dailyVenusWei,
+  dailyXvsDistributedWei,
   venusVaiVaultDailyRateWei,
   totalXvsDistributedWei,
 }) => {
@@ -46,7 +46,7 @@ export const HeaderUi: React.FC<HeaderProps & HeaderContainerProps> = ({
 
   const readableDailyDistribution = useMemo(() => {
     const dailyVenusTokens = convertWeiToTokens({
-      valueWei: dailyVenusWei,
+      valueWei: dailyXvsDistributedWei,
       tokenId: 'xvs',
     });
 
@@ -62,7 +62,7 @@ export const HeaderUi: React.FC<HeaderProps & HeaderContainerProps> = ({
       tokenId: 'xvs',
       minimizeDecimals: true,
     });
-  }, [dailyVenusWei.toFixed(), venusVaiVaultDailyRateWei.toFixed()]);
+  }, [dailyXvsDistributedWei.toFixed(), venusVaiVaultDailyRateWei.toFixed()]);
 
   const readableRemainingDistribution = useMemo(
     () =>
@@ -125,7 +125,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
   const { account } = useContext(AuthContext);
   const { data: venusVaiVaultDailyRateData } = useGetVenusVaiVaultDailyRate();
   const {
-    data: { dailyVenusWei, totalXvsDistributedWei },
+    data: { dailyXvsDistributedWei, totalXvsDistributedWei },
   } = useGetUserAssets({
     accountAddress: account?.address,
   });
@@ -139,7 +139,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
       remainingDistributionWei={xvsRemainingDistributionData?.balanceWei || new BigNumber(0)}
       venusVaiVaultDailyRateWei={venusVaiVaultDailyRateData?.dailyRateWei || new BigNumber(0)}
       className={className}
-      dailyVenusWei={dailyVenusWei}
+      dailyXvsDistributedWei={dailyXvsDistributedWei}
       totalXvsDistributedWei={totalXvsDistributedWei}
     />
   );

@@ -1,6 +1,6 @@
 import { QueryObserverOptions, useQuery } from 'react-query';
 
-import getMarkets, { GetAssetsOutput } from 'clients/api/queries/getAssets';
+import getAssets, { GetAssetsOutput } from 'clients/api/queries/getAssets';
 import { DEFAULT_REFETCH_INTERVAL_MS } from 'constants/defaultRefetchInterval';
 import FunctionKey from 'constants/functionKey';
 
@@ -13,7 +13,7 @@ type Options = QueryObserverOptions<
 >;
 
 const useGetAssets = (options?: Options) =>
-  useQuery(FunctionKey.GET_ASSETS, getMarkets, {
+  useQuery(FunctionKey.GET_ASSETS, getAssets, {
     refetchInterval: DEFAULT_REFETCH_INTERVAL_MS,
     ...options,
   });

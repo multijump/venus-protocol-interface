@@ -18,9 +18,9 @@ import TEST_IDS from './testIds';
 
 const fakeAsset: UserAsset = {
   ...userAssets[0],
-  tokenPrice: new BigNumber(1),
-  borrowBalance: new BigNumber(1000),
-  walletBalance: new BigNumber(10000000),
+  tokenPriceDollars: 1,
+  borrowBalanceTokens: new BigNumber(1000),
+  walletBalanceTokens: new BigNumber(10000000),
 };
 
 jest.mock('clients/api');
@@ -73,7 +73,7 @@ describe('hooks/useBorrowRepayModal/Repay', () => {
   it('disables submit button if an amount entered in input is higher than token borrow balance', async () => {
     const customFakeAsset: UserAsset = {
       ...fakeAsset,
-      walletBalance: new BigNumber(1),
+      walletBalanceTokens: new BigNumber(1),
     };
 
     const { getByText, getByTestId } = renderComponent(
@@ -92,7 +92,7 @@ describe('hooks/useBorrowRepayModal/Repay', () => {
       getByText(en.borrowRepayModal.repay.submitButtonDisabled).closest('button'),
     ).toBeDisabled();
 
-    const incorrectValueTokens = customFakeAsset.walletBalance.plus(1).toFixed();
+    const incorrectValueTokens = customFakeAsset.walletBalanceTokens.plus(1).toFixed();
 
     // Enter amount in input
     fireEvent.change(getByTestId(TEST_IDS.tokenTextField), {
@@ -123,7 +123,7 @@ describe('hooks/useBorrowRepayModal/Repay', () => {
       getByText(en.borrowRepayModal.repay.submitButtonDisabled).closest('button'),
     ).toBeDisabled();
 
-    const incorrectValueTokens = fakeAsset.borrowBalance.plus(1).toFixed();
+    const incorrectValueTokens = fakeAsset.borrowBalanceTokens.plus(1).toFixed();
 
     // Enter amount in input
     fireEvent.change(getByTestId(TEST_IDS.tokenTextField), {
@@ -140,8 +140,8 @@ describe('hooks/useBorrowRepayModal/Repay', () => {
   it('updates input value to token wallet balance when pressing on max button if token wallet balance is lower than token borrow balance', async () => {
     const customFakeAsset: UserAsset = {
       ...fakeAsset,
-      borrowBalance: new BigNumber(100),
-      walletBalance: new BigNumber(10),
+      borrowBalanceTokens: new BigNumber(100),
+      walletBalanceTokens: new BigNumber(10),
     };
 
     const { getByText, getByTestId } = renderComponent(
@@ -163,7 +163,9 @@ describe('hooks/useBorrowRepayModal/Repay', () => {
     // Press on max button
     fireEvent.click(getByText(en.borrowRepayModal.repay.rightMaxButtonLabel));
 
-    const expectedInputValue = customFakeAsset.walletBalance.dp(customFakeAsset.decimals).toFixed();
+    const expectedInputValue = customFakeAsset.walletBalanceTokens
+      .dp(customFakeAsset.decimals)
+      .toFixed();
 
     await waitFor(() => expect(input.value).toBe(expectedInputValue));
 
@@ -174,8 +176,8 @@ describe('hooks/useBorrowRepayModal/Repay', () => {
   it('updates input value to token borrow balance when pressing on max button if token borrow balance is lower than token wallet balance', async () => {
     const customFakeAsset: UserAsset = {
       ...fakeAsset,
-      borrowBalance: new BigNumber(10),
-      walletBalance: new BigNumber(100),
+      borrowBalanceTokens: new BigNumber(10),
+      walletBalanceTokens: new BigNumber(100),
     };
 
     const { getByText, getByTestId } = renderComponent(
@@ -197,7 +199,9 @@ describe('hooks/useBorrowRepayModal/Repay', () => {
     // Press on max button
     fireEvent.click(getByText(en.borrowRepayModal.repay.rightMaxButtonLabel));
 
-    const expectedInputValue = customFakeAsset.borrowBalance.dp(customFakeAsset.decimals).toFixed();
+    const expectedInputValue = customFakeAsset.borrowBalanceTokens
+      .dp(customFakeAsset.decimals)
+      .toFixed();
 
     await waitFor(() => expect(input.value).toBe(expectedInputValue));
 
@@ -208,8 +212,8 @@ describe('hooks/useBorrowRepayModal/Repay', () => {
   it('updates input value to correct value when pressing on preset percentage buttons', async () => {
     const customFakeAsset: UserAsset = {
       ...fakeAsset,
-      borrowBalance: new BigNumber(100),
-      walletBalance: new BigNumber(100),
+      borrowBalanceTokens: new BigNumber(100),
+      walletBalanceTokens: new BigNumber(100),
     };
 
     const { getByText, getByTestId } = renderComponent(
@@ -234,7 +238,7 @@ describe('hooks/useBorrowRepayModal/Repay', () => {
       // Press on preset percentage button
       fireEvent.click(getByText(`${presetPercentage}%`));
 
-      const expectedInputValue = customFakeAsset.borrowBalance
+      const expectedInputValue = customFakeAsset.borrowBalanceTokens
         .multipliedBy(presetPercentage / 100)
         .dp(customFakeAsset.decimals)
         .toFixed();
@@ -339,7 +343,7 @@ describe('hooks/useBorrowRepayModal/Repay', () => {
 
     await waitFor(() => expect(repayNonBnbVToken).toHaveBeenCalledTimes(1));
     expect(repayNonBnbVToken).toHaveBeenCalledWith({
-      amountWei: fakeAsset.borrowBalance.multipliedBy(1e18), // Convert borrow balance to wei
+      amountWei: fakeAsset.borrowBalanceTokens.multipliedBy(1e18), // Convert borrow balance to wei
       fromAccountAddress: fakeAccountAddress,
       isRepayingFullLoan: true,
     });
@@ -384,7 +388,7 @@ describe('hooks/useBorrowRepayModal/Repay', () => {
     await waitFor(() => expect(repayNonBnbVToken).toHaveBeenCalledTimes(1));
 
     expect(repayNonBnbVToken).toHaveBeenCalledWith({
-      amountWei: fakeBnbAsset.borrowBalance.multipliedBy(1e18), // Convert borrow balance to wei
+      amountWei: fakeBnbAsset.borrowBalanceTokens.multipliedBy(1e18), // Convert borrow balance to wei
       fromAccountAddress: fakeAccountAddress,
       isRepayingFullLoan: true,
     });

@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import config from 'config';
 import { useMemo } from 'react';
-import { Market } from 'types';
+import { Asset } from 'types';
 import { indexBy } from 'utilities';
 
 import { IGetVTokenBalancesAllOutput, useGetAssets, useGetVTokenBalancesAll } from 'clients/api';
@@ -38,14 +38,14 @@ const vTokenAddresses: string[] = Object.values(VBEP_TOKENS).reduce(
 
 const useGetTreasuryTotals = (): UseGetTreasuryTotalsOutput => {
   const {
-    data: getMarketsData = {
-      markets: [] as Market[],
+    data: getAssetsData = {
+      assets: [] as Asset[],
     },
     isLoading: isGetAssetsLoading,
   } = useGetAssets({
     placeholderData: {
-      markets: [],
-      dailyVenusWei: new BigNumber(0),
+      assets: [],
+      dailyXvsDistributedWei: new BigNumber(0),
     },
   });
 
@@ -72,35 +72,35 @@ const useGetTreasuryTotals = (): UseGetTreasuryTotalsOutput => {
     [JSON.stringify(vTokenBalancesTreasury)],
   );
 
-  const { markets } = getMarketsData;
+  const { assets } = getAssetsData;
   const {
     treasuryTotalSupplyBalanceCents,
     treasuryTotalBorrowBalanceCents,
     treasuryTotalBalanceCents,
     treasuryTotalAvailableLiquidityBalanceCents,
   } = useMemo(() => {
-    const data = markets.reduce(
+    const data = assets.reduce(
       (acc, curr) => {
         let treasuryBalanceTokens = new BigNumber(0);
         if (treasuryBalances && treasuryBalances[curr.address]) {
           const mantissa = treasuryBalances[curr.address].tokenBalance;
-          treasuryBalanceTokens = new BigNumber(mantissa).shiftedBy(-curr.underlyingDecimal);
+          treasuryBalanceTokens = new BigNumber(mantissa).shiftedBy(-curr.underlyingDecimals);
         }
 
         acc.treasuryTotalBalanceCents = acc.treasuryTotalBalanceCents.plus(
-          treasuryBalanceTokens.multipliedBy(curr.tokenPrice).times(100),
+          treasuryBalanceTokens.multipliedBy(curr.tokenPriceDollars).times(100),
         );
 
         acc.treasuryTotalSupplyBalanceCents = acc.treasuryTotalSupplyBalanceCents.plus(
-          curr.treasuryTotalSupplyCents,
+          curr.totalSupplyCents,
         );
 
         acc.treasuryTotalBorrowBalanceCents = acc.treasuryTotalBorrowBalanceCents.plus(
-          curr.treasuryTotalBorrowsCents,
+          curr.totalBorrowsCents,
         );
 
         acc.treasuryTotalAvailableLiquidityBalanceCents =
-          acc.treasuryTotalAvailableLiquidityBalanceCents.plus(curr.liquidity.times(100));
+          acc.treasuryTotalAvailableLiquidityBalanceCents.plus(curr.liquidityCents * 100);
 
         return acc;
       },
@@ -112,7 +112,7 @@ const useGetTreasuryTotals = (): UseGetTreasuryTotalsOutput => {
       },
     );
     return data;
-  }, [treasuryBalances, markets]);
+  }, [treasuryBalances, assets]);
 
   return {
     data: {

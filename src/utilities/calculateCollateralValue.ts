@@ -4,18 +4,19 @@ import { convertWeiToTokens } from 'utilities';
 
 const calculateCollateralValue = ({
   tokenId,
-  tokenPriceTokens,
+  tokenPriceDollars,
   collateralFactor,
   amountWei,
 }: {
   tokenId: UserAsset['id'];
-  tokenPriceTokens: UserAsset['tokenPrice'];
+  tokenPriceDollars: UserAsset['tokenPriceDollars'];
   collateralFactor: UserAsset['collateralFactor'];
   amountWei: BigNumber;
 }) => {
   const collateralValue = convertWeiToTokens({ valueWei: amountWei, tokenId })
-    .times(tokenPriceTokens)
+    .times(tokenPriceDollars)
     .times(collateralFactor);
+
   return collateralValue;
 };
 

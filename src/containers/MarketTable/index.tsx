@@ -3,7 +3,7 @@ import { Table, TableProps, TableRowProps, switchAriaLabel, toast } from 'compon
 import { VError, formatVErrorToReadableString } from 'errors';
 import React, { useContext, useMemo } from 'react';
 import { useTranslation } from 'translation';
-import { UserAsset, VTokenId } from 'types';
+import { Asset, UserAsset, VTokenId } from 'types';
 
 import { TOKENS } from 'constants/tokens';
 import { DisableLunaUstWarningContext } from 'context/DisableLunaUstWarning';
@@ -35,7 +35,7 @@ import useGenerateData from './useGenerateData';
 export interface MarketTableProps
   extends Partial<Omit<TableProps, 'columns' | 'rowKeyIndex' | 'breakpoint'>>,
     Pick<TableProps, 'breakpoint'> {
-  assets: UserAsset[];
+  assets: Array<Asset | UserAsset>;
   columns: ColumnName[];
   marketType?: 'supply' | 'borrow';
   className?: string;
