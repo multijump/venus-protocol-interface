@@ -24,7 +24,7 @@ export const DisableLunaUstWarningProvider: React.FC = ({ children }) => {
   const { account } = useContext(AuthContext);
   const accountAddress = account?.address || '';
   const {
-    data: { assets },
+    data: { userMarkets },
   } = useGetUserMarketInfo({
     accountAddress,
   });
@@ -33,10 +33,12 @@ export const DisableLunaUstWarningProvider: React.FC = ({ children }) => {
 
   const hasLunaOrUstCollateralEnabled = useMemo(
     () =>
-      assets.some(
-        asset => (asset.id === TOKENS.luna.id || asset.id === TOKENS.ust.id) && asset.collateral,
+      userMarkets.some(
+        userMarket =>
+          (userMarket.id === TOKENS.luna.id || userMarket.id === TOKENS.ust.id) &&
+          userMarket.collateral,
       ),
-    [JSON.stringify(assets)],
+    [JSON.stringify(userMarkets)],
   );
 
   useEffect(() => {

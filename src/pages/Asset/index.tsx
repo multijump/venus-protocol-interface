@@ -54,10 +54,10 @@ export interface AssetUiProps {
   totalSupplyBalanceCents?: number;
   borrowApyPercentage?: BigNumber;
   supplyApyPercentage?: BigNumber;
-  borrowDistributionApyPercentage?: number;
-  supplyDistributionApyPercentage?: number;
-  tokenPriceDollars?: BigNumber;
-  liquidityCents?: BigNumber;
+  borrowDistributionApyPercentage?: BigNumber;
+  supplyDistributionApyPercentage?: BigNumber;
+  tokenPriceDollars?: number;
+  liquidityCents?: number;
   supplierCount?: number;
   borrowerCount?: number;
   borrowCapTokens?: BigNumber;
@@ -216,7 +216,9 @@ export const AssetUi: React.FC<AssetUiProps> = ({
       {
         label: t('asset.marketInfo.stats.priceLabel'),
         value:
-          tokenPriceDollars === undefined ? PLACEHOLDER_KEY : `$${tokenPriceDollars.toFormat(2)}`,
+          tokenPriceDollars === undefined
+            ? PLACEHOLDER_KEY
+            : `$${new BigNumber(tokenPriceDollars).toFormat(2)}`,
       },
       {
         label: t('asset.marketInfo.stats.marketLiquidityLabel'),
@@ -405,7 +407,7 @@ export const AssetUi: React.FC<AssetUiProps> = ({
 
 export type AssetProps = RouteComponentProps<{ vTokenId: VTokenId; marketId: string }>;
 
-const Asset: React.FC<AssetProps> = ({
+const UserMarket: React.FC<AssetProps> = ({
   match: {
     params: { vTokenId, marketId },
   },
@@ -451,4 +453,4 @@ const Asset: React.FC<AssetProps> = ({
   );
 };
 
-export default Asset;
+export default UserMarket;

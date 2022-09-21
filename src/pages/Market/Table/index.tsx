@@ -2,7 +2,7 @@
 import { Select, TableRowProps } from 'components';
 import React from 'react';
 import { useTranslation } from 'translation';
-import { Asset } from 'types';
+import { UserMarket } from 'types';
 
 import Path from 'constants/path';
 import { MarketTable } from 'containers/MarketTable';
@@ -11,10 +11,10 @@ import { useShowMdDownCss } from 'hooks/responsive';
 import { useStyles } from './styles';
 
 export interface TableProps {
-  assets: Asset[];
+  markets: UserMarket[];
 }
 
-export const Table: React.FC<TableProps> = ({ assets }) => {
+export const Table: React.FC<TableProps> = ({ markets }) => {
   const styles = useStyles();
   const { t } = useTranslation();
 
@@ -48,7 +48,7 @@ export const Table: React.FC<TableProps> = ({ assets }) => {
 
       <MarketTable
         getRowHref={getRowHref}
-        assets={assets}
+        markets={markets}
         breakpoint="xl"
         columns={[
           'asset',

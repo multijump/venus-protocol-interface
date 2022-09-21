@@ -11,39 +11,6 @@ export interface User {
   Token: string;
 }
 
-export interface Asset {
-  id: TokenId;
-  tokenPrice: BigNumber;
-  symbol: string;
-  borrowBalance: BigNumber;
-  decimals: number;
-  walletBalance: BigNumber;
-  vtokenAddress: string;
-  borrowApy: BigNumber;
-  xvsBorrowApy: BigNumber;
-  xvsBorrowApr: BigNumber;
-  img: string;
-  borrowCaps: BigNumber;
-  liquidity: BigNumber;
-  xvsSupplyApy: BigNumber;
-  xvsSupplyApr: BigNumber;
-  supplyApy: BigNumber;
-  collateralFactor: BigNumber;
-  collateral: boolean;
-  supplyBalance: BigNumber;
-  key: number;
-  percentOfLimit: string;
-  tokenAddress: string;
-  treasuryBalance: BigNumber;
-  vimg: string | undefined;
-  vsymbol: string;
-  treasuryTotalBorrowsCents: BigNumber;
-  treasuryTotalSupplyCents: BigNumber;
-  treasuryTotalSupply: BigNumber;
-  treasuryTotalBorrows: BigNumber;
-  xvsPerDay: BigNumber;
-}
-
 export type TokenId = keyof typeof TOKENS;
 export type VTokenId = keyof typeof VBEP_TOKENS;
 
@@ -61,6 +28,52 @@ export interface VBepToken {
   symbol: `v${Uppercase<VTokenId>}`;
   address: string | '';
   decimals: number;
+}
+
+export interface Market {
+  id: TokenId;
+  name: string;
+  address: string;
+  symbol: string;
+  decimals: number;
+  tokenPriceDollars: number;
+  borrowCapTokens: BigNumber;
+  borrowRatePerBlock: BigNumber;
+  borrowApy: BigNumber;
+  borrowXvsApr: BigNumber;
+  borrowXvsApy: BigNumber;
+  borrowerCount: number;
+  borrowDailyXvsWei: BigNumber;
+  collateralFactor: BigNumber;
+  exchangeRate: BigNumber;
+  liquidityCents: number;
+  reserveFactor: BigNumber;
+  supplierCount: number;
+  supplyDailyXvsWei: BigNumber;
+  supplyRatePerBlock: BigNumber;
+  supplyApy: BigNumber;
+  supplyXvsApy: BigNumber;
+  supplyXvsApr: BigNumber;
+  totalBorrowsWei: BigNumber;
+  totalBorrowsTokens: BigNumber;
+  totalBorrowsCents: number;
+  totalXvsDistributedWei: BigNumber;
+  totalReservesWei: BigNumber;
+  totalSupplyWei: BigNumber;
+  totalSupplyTokens: BigNumber;
+  totalSupplyCents: number;
+  underlyingDecimals: number;
+  underlyingName: string;
+  underlyingSymbol: string;
+  underlyingAddress?: string;
+}
+
+export interface UserMarket extends Market {
+  collateral: boolean;
+  borrowBalanceTokens: BigNumber;
+  walletBalanceTokens: BigNumber;
+  supplyBalanceTokens: BigNumber;
+  percentOfLimit: number;
 }
 
 export interface Setting {
@@ -161,52 +174,6 @@ export interface VoteTransaction {
   amount: string;
   to: string;
   votes: string;
-}
-
-export interface Market {
-  id: TokenId;
-  address: string;
-  borrowApy: BigNumber;
-  borrowCaps: string;
-  borrowRatePerBlock: string;
-  borrowVenusApr: BigNumber;
-  borrowVenusApy: BigNumber;
-  borrowerCount: number;
-  borrowerDailyVenus: string;
-  cash: string;
-  collateralFactor: string;
-  exchangeRate: string;
-  lastCalculatedBlockNumber: number;
-  liquidity: BigNumber;
-  name: string;
-  reserveFactor: string;
-  supplierCount: number;
-  supplierDailyVenus: string;
-  supplyApy: BigNumber;
-  supplyRatePerBlock: string;
-  supplyVenusApy: BigNumber;
-  supplyVenusApr: BigNumber;
-  symbol: string;
-  tokenPrice: BigNumber;
-  totalBorrows: string;
-  totalBorrows2: string;
-  totalBorrowsUsd: string;
-  totalDistributed: string;
-  totalDistributed2: string;
-  totalReserves: string;
-  totalSupply: string;
-  totalSupply2: string;
-  totalSupplyUsd: string;
-  underlyingAddress: string;
-  underlyingDecimal: number;
-  underlyingName: string;
-  underlyingPrice: string;
-  underlyingSymbol: string;
-  venusBorrowIndex: string;
-  venusSpeeds: string;
-  venusSupplyIndex: string;
-  treasuryTotalBorrowsCents: BigNumber;
-  treasuryTotalSupplyCents: BigNumber;
 }
 
 export interface MarketSnapshot {

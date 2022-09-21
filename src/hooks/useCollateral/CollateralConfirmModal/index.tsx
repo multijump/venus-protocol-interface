@@ -3,14 +3,14 @@ import Typography from '@mui/material/Typography';
 import { Icon, Modal, ModalProps } from 'components';
 import React from 'react';
 import { useTranslation } from 'translation';
-import { Asset } from 'types';
+import { UserMarket } from 'types';
 
 import { ReactComponent as LogoWithText } from 'assets/img/venusLogoWithText.svg';
 
 import { useStyles } from './styles';
 
 export interface ConfirmCollateralModalProps {
-  asset: Asset | undefined;
+  asset: UserMarket | undefined;
   handleClose: ModalProps['handleClose'];
 }
 

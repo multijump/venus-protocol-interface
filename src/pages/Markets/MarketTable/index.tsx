@@ -56,7 +56,7 @@ export const MarketTableUi: React.FC<MarketTableProps> = ({ markets }) => {
     () =>
       markets.map(market => [
         {
-          key: 'assets',
+          key: 'markets',
           render: () => (
             // TODO: wire up
             <TokenGroup tokenIds={['usdt', 'eth', 'usdc', 'xrp', 'bnb', 'aave']} limit={4} />
@@ -79,30 +79,30 @@ export const MarketTableUi: React.FC<MarketTableProps> = ({ markets }) => {
           key: 'totalSupply',
           render: () =>
             formatCentsToReadableValue({
-              value: market.treasuryTotalSupplyCents,
+              value: market.totalSupplyCents,
               shortenLargeValue: true,
             }),
           align: 'right',
-          value: market.treasuryTotalSupplyCents.toFixed(),
+          value: market.totalSupplyCents.toFixed(),
         },
         {
           key: 'totalBorrow',
           render: () =>
             formatCentsToReadableValue({
-              value: market.treasuryTotalBorrowsCents,
+              value: market.totalBorrowsCents,
               shortenLargeValue: true,
             }),
-          value: market.treasuryTotalBorrowsCents.toFixed(),
+          value: market.totalBorrowsCents.toFixed(),
           align: 'right',
         },
         {
           key: 'liquidity',
           render: () =>
             formatCentsToReadableValue({
-              value: market.liquidity.multipliedBy(100),
+              value: market.liquidityCents,
               shortenLargeValue: true,
             }),
-          value: market.liquidity.toFixed(),
+          value: market.liquidityCents.toFixed(),
           align: 'right',
         },
       ]),
@@ -141,8 +141,8 @@ export const MarketTableUi: React.FC<MarketTableProps> = ({ markets }) => {
 const MarketTable = () => {
   // TODO: fetch isolated lending markets
 
-  const { data: { markets } = { markets: [], dailyVenusWei: undefined } } = useGetMarkets({
-    placeholderData: { markets: [], dailyVenusWei: undefined },
+  const { data: { markets } = { markets: [], dailyXvsDistributedWei: undefined } } = useGetMarkets({
+    placeholderData: { markets: [], dailyXvsDistributedWei: undefined },
   });
 
   return <MarketTableUi markets={markets} />;

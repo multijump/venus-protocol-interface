@@ -60,13 +60,13 @@ export const Default = () => (
     vTokenId="bnb"
     totalBorrowBalanceCents={100000000}
     borrowApyPercentage={new BigNumber(2.24)}
-    borrowDistributionApyPercentage={1.1}
+    borrowDistributionApyPercentage={new BigNumber(1.1)}
     totalSupplyBalanceCents={100000000000}
     supplyApyPercentage={new BigNumber(4.56)}
-    supplyDistributionApyPercentage={0.45}
+    supplyDistributionApyPercentage={new BigNumber(0.45)}
     currentUtilizationRate={46}
-    tokenPriceDollars={new BigNumber('1.14')}
-    liquidityCents={new BigNumber(10000000000)}
+    tokenPriceDollars={1.14}
+    liquidityCents={10000000000}
     supplierCount={1234}
     borrowerCount={76}
     borrowCapTokens={new BigNumber(812963286)}

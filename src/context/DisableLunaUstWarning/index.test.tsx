@@ -1,7 +1,7 @@
 import { waitFor } from '@testing-library/react';
 import BigNumber from 'bignumber.js';
 import React from 'react';
-import { Asset } from 'types';
+import { UserMarket } from 'types';
 
 import { assetData } from '__mocks__/models/asset';
 import { useGetUserMarketInfo } from 'clients/api';
@@ -15,18 +15,18 @@ describe('context/DisableLunaUstWarning', () => {
   it.each([TOKENS.ust.id, TOKENS.luna.id])(
     'displays warning modal if %s is enabled as collateral',
     async tokenId => {
-      const customAssets: Asset[] = [
+      const customAssets: UserMarket[] = [
         ...assetData,
         {
           ...assetData[0],
-          id: tokenId as Asset['id'],
+          id: tokenId as UserMarket['id'],
           collateral: true,
         },
       ];
 
       (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
         data: {
-          assets: customAssets,
+          markets: customAssets,
           userTotalBorrowLimitCents: new BigNumber('111'),
           userTotalBorrowBalanceCents: new BigNumber('91'),
           userTotalSupplyBalanceCents: new BigNumber('910'),

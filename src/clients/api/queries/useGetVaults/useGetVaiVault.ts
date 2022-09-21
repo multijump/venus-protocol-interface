@@ -1,4 +1,3 @@
-import BigNumber from 'bignumber.js';
 import { useMemo } from 'react';
 import { TokenId, Vault } from 'types';
 import { convertWeiToTokens, getContractAddress } from 'utilities';
@@ -56,8 +55,10 @@ const useGetVaiVault = ({ accountAddress }: { accountAddress?: string }): UseGet
     useGetVenusVaiVaultDailyRate();
 
   const { data: getMarketsData, isLoading: isGetMarketsLoading } = useGetMarkets();
-  const xvsPriceDollars: BigNumber | undefined = useMemo(
-    () => (getMarketsData?.markets || []).find(market => market.id === TOKENS.xvs.id)?.tokenPrice,
+  const xvsPriceDollars: number | undefined = useMemo(
+    () =>
+      (getMarketsData?.markets || []).find(market => market.id === TOKENS.xvs.id)
+        ?.tokenPriceDollars,
     [JSON.stringify(getMarketsData?.markets)],
   );
 

@@ -19,5 +19,5 @@ export default {
 } as ComponentMeta<typeof MarketBreakdown>;
 
 export const Default = () => (
-  <MarketBreakdown assets={assetData} riskLevel="MINIMAL" marketName="Venus" includeXvs />
+  <MarketBreakdown markets={assetData} riskLevel="MINIMAL" marketName="Venus" includeXvs />
 );

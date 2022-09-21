@@ -14,7 +14,7 @@ import {
 } from 'components';
 import React, { useContext } from 'react';
 import { useTranslation } from 'translation';
-import { Asset, TokenId, VTokenId } from 'types';
+import { TokenId, UserMarket, VTokenId } from 'types';
 import {
   convertTokensToWei,
   formatToReadablePercentage,
@@ -39,21 +39,21 @@ import { useStyles } from './styles';
 export interface SupplyWithdrawProps {
   onClose: ModalProps['handleClose'];
   includeXvs: boolean;
-  assetId: Asset['id'];
+  assetId: UserMarket['id'];
 }
 
 export interface SupplyWithdrawUiProps extends Omit<SupplyWithdrawProps, 'assetId'> {
   className?: string;
   onClose: ModalProps['handleClose'];
-  assets: Asset[];
+  markets: UserMarket[];
   includeXvs: boolean;
-  userTotalBorrowBalanceCents: BigNumber;
-  userTotalBorrowLimitCents: BigNumber;
+  userTotalBorrowBalanceCents: number;
+  userTotalBorrowLimitCents: number;
   onSubmitSupply: AmountFormProps['onSubmit'];
   onSubmitWithdraw: AmountFormProps['onSubmit'];
   isSupplyLoading: boolean;
   isWithdrawLoading: boolean;
-  asset?: Asset;
+  asset?: UserMarket;
 }
 
 /**
@@ -64,7 +64,7 @@ export const SupplyWithdrawUi: React.FC<SupplyWithdrawUiProps> = ({
   className,
   onClose,
   asset,
-  assets,
+  markets,
   userTotalBorrowBalanceCents,
   userTotalBorrowLimitCents,
   includeXvs,
@@ -88,7 +88,7 @@ export const SupplyWithdrawUi: React.FC<SupplyWithdrawUiProps> = ({
         {
           label: t('supplyWithdraw.distributionApy'),
           iconName: 'xvs' as IconName,
-          children: formatToReadablePercentage(asset.xvsSupplyApy),
+          children: formatToReadablePercentage(asset.supplyXvsApy),
         },
       ]
     : [];
@@ -119,33 +119,32 @@ export const SupplyWithdrawUi: React.FC<SupplyWithdrawUiProps> = ({
     }
 
     const maxInput = React.useMemo(() => {
-      let maxInputTokens = asset.walletBalance;
+      let maxInputTokens = asset.walletBalanceTokens;
 
       // If asset isn't used as collateral user can withdraw the entire supply
       // balance without affecting their borrow limit
       if (type === 'withdraw' && !asset.collateral) {
-        maxInputTokens = asset.supplyBalance;
+        maxInputTokens = asset.supplyBalanceTokens;
       } else if (type === 'withdraw') {
         // Calculate how much token user can withdraw before they risk getting
         // liquidated (if their borrow balance goes above their borrow limit)
 
         // Return 0 if borrow limit has already been reached
-        if (userTotalBorrowBalanceCents.isGreaterThanOrEqualTo(userTotalBorrowLimitCents)) {
+        if (userTotalBorrowBalanceCents >= userTotalBorrowLimitCents) {
           return new BigNumber(0);
         }
 
-        const marginWithBorrowLimitDollars = userTotalBorrowLimitCents
-          .minus(userTotalBorrowBalanceCents)
-          .dividedBy(100);
+        const marginWithBorrowLimitDollars =
+          (userTotalBorrowLimitCents - userTotalBorrowBalanceCents) / 100;
 
-        const collateralAmountPerTokenDollars = asset.tokenPrice.multipliedBy(
-          asset.collateralFactor,
+        const collateralAmountPerTokenDollars = asset.collateralFactor.multipliedBy(
+          asset.tokenPriceDollars,
         );
-        const maxTokensBeforeLiquidation = marginWithBorrowLimitDollars
+        const maxTokensBeforeLiquidation = new BigNumber(marginWithBorrowLimitDollars)
           .dividedBy(collateralAmountPerTokenDollars)
           .dp(asset.decimals, BigNumber.ROUND_DOWN);
 
-        maxInputTokens = BigNumber.minimum(maxTokensBeforeLiquidation, asset.supplyBalance);
+        maxInputTokens = BigNumber.minimum(maxTokensBeforeLiquidation, asset.supplyBalanceTokens);
       }
 
       return maxInputTokens;
@@ -164,7 +163,7 @@ export const SupplyWithdrawUi: React.FC<SupplyWithdrawUiProps> = ({
               <SupplyWithdrawForm
                 key={`form-${type}`}
                 asset={asset}
-                assets={assets}
+                markets={markets}
                 type={type}
                 tokenInfo={tokenInfo}
                 userTotalBorrowBalanceCents={userTotalBorrowBalanceCents}
@@ -237,14 +236,14 @@ const SupplyWithdrawModal: React.FC<SupplyWithdrawProps> = ({ assetId, includeXv
   const { account: { address: accountAddress = '' } = {} } = useContext(AuthContext);
 
   const {
-    data: { assets, userTotalBorrowBalanceCents, userTotalBorrowLimitCents },
+    data: { userMarkets, userTotalBorrowBalanceCents, userTotalBorrowLimitCents },
   } = useGetUserMarketInfo({
     accountAddress,
   });
 
   const asset = React.useMemo(
-    () => assets.find(marketAsset => marketAsset.id === assetId),
-    [assetId, JSON.stringify(assets)],
+    () => userMarkets.find(userMarket => userMarket.id === assetId),
+    [assetId, JSON.stringify(userMarkets)],
   );
 
   const { t } = useTranslation();
@@ -301,7 +300,7 @@ const SupplyWithdrawModal: React.FC<SupplyWithdrawProps> = ({ assetId, includeXv
     }
 
     const amount = new BigNumber(value);
-    const amountEqualsSupplyBalance = amount.eq(asset.supplyBalance);
+    const amountEqualsSupplyBalance = amount.eq(asset.supplyBalanceTokens);
     let transactionHash;
 
     if (amountEqualsSupplyBalance && vTokenBalanceData?.balanceWei) {
@@ -335,7 +334,7 @@ const SupplyWithdrawModal: React.FC<SupplyWithdrawProps> = ({ assetId, includeXv
     <SupplyWithdrawUi
       onClose={onClose}
       asset={asset}
-      assets={assets}
+      markets={userMarkets}
       userTotalBorrowBalanceCents={userTotalBorrowBalanceCents}
       userTotalBorrowLimitCents={userTotalBorrowLimitCents}
       onSubmitSupply={onSubmitSupply}

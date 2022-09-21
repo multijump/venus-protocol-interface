@@ -9,7 +9,7 @@ import TEST_IDS from './testIds';
 jest.mock('clients/api');
 
 const baseProps: MarketBreakdownProps = {
-  assets: assetData,
+  markets: assetData,
   includeXvs: true,
   marketName: 'Fake market name',
   riskLevel: 'VERY_HIGH',

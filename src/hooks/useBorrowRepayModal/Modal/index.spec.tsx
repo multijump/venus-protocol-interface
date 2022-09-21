@@ -19,7 +19,7 @@ describe('hooks/useBorrowRepayModal', () => {
   beforeEach(() => {
     (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
       data: {
-        assets: assetData,
+        markets: assetData,
         userTotalBorrowLimitCents: new BigNumber('111'),
         userTotalBorrowBalanceCents: new BigNumber('91'),
       },

@@ -1,6 +1,6 @@
-import { Asset } from 'types';
+import { UserMarket } from 'types';
 
-import { assetData as assets } from '__mocks__/models/asset';
+import { assetData as markets } from '__mocks__/models/asset';
 
 import {
   calculateYearlyEarningsForAsset,
@@ -10,7 +10,7 @@ import {
 describe('utilities/calculateYearlyEarnings', () => {
   test('calculates yearly Earnings for single asset', () => {
     const earnings = calculateYearlyEarningsForAsset({
-      asset: assets[0] as Asset,
+      market: markets[0] as UserMarket,
       includeXvs: false,
     });
 
@@ -19,7 +19,7 @@ describe('utilities/calculateYearlyEarnings', () => {
 
   test('calculates yearly Earnings for single asset, including XVS distribution', () => {
     const earnings = calculateYearlyEarningsForAsset({
-      asset: assets[0] as Asset,
+      market: markets[0] as UserMarket,
       includeXvs: true,
     });
 
@@ -28,17 +28,17 @@ describe('utilities/calculateYearlyEarnings', () => {
     );
   });
 
-  test('calculates yearly Earnings for array of assets', () => {
+  test('calculates yearly Earnings for array of markets', () => {
     const earnings = calculateYearlyEarningsForAssets({
-      assets: assets as Asset[],
+      markets: markets as UserMarket[],
       includeXvs: false,
     });
     expect(earnings?.toFixed()).toMatchInlineSnapshot('"-6.8460208090305522483859"');
   });
 
-  test('calculates yearly Earnings for array of assets, including XVS distribution', () => {
+  test('calculates yearly Earnings for array of markets, including XVS distribution', () => {
     const earnings = calculateYearlyEarningsForAssets({
-      assets: assets as Asset[],
+      markets: markets as UserMarket[],
       includeXvs: true,
     });
 

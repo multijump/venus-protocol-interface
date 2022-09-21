@@ -18,7 +18,7 @@ describe('pages/Dashboard/Vai', () => {
   beforeEach(() => {
     (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
       data: {
-        assets: [...assetData, fakeVai],
+        markets: [...assetData, fakeVai],
         userTotalBorrowLimitCents: new BigNumber('111'),
         userTotalBorrowBalanceCents: new BigNumber('91'),
       },

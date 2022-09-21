@@ -1,9 +1,8 @@
 /** @jsxImportSource @emotion/react */
-import BigNumber from 'bignumber.js';
 import { ButtonGroup, Select, TextField, Toggle } from 'components';
 import React, { InputHTMLAttributes, useContext, useState } from 'react';
 import { useTranslation } from 'translation';
-import { Asset } from 'types';
+import { UserMarket } from 'types';
 
 import { useGetUserMarketInfo } from 'clients/api';
 import { MarketTable } from 'containers/MarketTable';
@@ -14,16 +13,15 @@ import HigherRiskTokensNotice from './HigherRiskTokensNotice';
 import { useStyles } from './styles';
 
 interface DashboardUiProps {
-  userTotalBorrowLimitCents: BigNumber;
   areHigherRiskTokensDisplayed: boolean;
   onHigherRiskTokensToggleChange: (newValue: boolean) => void;
   searchValue: string;
   onSearchInputChange: (newValue: string) => void;
-  assets: Asset[];
+  markets: UserMarket[];
 }
 
 const DashboardUi: React.FC<DashboardUiProps> = ({
-  assets,
+  markets,
   areHigherRiskTokensDisplayed,
   onHigherRiskTokensToggleChange,
   searchValue,
@@ -116,7 +114,7 @@ const DashboardUi: React.FC<DashboardUiProps> = ({
         // TODO: handle sorting on mobile
         <MarketTable
           key="dashboard-supply-market-table"
-          assets={assets}
+          markets={markets}
           marketType="supply"
           breakpoint="lg"
           columns={['asset', 'supplyApyLtv', 'market', 'riskLevel', 'collateral']}
@@ -129,7 +127,7 @@ const DashboardUi: React.FC<DashboardUiProps> = ({
         // TODO: handle sorting on mobile
         <MarketTable
           key="dashboard-borrow-market-table"
-          assets={assets}
+          markets={markets}
           marketType="borrow"
           breakpoint="lg"
           columns={['asset', 'borrowApy', 'market', 'riskLevel', 'liquidity']}
@@ -152,15 +150,14 @@ const Dashboard: React.FC = () => {
 
   // TODO: handle loading state (see VEN-591)
   const {
-    data: { assets, userTotalBorrowLimitCents },
+    data: { userMarkets },
   } = useGetUserMarketInfo({
     accountAddress,
   });
 
   return (
     <DashboardUi
-      assets={assets}
-      userTotalBorrowLimitCents={userTotalBorrowLimitCents}
+      markets={userMarkets}
       areHigherRiskTokensDisplayed={areHigherRiskTokensDisplayed}
       onHigherRiskTokensToggleChange={setAreHigherRiskTokensDisplayed}
       searchValue={searchValue}

@@ -14,7 +14,7 @@ import {
 import { VError, formatVErrorToReadableString } from 'errors';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'translation';
-import { Asset, TokenId } from 'types';
+import { TokenId, UserMarket } from 'types';
 import {
   calculateCollateralValue,
   calculateDailyEarningsCents,
@@ -31,13 +31,13 @@ import { AmountForm, AmountFormProps, ErrorCode } from 'containers/AmountForm';
 import { useStyles } from './styles';
 
 interface SupplyWithdrawFormUiProps {
-  asset: Asset;
-  assets: Asset[];
+  asset: UserMarket;
+  markets: UserMarket[];
   type: 'supply' | 'withdraw';
   tokenInfo: LabeledInlineContentProps[];
   maxInput: BigNumber;
-  userTotalBorrowBalanceCents: BigNumber;
-  userTotalBorrowLimitCents: BigNumber;
+  userTotalBorrowBalanceCents: number;
+  userTotalBorrowLimitCents: number;
   inputLabel: string;
   enabledButtonKey: string;
   disabledButtonKey: string;
@@ -53,7 +53,7 @@ export const SupplyWithdrawContent: React.FC<SupplyWithdrawFormUiProps> = ({
   tokenInfo,
   userTotalBorrowBalanceCents,
   userTotalBorrowLimitCents,
-  assets,
+  markets,
   maxInput,
   inputLabel,
   enabledButtonKey,
@@ -73,22 +73,22 @@ export const SupplyWithdrawContent: React.FC<SupplyWithdrawFormUiProps> = ({
   const validAmount = amount && !amount.isZero() && !amount.isNaN();
 
   const hypotheticalTokenSupplyBalance = amountValue
-    ? calculateNewBalance(asset.supplyBalance, amount)
+    ? calculateNewBalance(asset.supplyBalanceTokens, amount)
     : undefined;
 
   const hypotheticalBorrowLimitCents = useMemo(() => {
-    const tokenPrice = getBigNumber(asset?.tokenPrice);
+    const tokenPriceDollars = getBigNumber(asset?.tokenPriceDollars);
     let updateBorrowLimitCents;
 
-    if (tokenPrice && validAmount) {
+    if (tokenPriceDollars && validAmount) {
       const amountInCents = calculateCollateralValue({
         amountWei: convertTokensToWei({ value: amount, tokenId: asset.id }),
         tokenId: asset.id,
-        tokenPriceTokens: asset.tokenPrice,
+        tokenPriceDollars: asset.tokenPriceDollars,
         collateralFactor: asset.collateralFactor,
       }).times(100);
 
-      const temp = calculateNewBalance(userTotalBorrowLimitCents, amountInCents);
+      const temp = calculateNewBalance(new BigNumber(userTotalBorrowLimitCents), amountInCents);
       updateBorrowLimitCents = BigNumber.maximum(temp, 0);
     }
 
@@ -97,10 +97,10 @@ export const SupplyWithdrawContent: React.FC<SupplyWithdrawFormUiProps> = ({
 
   const [dailyEarningsCents, hypotheticalDailyEarningCents] = useMemo(() => {
     let hypotheticalDailyEarningCentsValue;
-    const hypotheticalAssets = [...assets];
+    const hypotheticalAssets = [...markets];
 
     const yearlyEarningsCents = calculateYearlyEarningsForAssets({
-      assets,
+      markets,
       includeXvs,
     });
 
@@ -111,14 +111,14 @@ export const SupplyWithdrawContent: React.FC<SupplyWithdrawFormUiProps> = ({
     if (validAmount) {
       const hypotheticalAsset = {
         ...asset,
-        supplyBalance: calculateNewBalance(asset.supplyBalance, amount),
+        supplyBalance: calculateNewBalance(asset.supplyBalanceTokens, amount),
       };
 
-      const currentIndex = assets.findIndex(a => a.id === asset.id);
+      const currentIndex = markets.findIndex(a => a.id === asset.id);
       hypotheticalAssets.splice(currentIndex, 1, hypotheticalAsset);
 
       const hypotheticalYearlyEarningsCents = calculateYearlyEarningsForAssets({
-        assets: hypotheticalAssets,
+        markets: hypotheticalAssets,
         includeXvs,
       });
 
@@ -127,7 +127,7 @@ export const SupplyWithdrawContent: React.FC<SupplyWithdrawFormUiProps> = ({
         calculateDailyEarningsCents(hypotheticalYearlyEarningsCents);
     }
     return [dailyEarningsCentsValue, hypotheticalDailyEarningCentsValue];
-  }, [amount, asset.id, includeXvs, JSON.stringify(assets)]);
+  }, [amount, asset.id, includeXvs, JSON.stringify(markets)]);
 
   // Prevent users from supplying LUNA tokens. This is a temporary hotfix
   // following the crash of the LUNA token
@@ -179,10 +179,8 @@ export const SupplyWithdrawContent: React.FC<SupplyWithdrawFormUiProps> = ({
 
       <BorrowBalanceAccountHealth
         css={styles.getRow({ isLast: true })}
-        borrowBalanceCents={userTotalBorrowBalanceCents.toNumber()}
-        borrowLimitCents={
-          hypotheticalBorrowLimitCents?.toNumber() || userTotalBorrowLimitCents.toNumber()
-        }
+        borrowBalanceCents={userTotalBorrowBalanceCents}
+        borrowLimitCents={hypotheticalBorrowLimitCents?.toNumber() || userTotalBorrowLimitCents}
         safeBorrowLimitPercentage={SAFE_BORROW_LIMIT_PERCENTAGE}
       />
 
@@ -191,7 +189,10 @@ export const SupplyWithdrawContent: React.FC<SupplyWithdrawFormUiProps> = ({
         css={styles.getRow({ isLast: true })}
         className="info-row"
       >
-        <ValueUpdate original={userTotalBorrowLimitCents} update={hypotheticalBorrowLimitCents} />
+        <ValueUpdate
+          original={userTotalBorrowLimitCents}
+          update={hypotheticalBorrowLimitCents?.toNumber()}
+        />
       </LabeledInlineContent>
       <Delimiter css={styles.getRow({ isLast: true })} />
       <LabeledInlineContent
@@ -207,7 +208,7 @@ export const SupplyWithdrawContent: React.FC<SupplyWithdrawFormUiProps> = ({
         className="info-row"
       >
         <ValueUpdate
-          original={asset.supplyBalance}
+          original={asset.supplyBalanceTokens}
           update={hypotheticalTokenSupplyBalance}
           format={(value: BigNumber | undefined) =>
             formatTokensToReadableValue({

@@ -1,42 +1,42 @@
 import BigNumber from 'bignumber.js';
-import { Asset } from 'types';
+import { UserMarket } from 'types';
 
 export const calculateYearlyEarningsForAsset = ({
-  asset,
+  market,
   includeXvs,
 }: {
-  asset: Asset;
+  market: UserMarket;
   includeXvs: boolean;
 }) => {
-  const assetBorrowBalanceCents = asset.borrowBalance
-    .multipliedBy(asset.tokenPrice)
+  const marketBorrowBalanceCents = market.borrowBalanceTokens
+    .multipliedBy(market.tokenPriceDollars)
     .multipliedBy(100);
-  const assetSupplyBalanceCents = asset.supplyBalance
-    .multipliedBy(asset.tokenPrice)
+  const marketSupplyBalanceCents = market.supplyBalanceTokens
+    .multipliedBy(market.tokenPriceDollars)
     .multipliedBy(100);
 
-  const supplyYearlyEarningsCents = assetSupplyBalanceCents.multipliedBy(
-    asset.supplyApy.dividedBy(100),
+  const supplyYearlyEarningsCents = marketSupplyBalanceCents.multipliedBy(
+    market.supplyApy.dividedBy(100),
   );
   // Note that borrowYearlyEarningsCents will always be negative (or 0), since
   // the borrow APY is expressed with a negative percentage)
-  const borrowYearlyEarningsCents = assetBorrowBalanceCents.multipliedBy(
-    asset.borrowApy.dividedBy(100),
+  const borrowYearlyEarningsCents = marketBorrowBalanceCents.multipliedBy(
+    market.borrowApy.dividedBy(100),
   );
 
   const yearlyEarningsCents = supplyYearlyEarningsCents.plus(borrowYearlyEarningsCents);
 
-  if (!includeXvs || !asset.xvsSupplyApr.isFinite() || !asset.xvsBorrowApr.isFinite()) {
+  if (!includeXvs || !market.supplyXvsApr.isFinite() || !market.borrowXvsApr.isFinite()) {
     return yearlyEarningsCents;
   }
 
   // Add earnings from XVS distribution
   const supplyYearlyXvsDistributionEarningsCents = supplyYearlyEarningsCents.multipliedBy(
-    asset.xvsSupplyApr.dividedBy(100),
+    market.supplyXvsApr.dividedBy(100),
   );
 
   const borrowYearlyXvsDistributionEarningsCents = borrowYearlyEarningsCents.multipliedBy(
-    asset.xvsBorrowApr.dividedBy(100),
+    market.borrowXvsApr.dividedBy(100),
   );
 
   return yearlyEarningsCents
@@ -45,26 +45,26 @@ export const calculateYearlyEarningsForAsset = ({
 };
 
 export const calculateYearlyEarningsForAssets = ({
-  assets,
+  markets,
   includeXvs,
 }: {
-  assets: Asset[];
+  markets: UserMarket[];
   includeXvs: boolean;
 }) => {
   // We use the yearly earnings to calculate the daily earnings the net APY
   let yearlyEarningsCents: BigNumber | undefined;
 
-  assets.forEach(asset => {
+  markets.forEach(market => {
     if (!yearlyEarningsCents) {
       yearlyEarningsCents = new BigNumber(0);
     }
 
-    const assetYearlyEarningsCents = calculateYearlyEarningsForAsset({
-      asset,
+    const marketYearlyEarningsCents = calculateYearlyEarningsForAsset({
+      market,
       includeXvs,
     });
 
-    yearlyEarningsCents = yearlyEarningsCents.plus(assetYearlyEarningsCents);
+    yearlyEarningsCents = yearlyEarningsCents.plus(marketYearlyEarningsCents);
   });
 
   return yearlyEarningsCents;

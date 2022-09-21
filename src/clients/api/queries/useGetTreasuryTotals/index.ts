@@ -45,7 +45,7 @@ const useGetTreasuryTotals = (): UseGetTreasuryTotalsOutput => {
   } = useGetMarkets({
     placeholderData: {
       markets: [],
-      dailyVenusWei: new BigNumber(0),
+      dailyXvsDistributedWei: new BigNumber(0),
     },
   });
 
@@ -84,23 +84,23 @@ const useGetTreasuryTotals = (): UseGetTreasuryTotalsOutput => {
         let treasuryBalanceTokens = new BigNumber(0);
         if (treasuryBalances && treasuryBalances[curr.address]) {
           const mantissa = treasuryBalances[curr.address].tokenBalance;
-          treasuryBalanceTokens = new BigNumber(mantissa).shiftedBy(-curr.underlyingDecimal);
+          treasuryBalanceTokens = new BigNumber(mantissa).shiftedBy(-curr.underlyingDecimals);
         }
 
         acc.treasuryTotalBalanceCents = acc.treasuryTotalBalanceCents.plus(
-          treasuryBalanceTokens.multipliedBy(curr.tokenPrice).times(100),
+          treasuryBalanceTokens.multipliedBy(curr.tokenPriceDollars).times(100),
         );
 
         acc.treasuryTotalSupplyBalanceCents = acc.treasuryTotalSupplyBalanceCents.plus(
-          curr.treasuryTotalSupplyCents,
+          curr.totalSupplyCents,
         );
 
         acc.treasuryTotalBorrowBalanceCents = acc.treasuryTotalBorrowBalanceCents.plus(
-          curr.treasuryTotalBorrowsCents,
+          curr.totalBorrowsCents,
         );
 
         acc.treasuryTotalAvailableLiquidityBalanceCents =
-          acc.treasuryTotalAvailableLiquidityBalanceCents.plus(curr.liquidity.times(100));
+          acc.treasuryTotalAvailableLiquidityBalanceCents.plus(curr.liquidityCents);
 
         return acc;
       },

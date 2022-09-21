@@ -1,5 +1,7 @@
 import { restService } from 'utilities';
 
+import governanceResponse from '__mocks__/api/governance.json';
+
 import getMarkets from '.';
 
 jest.mock('utilities/restService');
@@ -36,7 +38,7 @@ const supportedMarket = {
   totalSupply2: '471719991318791850460.48588013',
   totalSupplyUsd: '10000008520383416148.354763493825771157',
   underlyingAddress: '0x16227d60f7a0e586c66b005219dfc887d13c9531',
-  underlyingDecimal: 6,
+  underlyingDecimals: 6,
   underlyingName: 'USDC',
   underlyingPrice: '999900000000000000000000000000',
   underlyingSymbol: 'USDC',
@@ -85,5 +87,16 @@ describe('api/queries/getMarkets', () => {
     const { markets } = await getMarkets();
 
     expect(markets).toHaveLength(0);
+  });
+
+  test('it fetches and formats markets correctly', async () => {
+    (restService as jest.Mock).mockImplementationOnce(async () => ({
+      status: 200,
+      data: governanceResponse,
+    }));
+
+    const response = await getMarkets();
+
+    expect(response).toMatchSnapshot();
   });
 });

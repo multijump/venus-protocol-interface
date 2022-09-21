@@ -28,7 +28,7 @@ describe('pages/ConvertVRT/Convert', () => {
     }));
     (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
       data: {
-        assets: assetData,
+        markets: assetData,
         userTotalBorrowLimit: new BigNumber('111'),
         userTotalBorrowBalance: new BigNumber('91'),
         userTotalSupplyBalance: new BigNumber('910'),

@@ -4,7 +4,7 @@ import Paper from '@mui/material/Paper';
 import { ButtonGroup, Select } from 'components';
 import React, { useState } from 'react';
 import { useTranslation } from 'translation';
-import { Asset } from 'types';
+import { UserMarket } from 'types';
 
 import { MarketTable, MarketTableProps } from 'containers/MarketTable';
 import {
@@ -18,10 +18,10 @@ import TEST_IDS from '../testIds';
 import { useStyles } from './styles';
 
 export interface TablesProps {
-  assets: Asset[];
+  markets: UserMarket[];
 }
 
-export const Tables: React.FC<TablesProps> = ({ assets }) => {
+export const Tables: React.FC<TablesProps> = ({ markets }) => {
   const styles = useStyles();
   const { t } = useTranslation();
   const [activeTabIndex, setActiveTabIndex] = useState(0);
@@ -36,7 +36,7 @@ export const Tables: React.FC<TablesProps> = ({ assets }) => {
     borrow: MarketTableProps;
   } = {
     supply: {
-      assets,
+      markets,
       marketType: 'supply',
       breakpoint: 'md',
       columns: ['asset', 'supplyApyLtv', 'supplyBalance', 'collateral'],
@@ -46,7 +46,7 @@ export const Tables: React.FC<TablesProps> = ({ assets }) => {
       },
     },
     borrow: {
-      assets,
+      markets,
       marketType: 'borrow',
       breakpoint: 'md',
       columns: ['asset', 'borrowApy', 'borrowBalance', 'percentOfLimit'],

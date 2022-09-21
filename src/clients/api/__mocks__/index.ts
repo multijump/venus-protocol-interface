@@ -101,7 +101,7 @@ export const useGetTreasuryTotals = jest.fn();
 export const useGetUserMarketInfo = jest.fn(() => ({
   isLoading: false,
   data: {
-    assets: assetData,
+    markets: assetData,
   },
 }));
 

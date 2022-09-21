@@ -343,7 +343,7 @@
   },
   "marketTable": {
     "columns": {
-      "asset": "Asset",
+      "asset": "UserMarket",
       "borrowApy": "APY",
       "borrowBalance": "Balance",
       "collateral": "Collateral",
@@ -855,7 +855,7 @@
   },
   "xvs": {
     "columns": {
-      "asset": "Asset",
+      "asset": "UserMarket",
       "borrowXvsApy": "Borrow XVS APY",
       "supplyXvsApy": "Supply XVS APY",
       "xvsPerDay": "XVS Per Day"

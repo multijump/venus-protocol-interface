@@ -1,21 +1,22 @@
 import BigNumber from 'bignumber.js';
-import { Asset } from 'types';
+import { Market } from 'types';
 import { convertWeiToTokens } from 'utilities';
 
 const calculateCollateralValue = ({
   tokenId,
-  tokenPriceTokens,
+  tokenPriceDollars,
   collateralFactor,
   amountWei,
 }: {
-  tokenId: Asset['id'];
-  tokenPriceTokens: Asset['tokenPrice'];
-  collateralFactor: Asset['collateralFactor'];
+  tokenId: Market['id'];
+  tokenPriceDollars: Market['tokenPriceDollars'];
+  collateralFactor: Market['collateralFactor'];
   amountWei: BigNumber;
 }) => {
   const collateralValue = convertWeiToTokens({ valueWei: amountWei, tokenId })
-    .times(tokenPriceTokens)
+    .times(tokenPriceDollars)
     .times(collateralFactor);
+
   return collateralValue;
 };
 

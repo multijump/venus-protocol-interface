@@ -17,26 +17,13 @@ const useGetMarketData = ({ vTokenId }: { vTokenId: VBepToken['id'] }) => {
   const assetMarket = (getMarketData?.markets || []).find(market => market.id === vTokenId);
 
   return React.useMemo(() => {
-    const totalBorrowBalanceCents = assetMarket && +assetMarket.totalBorrowsUsd * 100;
-    const totalSupplyBalanceCents = assetMarket && +assetMarket.totalSupplyUsd * 100;
-    const borrowApyPercentage = assetMarket?.borrowApy;
-    const supplyApyPercentage = assetMarket?.supplyApy;
-    const borrowDistributionApyPercentage = assetMarket && +assetMarket.borrowVenusApy;
-    const supplyDistributionApyPercentage = assetMarket && +assetMarket.supplyVenusApy;
-    const tokenPriceDollars = assetMarket?.tokenPrice;
-    const liquidityCents = assetMarket && new BigNumber(assetMarket.liquidity).multipliedBy(100);
-    const supplierCount = assetMarket?.supplierCount;
-    const borrowerCount = assetMarket?.borrowerCount;
-    const borrowCapTokens = assetMarket && new BigNumber(assetMarket.borrowCaps);
-    const mintedTokens = assetMarket && new BigNumber(assetMarket.totalSupply2);
+    const mintedTokens = assetMarket && new BigNumber(assetMarket.totalSupplyTokens);
     const reserveFactorMantissa = assetMarket && new BigNumber(assetMarket.reserveFactor);
 
     const dailyDistributionXvs =
       assetMarket &&
       convertWeiToTokens({
-        valueWei: new BigNumber(assetMarket.supplierDailyVenus).plus(
-          assetMarket.borrowerDailyVenus,
-        ),
+        valueWei: new BigNumber(assetMarket.supplyDailyXvsWei).plus(assetMarket.borrowDailyXvsWei),
         tokenId: TOKENS.xvs.id as TokenId,
       });
 
@@ -56,7 +43,7 @@ const useGetMarketData = ({ vTokenId }: { vTokenId: VBepToken['id'] }) => {
       assetMarket &&
       formattedSupplyRatePerBlock &&
       // prettier-ignore
-      +assetMarket.totalSupplyUsd * (((1 + formattedSupplyRatePerBlock) ** BLOCKS_PER_DAY) - 1) *
+      (assetMarket.totalBorrowsCents / 100) * (((1 + formattedSupplyRatePerBlock) ** BLOCKS_PER_DAY) - 1) *
       // Convert to cents
       100;
 
@@ -64,7 +51,7 @@ const useGetMarketData = ({ vTokenId }: { vTokenId: VBepToken['id'] }) => {
       assetMarket &&
       formattedBorrowRatePerBlock &&
       // prettier-ignore
-      +assetMarket.totalBorrowsUsd * (((1 + formattedBorrowRatePerBlock) ** BLOCKS_PER_DAY) - 1)
+      (assetMarket.totalBorrowsCents / 100) * (((1 + formattedBorrowRatePerBlock) ** BLOCKS_PER_DAY) - 1)
         // Convert to cents
         * 100;
 
@@ -77,7 +64,7 @@ const useGetMarketData = ({ vTokenId }: { vTokenId: VBepToken['id'] }) => {
     const reserveTokens =
       assetMarket &&
       convertWeiToTokens({
-        valueWei: new BigNumber(assetMarket.totalReserves),
+        valueWei: new BigNumber(assetMarket.totalReservesWei),
         tokenId: vTokenId,
       });
 
@@ -96,25 +83,25 @@ const useGetMarketData = ({ vTokenId }: { vTokenId: VBepToken['id'] }) => {
         tokenId: vTokenId,
       });
 
-      currentUtilizationRate = new BigNumber(assetMarket.totalBorrows2)
-        .div(vTokenCashTokens.plus(assetMarket.totalBorrows2).minus(reserveTokens))
+      currentUtilizationRate = new BigNumber(assetMarket.totalBorrowsTokens)
+        .div(vTokenCashTokens.plus(assetMarket.totalBorrowsTokens).minus(reserveTokens))
         .multipliedBy(100)
         .dp(0)
         .toNumber();
     }
 
     return {
-      totalBorrowBalanceCents,
-      totalSupplyBalanceCents,
-      borrowApyPercentage,
-      supplyApyPercentage,
-      borrowDistributionApyPercentage,
-      supplyDistributionApyPercentage,
-      tokenPriceDollars,
-      liquidityCents,
-      supplierCount,
-      borrowerCount,
-      borrowCapTokens,
+      totalBorrowBalanceCents: assetMarket?.totalBorrowsCents,
+      totalSupplyBalanceCents: assetMarket?.totalSupplyCents,
+      borrowApyPercentage: assetMarket?.borrowApy,
+      supplyApyPercentage: assetMarket?.supplyApy,
+      borrowDistributionApyPercentage: assetMarket?.borrowXvsApy,
+      supplyDistributionApyPercentage: assetMarket?.supplyXvsApy,
+      tokenPriceDollars: assetMarket?.tokenPriceDollars,
+      liquidityCents: assetMarket?.liquidityCents,
+      supplierCount: assetMarket?.supplierCount,
+      borrowerCount: assetMarket?.borrowerCount,
+      borrowCapTokens: assetMarket?.borrowCapTokens,
       mintedTokens,
       dailyDistributionXvs,
       dailySupplyingInterestsCents,

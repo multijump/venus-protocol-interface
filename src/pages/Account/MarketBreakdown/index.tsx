@@ -10,7 +10,7 @@ import {
 } from 'components';
 import React from 'react';
 import { useTranslation } from 'translation';
-import { Asset, MarketRiskLevel } from 'types';
+import { MarketRiskLevel, UserMarket } from 'types';
 import { formatCentsToReadableValue, formatToReadablePercentage } from 'utilities';
 
 import { SAFE_BORROW_LIMIT_PERCENTAGE } from 'constants/safeBorrowLimitPercentage';
@@ -24,13 +24,13 @@ export interface MarketBreakdownProps {
   marketName: string;
   riskLevel: MarketRiskLevel;
   includeXvs: boolean;
-  assets: Asset[];
+  markets: UserMarket[];
   className?: string;
 }
 
 export const MarketBreakdown: React.FC<MarketBreakdownProps> = ({
   marketName,
-  assets,
+  markets,
   includeXvs,
   riskLevel,
   className,
@@ -47,7 +47,7 @@ export const MarketBreakdown: React.FC<MarketBreakdownProps> = ({
     dailyEarningsCents,
     netApyPercentage,
   } = useExtractData({
-    assets,
+    markets,
     includeXvs,
   });
 
@@ -120,7 +120,7 @@ export const MarketBreakdown: React.FC<MarketBreakdownProps> = ({
         </div>
       </Paper>
 
-      <Tables assets={assets} />
+      <Tables markets={markets} />
     </div>
   );
 };

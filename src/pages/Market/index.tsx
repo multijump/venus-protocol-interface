@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 import { Cell, CellGroup, Icon } from 'components';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'translation';
-import { Asset } from 'types';
+import { UserMarket } from 'types';
 import { formatCentsToReadableValue } from 'utilities';
 
 import { assetData } from '__mocks__/models/asset';
@@ -14,7 +14,7 @@ import { useStyles } from './styles';
 
 export interface MarketUiProps {
   marketName: string;
-  assets: Asset[];
+  markets: UserMarket[];
   isIsolatedLendingMarket: boolean;
   totalSupplyCents: number;
   totalBorrowCents: number;
@@ -23,7 +23,7 @@ export interface MarketUiProps {
 
 export const MarketUi: React.FC<MarketUiProps> = ({
   marketName,
-  assets,
+  markets,
   isIsolatedLendingMarket,
   totalSupplyCents,
   totalBorrowCents,
@@ -64,10 +64,10 @@ export const MarketUi: React.FC<MarketUiProps> = ({
       },
       {
         label: t('market.header.assetsLabel'),
-        value: assets.length,
+        value: markets.length,
       },
     ],
-    [totalSupplyCents, totalBorrowCents, assets.length],
+    [totalSupplyCents, totalBorrowCents, markets.length],
   );
 
   return (
@@ -106,7 +106,7 @@ export const MarketUi: React.FC<MarketUiProps> = ({
         </div>
       )}
 
-      <Table assets={assets} />
+      <Table markets={markets} />
     </>
   );
 };
@@ -114,7 +114,7 @@ export const MarketUi: React.FC<MarketUiProps> = ({
 const Market: React.FC = () => {
   // TODO: fetch actual values (see VEN-546)
   const marketName = 'Venus';
-  const assets = assetData;
+  const markets = assetData;
   const isIsolatedLendingMarket = true;
   const totalSupplyCents = 1000000000;
   const totalBorrowCents = 100000000;
@@ -124,7 +124,7 @@ const Market: React.FC = () => {
   return (
     <MarketUi
       marketName={marketName}
-      assets={assets}
+      markets={markets}
       isIsolatedLendingMarket={isIsolatedLendingMarket}
       totalSupplyCents={totalSupplyCents}
       totalBorrowCents={totalBorrowCents}

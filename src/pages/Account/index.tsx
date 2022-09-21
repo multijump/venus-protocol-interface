@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 import { Cell, CellGroup, Toggle } from 'components';
 import React, { useContext } from 'react';
 import { useTranslation } from 'translation';
-import { Asset, MarketRiskLevel } from 'types';
+import { MarketRiskLevel, UserMarket } from 'types';
 import { formatCentsToReadableValue, formatToReadablePercentage } from 'utilities';
 
 import { assetData } from '__mocks__/models/asset';
@@ -16,7 +16,7 @@ import TEST_IDS from './testIds';
 export interface Market {
   name: string;
   riskLevel: MarketRiskLevel;
-  assets: Asset[];
+  markets: UserMarket[];
 }
 
 export interface AccountUiProps {
@@ -83,11 +83,11 @@ export const AccountUi: React.FC<AccountUiProps> = ({
         <CellGroup cells={cells} data-testid={TEST_IDS.stats} />
       </div>
 
-      {markets.map(({ assets, name, riskLevel }) => (
+      {markets.map(({ markets, name, riskLevel }) => (
         <MarketBreakdown
           key={`market-breakdown-${name}`}
           css={styles.section}
-          assets={assets}
+          markets={markets}
           marketName={name}
           riskLevel={riskLevel}
           includeXvs={includeXvs}
@@ -108,17 +108,17 @@ const Account: React.FC = () => {
 
   const markets: Market[] = [
     {
-      assets: assetData,
+      markets: assetData,
       name: 'Venus',
       riskLevel: 'MINIMAL',
     },
     {
-      assets: assetData,
+      markets: assetData,
       name: 'Metaverse',
       riskLevel: 'VERY_HIGH',
     },
     {
-      assets: assetData,
+      markets: assetData,
       name: 'Gaming',
       riskLevel: 'MEDIUM',
     },

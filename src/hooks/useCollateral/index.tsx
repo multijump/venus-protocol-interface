@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { VError } from 'errors';
 import React, { useCallback, useContext, useState } from 'react';
-import { Asset, VTokenId } from 'types';
+import { UserMarket, VTokenId } from 'types';
 
 import {
   getHypotheticalAccountLiquidity,
@@ -24,7 +24,7 @@ const useCollateral = () => {
   const web3 = useWeb3();
   const comptrollerContract = useComptrollerContract();
 
-  const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>(undefined);
+  const [selectedAsset, setSelectedAsset] = useState<UserMarket | undefined>(undefined);
 
   const { hasLunaOrUstCollateralEnabled } = useContext(DisableLunaUstWarningContext);
 
@@ -36,7 +36,7 @@ const useCollateral = () => {
     onSettled: () => setSelectedAsset(undefined),
   });
 
-  const toggleCollateral = async (asset: Asset) => {
+  const toggleCollateral = async (asset: UserMarket) => {
     // Prevent action if user has UST or LUNA enabled as collateral while trying
     // to enable/disable a different token
     if (
@@ -54,7 +54,7 @@ const useCollateral = () => {
       });
     }
 
-    if (!asset || !asset.borrowBalance.isZero()) {
+    if (!asset || !asset.borrowBalanceTokens.isZero()) {
       throw new VError({
         type: 'interaction',
         code: 'collateralRequired',
@@ -75,12 +75,12 @@ const useCollateral = () => {
         const assetHypotheticalLiquidity = await getHypotheticalAccountLiquidity({
           comptrollerContract,
           accountAddress,
-          vTokenAddress: asset.vtokenAddress,
+          vTokenAddress: asset.address,
           vTokenBalanceOfWei: new BigNumber(vTokenBalanceOf.balanceWei),
         });
 
         if (+assetHypotheticalLiquidity['1'] > 0 || +assetHypotheticalLiquidity['2'] === 0) {
-          await exitMarket({ vtokenAddress: asset.vtokenAddress, accountAddress });
+          await exitMarket({ vtokenAddress: asset.address, accountAddress });
         }
       } catch (error) {
         if (error instanceof VError) {
@@ -97,7 +97,7 @@ const useCollateral = () => {
       }
     } else {
       try {
-        await enterMarkets({ vTokenAddresses: [asset.vtokenAddress], accountAddress });
+        await enterMarkets({ vTokenAddresses: [asset.address], accountAddress });
       } catch (error) {
         if (error instanceof VError) {
           throw error;

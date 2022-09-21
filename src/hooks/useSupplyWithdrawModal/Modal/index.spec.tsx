@@ -1,7 +1,7 @@
 import { act, fireEvent, waitFor } from '@testing-library/react';
 import BigNumber from 'bignumber.js';
 import React from 'react';
-import { Asset, TokenId } from 'types';
+import { TokenId, UserMarket } from 'types';
 import { DISABLED_TOKENS } from 'utilities';
 
 import fakeAccountAddress from '__mocks__/models/address';
@@ -26,11 +26,11 @@ import SupplyWithdraw from '.';
 const asset = assetData[1];
 const fakeGetVTokenBalance = new BigNumber('111');
 
-const fakeAsset: Asset = {
+const fakeAsset: UserMarket = {
   ...assetData[0],
-  tokenPrice: new BigNumber(1),
-  supplyBalance: new BigNumber(1000),
-  walletBalance: new BigNumber(10000000),
+  tokenPriceDollars: 1,
+  supplyBalanceTokens: new BigNumber(1000),
+  walletBalanceTokens: new BigNumber(10000000),
 };
 
 const fakeUserTotalBorrowLimitDollars = new BigNumber(1000);
@@ -48,7 +48,7 @@ describe('hooks/useSupplyWithdrawModal', () => {
 
     (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
       data: {
-        assets: assetData,
+        markets: assetData,
         userTotalBorrowLimitCents: fakeUserTotalBorrowLimitDollars,
         userTotalBorrowBalanceCents: fakeUserTotalBorrowBalanceDollars,
       },
@@ -97,7 +97,7 @@ describe('hooks/useSupplyWithdrawModal', () => {
     beforeEach(() => {
       (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
         data: {
-          assets: [fakeAsset],
+          markets: [fakeAsset],
           userTotalBorrowLimitCents: fakeUserTotalBorrowLimitDollars,
           userTotalBorrowBalanceCents: fakeUserTotalBorrowBalanceDollars,
         },
@@ -113,7 +113,7 @@ describe('hooks/useSupplyWithdrawModal', () => {
 
       (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
         data: {
-          assets: [customFakeAsset],
+          markets: [customFakeAsset],
           userTotalBorrowLimitCents: fakeUserTotalBorrowLimitDollars,
           userTotalBorrowBalanceCents: fakeUserTotalBorrowBalanceDollars,
         },
@@ -165,14 +165,14 @@ describe('hooks/useSupplyWithdrawModal', () => {
     });
 
     it('disables submit button if an amount entered in input is higher than token wallet balance', async () => {
-      const customFakeAsset: Asset = {
+      const customFakeAsset: UserMarket = {
         ...fakeAsset,
-        walletBalance: new BigNumber(1),
+        walletBalanceTokens: new BigNumber(1),
       };
 
       (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
         data: {
-          assets: [customFakeAsset],
+          markets: [customFakeAsset],
           userTotalBorrowLimitCents: fakeUserTotalBorrowLimitDollars,
           userTotalBorrowBalanceCents: fakeUserTotalBorrowBalanceDollars,
         },
@@ -194,7 +194,7 @@ describe('hooks/useSupplyWithdrawModal', () => {
       // Check submit button is disabled
       expect(getByText(en.supplyWithdraw.enterValidAmountSupply).closest('button')).toBeDisabled();
 
-      const incorrectValueTokens = customFakeAsset.walletBalance.plus(1).toFixed();
+      const incorrectValueTokens = customFakeAsset.walletBalanceTokens.plus(1).toFixed();
 
       // Enter amount in input
       const tokenTextInput = document.querySelector('input') as HTMLInputElement;
@@ -228,17 +228,16 @@ describe('hooks/useSupplyWithdrawModal', () => {
     });
 
     it('lets user supply BNB, then displays successful transaction modal and calls onClose callback on success', async () => {
-      const customFakeAsset: Asset = {
+      const customFakeAsset: UserMarket = {
         ...fakeAsset,
         id: 'bnb' as TokenId,
         symbol: 'BNB',
-        vsymbol: 'vBNB',
-        walletBalance: new BigNumber('11'),
+        walletBalanceTokens: new BigNumber('11'),
       };
 
       (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
         data: {
-          assets: [customFakeAsset],
+          markets: [customFakeAsset],
           userTotalBorrowLimitCents: fakeUserTotalBorrowLimitDollars,
           userTotalBorrowBalanceCents: fakeUserTotalBorrowBalanceDollars,
         },
@@ -290,17 +289,16 @@ describe('hooks/useSupplyWithdrawModal', () => {
     });
 
     it('lets user supply non-BNB tokens, then displays successful transaction modal and calls onClose callback on success', async () => {
-      const customFakeAsset: Asset = {
+      const customFakeAsset: UserMarket = {
         ...fakeAsset,
         id: 'eth' as TokenId,
         symbol: 'ETH',
-        vsymbol: 'vETH',
-        walletBalance: new BigNumber('11'),
+        walletBalanceTokens: new BigNumber('11'),
       };
 
       (useGetUserMarketInfo as jest.Mock).mockImplementation(() => ({
         data: {
-          assets: [customFakeAsset],
+          markets: [customFakeAsset],
           userTotalBorrowLimitCents: fakeUserTotalBorrowLimitDollars,
           userTotalBorrowBalanceCents: fakeUserTotalBorrowBalanceDollars,
         },

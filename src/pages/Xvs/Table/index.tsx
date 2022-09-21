@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { Typography } from '@mui/material';
+import BigNumber from 'bignumber.js';
 import { Table, TableProps, Token } from 'components';
 import React, { useContext, useMemo } from 'react';
 import { useTranslation } from 'translation';
-import { Asset } from 'types';
+import { TokenId, UserMarket } from 'types';
 import {
   convertWeiToTokens,
   formatToReadablePercentage,
@@ -14,21 +15,23 @@ import {
 import { useGetBalanceOf, useGetUserMarketInfo, useGetVenusVaiVaultDailyRate } from 'clients/api';
 import { DAYS_PER_YEAR } from 'constants/daysPerYear';
 import { DEFAULT_REFETCH_INTERVAL_MS } from 'constants/defaultRefetchInterval';
+import { TOKENS } from 'constants/tokens';
 import { AuthContext } from 'context/AuthContext';
 
 import { useStyles } from '../styles';
 
-type TableAsset = Pick<Asset, 'id' | 'symbol'> & {
-  xvsPerDay: Asset['xvsPerDay'] | undefined;
-  xvsSupplyApy: Asset['xvsSupplyApy'] | undefined;
-  xvsBorrowApy: Asset['xvsBorrowApy'] | undefined;
+type TableAsset = Pick<UserMarket, 'id' | 'symbol'> & {
+  supplyDailyXvsWei: UserMarket['supplyDailyXvsWei'] | undefined;
+  borrowDailyXvsWei: UserMarket['borrowDailyXvsWei'] | undefined;
+  supplyXvsApy: UserMarket['supplyXvsApy'] | undefined;
+  borrowXvsApy: UserMarket['borrowXvsApy'] | undefined;
 };
 
 interface XvsTableProps {
-  assets: TableAsset[];
+  markets: TableAsset[];
 }
 
-const XvsTableUi: React.FC<XvsTableProps> = ({ assets }) => {
+const XvsTableUi: React.FC<XvsTableProps> = ({ markets }) => {
   const { t } = useTranslation();
   const styles = useStyles();
 
@@ -52,49 +55,58 @@ const XvsTableUi: React.FC<XvsTableProps> = ({ assets }) => {
     [],
   );
 
-  // Format assets to rows
-  const rows: TableProps['data'] = assets.map(asset => [
-    {
-      key: 'asset',
-      render: () => <Token tokenId={asset.id} />,
-      value: asset.id,
-      align: 'left',
-    },
-    {
-      key: 'xvsPerDay',
-      render: () => (
-        <Typography variant="small1" css={[styles.whiteText, styles.fontWeight400]}>
-          {formatTokensToReadableValue({
-            value: asset.xvsPerDay,
-            tokenId: 'xvs',
-            minimizeDecimals: true,
-          })}
-        </Typography>
+  // Format markets to rows
+  const rows: TableProps['data'] = markets.map(asset => {
+    const xvsPerDay = convertWeiToTokens({
+      valueWei: new BigNumber(asset?.supplyDailyXvsWei || 0).plus(
+        new BigNumber(asset?.borrowDailyXvsWei || 0),
       ),
-      value: asset.xvsPerDay?.toFixed() || 0,
-      align: 'right',
-    },
-    {
-      key: 'supplyXvsApy',
-      render: () => (
-        <Typography variant="small1" css={[styles.whiteText, styles.fontWeight400]}>
-          {formatToReadablePercentage(asset.xvsSupplyApy)}
-        </Typography>
-      ),
-      value: asset.xvsSupplyApy?.toFixed() || 0,
-      align: 'right',
-    },
-    {
-      key: 'borrowXvsApy',
-      render: () => (
-        <Typography variant="small1" css={[styles.whiteText, styles.fontWeight400]}>
-          {formatToReadablePercentage(asset.xvsBorrowApy)}
-        </Typography>
-      ),
-      value: asset.xvsBorrowApy?.toFixed() || 0,
-      align: 'right',
-    },
-  ]);
+      tokenId: TOKENS.xvs.id as TokenId,
+    });
+
+    return [
+      {
+        key: 'asset',
+        render: () => <Token tokenId={asset.id} />,
+        value: asset.id,
+        align: 'left',
+      },
+      {
+        key: 'xvsPerDay',
+        render: () => (
+          <Typography variant="small1" css={[styles.whiteText, styles.fontWeight400]}>
+            {formatTokensToReadableValue({
+              value: xvsPerDay,
+              tokenId: 'xvs',
+              minimizeDecimals: true,
+            })}
+          </Typography>
+        ),
+        value: xvsPerDay?.toFixed() || 0,
+        align: 'right',
+      },
+      {
+        key: 'supplyXvsApy',
+        render: () => (
+          <Typography variant="small1" css={[styles.whiteText, styles.fontWeight400]}>
+            {formatToReadablePercentage(asset.supplyXvsApy)}
+          </Typography>
+        ),
+        value: asset.supplyXvsApy?.toFixed() || 0,
+        align: 'right',
+      },
+      {
+        key: 'borrowXvsApy',
+        render: () => (
+          <Typography variant="small1" css={[styles.whiteText, styles.fontWeight400]}>
+            {formatToReadablePercentage(asset.borrowXvsApy)}
+          </Typography>
+        ),
+        value: asset.borrowXvsApy?.toFixed() || 0,
+        align: 'right',
+      },
+    ];
+  });
 
   return (
     <Table
@@ -115,7 +127,7 @@ const XvsTable: React.FC = () => {
   const { account } = useContext(AuthContext);
   // TODO: handle loading state (see VEN-591)
   const {
-    data: { assets },
+    data: { userMarkets },
   } = useGetUserMarketInfo({
     accountAddress: account?.address,
   });
@@ -133,8 +145,8 @@ const XvsTable: React.FC = () => {
   );
 
   const assetsWithVai = useMemo(() => {
-    const allAssets: TableAsset[] = [...assets];
-    const xvsAsset = assets.find(asset => asset.id === 'xvs');
+    const allAssets: TableAsset[] = [...userMarkets];
+    const xvsAsset = userMarkets.find(asset => asset.id === 'xvs');
 
     if (venusVaiVaultDailyRateData && vaultVaiStakedData && xvsAsset) {
       const venusVaiVaultDailyRateTokens = convertWeiToTokens({
@@ -148,7 +160,7 @@ const XvsTable: React.FC = () => {
       });
 
       const vaiApy = venusVaiVaultDailyRateTokens
-        .times(xvsAsset.tokenPrice)
+        .times(xvsAsset.tokenPriceDollars)
         .times(DAYS_PER_YEAR)
         .times(100)
         .div(vaultVaiStakedTokens);
@@ -156,20 +168,21 @@ const XvsTable: React.FC = () => {
       allAssets.unshift({
         id: 'vai',
         symbol: 'VAI',
-        xvsPerDay: venusVaiVaultDailyRateTokens,
-        xvsSupplyApy: vaiApy,
-        xvsBorrowApy: undefined,
+        supplyDailyXvsWei: venusVaiVaultDailyRateData.dailyRateWei,
+        borrowDailyXvsWei: undefined,
+        supplyXvsApy: vaiApy,
+        borrowXvsApy: undefined,
       });
     }
 
     return allAssets;
   }, [
-    JSON.stringify(assets),
+    JSON.stringify(userMarkets),
     venusVaiVaultDailyRateData?.dailyRateWei.toFixed(),
     vaultVaiStakedData?.balanceWei.toFixed(),
   ]);
 
-  return <XvsTableUi assets={assetsWithVai} />;
+  return <XvsTableUi markets={assetsWithVai} />;
 };
 
 export default XvsTable;

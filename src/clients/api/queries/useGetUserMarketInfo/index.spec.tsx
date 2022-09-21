@@ -10,7 +10,7 @@ import { vTokenBalancesAccount } from '__mocks__/models/vTokenBalancesAccount';
 import { getAssetsInAccount, getMarkets, getMintedVai, useGetVTokenBalancesAll } from 'clients/api';
 import renderComponent from 'testUtils/renderComponent';
 
-import useGetUserMarketInfo, { UseGetUserMarketInfoOutput } from '.';
+import useGetUserMarketInfo, { UseGetUserMarketsOutput } from '.';
 
 jest.mock('clients/api');
 
@@ -34,14 +34,14 @@ describe('api/queries/useGetUserMarketInfo', () => {
     });
   });
 
-  it('calculates totals correctly', async () => {
-    let data: UseGetUserMarketInfoOutput['data'] = {
-      assets: [],
-      userTotalBorrowBalanceCents: new BigNumber(0),
-      userTotalBorrowLimitCents: new BigNumber(0),
-      userTotalSupplyBalanceCents: new BigNumber(0),
+  it('calculates totals and formats user markets correctly', async () => {
+    let data: UseGetUserMarketsOutput['data'] = {
+      userMarkets: [],
+      userTotalBorrowBalanceCents: 0,
+      userTotalBorrowLimitCents: 0,
+      userTotalSupplyBalanceCents: 0,
       totalXvsDistributedWei: new BigNumber(0),
-      dailyVenusWei: new BigNumber(0),
+      dailyXvsDistributedWei: new BigNumber(0),
     };
 
     const CallMarketContext = () => {
@@ -53,7 +53,7 @@ describe('api/queries/useGetUserMarketInfo', () => {
       authContextValue: { account: { address: fakeAddress } },
     });
 
-    await waitFor(() => expect(data.assets.length > 0).toBe(true));
+    await waitFor(() => expect(data.userMarkets.length > 0).toBe(true));
     expect(data).toMatchSnapshot();
   });
 });

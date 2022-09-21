@@ -2,7 +2,7 @@
 import { Modal, ModalProps, Spinner, TabContent, Tabs, Token } from 'components';
 import React from 'react';
 import { useTranslation } from 'translation';
-import { Asset } from 'types';
+import { UserMarket } from 'types';
 import { isAssetEnabled } from 'utilities';
 
 import { useGetUserMarketInfo } from 'clients/api';
@@ -15,7 +15,7 @@ import { useStyles } from './styles';
 export interface BorrowRepayProps {
   onClose: ModalProps['handleClose'];
   includeXvs: boolean;
-  assetId: Asset['id'];
+  assetId: UserMarket['id'];
 }
 
 const BorrowRepay: React.FC<BorrowRepayProps> = ({ onClose, assetId, includeXvs }) => {
@@ -24,14 +24,14 @@ const BorrowRepay: React.FC<BorrowRepayProps> = ({ onClose, assetId, includeXvs 
   const { account } = React.useContext(AuthContext);
 
   const {
-    data: { assets },
+    data: { userMarkets },
   } = useGetUserMarketInfo({
     accountAddress: account?.address,
   });
 
   const asset = React.useMemo(
-    () => assets.find(marketAsset => marketAsset.id === assetId),
-    [assetId, JSON.stringify(assets)],
+    () => userMarkets.find(userMarket => userMarket.id === assetId),
+    [assetId, JSON.stringify(userMarkets)],
   );
 
   const tabsContent: TabContent[] = [

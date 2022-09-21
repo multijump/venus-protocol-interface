@@ -13,7 +13,7 @@ import {
 import React, { useContext, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'translation';
-import { Asset } from 'types';
+import { UserMarket } from 'types';
 import {
   calculateCollateralValue,
   calculatePercentage,
@@ -30,13 +30,13 @@ import { useStyles } from './styles';
 import { ColumnName } from './types';
 
 const useGenerateData = ({
-  assets,
+  markets,
   columns,
   collateralOnChange,
 }: {
-  assets: Asset[];
+  markets: UserMarket[];
   columns: ColumnName[];
-  collateralOnChange: (asset: Asset) => void;
+  collateralOnChange: (asset: UserMarket) => void;
 }) => {
   const { t } = useTranslation();
   const styles = useStyles();
@@ -51,7 +51,7 @@ const useGenerateData = ({
     }
 
     return (
-      assets
+      markets
         .reduce((acc, asset) => {
           if (!asset.collateral) {
             return acc;
@@ -61,9 +61,12 @@ const useGenerateData = ({
           // collateral
           return acc.plus(
             calculateCollateralValue({
-              amountWei: convertTokensToWei({ value: asset.supplyBalance, tokenId: asset.id }),
+              amountWei: convertTokensToWei({
+                value: asset.supplyBalanceTokens,
+                tokenId: asset.id,
+              }),
               tokenId: asset.id,
-              tokenPriceTokens: asset.tokenPrice,
+              tokenPriceDollars: asset.tokenPriceDollars,
               collateralFactor: asset.collateralFactor,
             }).times(100),
           );
@@ -71,9 +74,9 @@ const useGenerateData = ({
         // Convert BigNumber to number
         .toNumber()
     );
-  }, [JSON.stringify(assets), columns.includes('percentOfLimit')]);
+  }, [JSON.stringify(markets), columns.includes('percentOfLimit')]);
 
-  const data: TableProps['data'] = assets.map(asset =>
+  const data: TableProps['data'] = markets.map(asset =>
     columns.map((column, index) => {
       const row: TableRowProps = {
         key: column,
@@ -86,12 +89,12 @@ const useGenerateData = ({
         row.render = () => <Token tokenId={asset.id} />;
         row.value = asset.id;
       } else if (column === 'borrowApy' || column === 'labeledBorrowApy') {
-        const borrowApy = includeXvs ? asset.xvsBorrowApy.plus(asset.borrowApy) : asset.borrowApy;
+        const borrowApy = includeXvs ? asset.borrowXvsApy.plus(asset.borrowApy) : asset.borrowApy;
 
         row.render = () => formatToReadablePercentage(borrowApy);
         row.value = borrowApy.toNumber();
       } else if (column === 'supplyApyLtv' || column === 'labeledSupplyApyLtv') {
-        const supplyApy = includeXvs ? asset.xvsSupplyApy.plus(asset.supplyApy) : asset.supplyApy;
+        const supplyApy = includeXvs ? asset.supplyXvsApy.plus(asset.supplyApy) : asset.supplyApy;
         const ltv = +asset.collateralFactor * 100;
 
         row.render = () => (
@@ -114,10 +117,10 @@ const useGenerateData = ({
       } else if (column === 'liquidity') {
         row.render = () =>
           formatCentsToReadableValue({
-            value: asset.liquidity.multipliedBy(100),
+            value: asset.liquidityCents,
             shortenLargeValue: true,
           });
-        row.value = asset.liquidity.toNumber();
+        row.value = asset.liquidityCents;
       } else if (column === 'market') {
         row.render = () => (
           <div>
@@ -137,49 +140,49 @@ const useGenerateData = ({
       } else if (column === 'walletBalance') {
         row.render = () =>
           formatTokensToReadableValue({
-            value: asset.walletBalance,
+            value: asset.walletBalanceTokens,
             tokenId: asset.id,
             minimizeDecimals: true,
           });
 
-        row.value = asset.walletBalance.toFixed();
+        row.value = asset.walletBalanceTokens.toFixed();
       } else if (column === 'supplyBalance') {
         row.render = () =>
           formatTokensToReadableValue({
-            value: asset.supplyBalance,
+            value: asset.supplyBalanceTokens,
             tokenId: asset.id,
             minimizeDecimals: true,
           });
 
-        row.value = asset.supplyBalance.toFixed();
+        row.value = asset.supplyBalanceTokens.toFixed();
       } else if (column === 'borrowBalance') {
         row.render = () =>
           formatTokensToReadableValue({
-            value: asset.borrowBalance,
+            value: asset.borrowBalanceTokens,
             tokenId: asset.id,
             minimizeDecimals: true,
           });
 
-        row.value = asset.borrowBalance.toFixed();
+        row.value = asset.borrowBalanceTokens.toFixed();
       } else if (column === 'treasuryTotalBorrow') {
         row.render = () =>
           formatCentsToReadableValue({
-            value: asset.treasuryTotalBorrowsCents,
+            value: asset.totalBorrowsCents,
             shortenLargeValue: true,
           });
 
-        row.value = asset.treasuryTotalBorrowsCents.toFixed();
+        row.value = asset.totalBorrowsCents.toFixed();
       } else if (column === 'treasuryTotalSupply') {
         row.render = () =>
           formatCentsToReadableValue({
-            value: asset.treasuryTotalSupplyCents,
+            value: asset.totalSupplyCents,
             shortenLargeValue: true,
           });
 
-        row.value = asset.treasuryTotalSupplyCents.toFixed();
+        row.value = asset.totalSupplyCents.toFixed();
       } else if (column === 'percentOfLimit') {
         const percentOfLimit = calculatePercentage({
-          numerator: +asset.borrowBalance.multipliedBy(asset.tokenPrice).times(100),
+          numerator: +asset.borrowBalanceTokens.multipliedBy(asset.tokenPriceDollars).times(100),
           denominator: +userTotalBorrowLimitCents,
         });
 

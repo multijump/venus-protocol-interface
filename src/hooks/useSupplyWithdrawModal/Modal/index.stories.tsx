@@ -1,5 +1,4 @@
 import { ComponentMeta, Story } from '@storybook/react';
-import { BigNumber } from 'bignumber.js';
 import noop from 'noop-ts';
 import React from 'react';
 import { VTokenId } from 'types';
@@ -39,10 +38,10 @@ const context = {
 export const DisconnectedSupply = Template.bind({});
 DisconnectedSupply.args = {
   asset: assetData[0],
-  assets: assetData,
+  markets: assetData,
   onClose: noop,
-  userTotalBorrowBalanceCents: new BigNumber('16'),
-  userTotalBorrowLimitCents: new BigNumber('42.38'),
+  userTotalBorrowBalanceCents: 16,
+  userTotalBorrowLimitCents: 42.38,
   isSupplyLoading: false,
   isWithdrawLoading: false,
 };
@@ -51,10 +50,10 @@ export const DisabledSupply = Template.bind({});
 DisabledSupply.decorators = [withAuthContext(context)];
 DisabledSupply.args = {
   asset: assetData[0],
-  assets: assetData,
+  markets: assetData,
   onClose: noop,
-  userTotalBorrowBalanceCents: new BigNumber('16'),
-  userTotalBorrowLimitCents: new BigNumber('42.38'),
+  userTotalBorrowBalanceCents: 16,
+  userTotalBorrowLimitCents: 42.38,
   onSubmitSupply: noop,
   onSubmitWithdraw: noop,
   isSupplyLoading: false,
@@ -72,10 +71,10 @@ Supply.decorators = [
 ];
 Supply.args = {
   asset: assetData[0],
-  assets: assetData,
+  markets: assetData,
   onClose: noop,
-  userTotalBorrowBalanceCents: new BigNumber('16'),
-  userTotalBorrowLimitCents: new BigNumber('42.38'),
+  userTotalBorrowBalanceCents: 16,
+  userTotalBorrowLimitCents: 42.38,
   onSubmitSupply: noop,
   onSubmitWithdraw: noop,
   isSupplyLoading: false,
