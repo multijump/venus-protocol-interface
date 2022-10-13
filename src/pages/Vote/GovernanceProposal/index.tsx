@@ -102,6 +102,7 @@ interface GovernanceProposalProps {
   proposalTitle: string;
   proposalState: ProposalState;
   endDate: Date | undefined;
+  cancelDate: Date | undefined;
   userVoteStatus?: VoteSupport;
   forVotesWei?: BigNumber;
   againstVotesWei?: BigNumber;
@@ -114,6 +115,7 @@ const GovernanceProposalUi: React.FC<GovernanceProposalProps> = ({
   proposalTitle,
   proposalState,
   endDate,
+  cancelDate,
   userVoteStatus,
   forVotesWei,
   againstVotesWei,
@@ -141,6 +143,50 @@ const GovernanceProposalUi: React.FC<GovernanceProposalProps> = ({
     abstainedVotesWei || 0,
   ]);
 
+  const footerDom = useMemo(() => {
+    // Translation keys: do not remove these comments
+    // t('voteProposalUi.activeUntilDate')
+    // t('voteProposalUi.canceledOn')
+    // t('voteProposalUi.defeatedOn')
+    // t('voteProposalUi.queuedOn')
+    // t('voteProposalUi.executedOn')
+    // t('voteProposalUi.expiredOn')
+
+    let i18nKey = 'voteProposalUi.activeUntilDate';
+
+    if (proposalState === 'Canceled') {
+      i18nKey = 'voteProposalUi.canceledOn';
+    } else if (proposalState === 'Defeated') {
+      i18nKey = 'voteProposalUi.defeatedOn';
+    } else if (proposalState === 'Queued') {
+      i18nKey = 'voteProposalUi.queuedOn';
+    } else if (proposalState === 'Executed') {
+      i18nKey = 'voteProposalUi.executedOn';
+    } else if (proposalState === 'Expired') {
+      i18nKey = 'voteProposalUi.expiredOn';
+    }
+
+    return (
+      <div css={styles.timestamp}>
+        {proposalState !== 'Pending' && endDate && (
+          <Typography variant="small2">
+            <Trans
+              i18nKey={i18nKey}
+              components={{
+                Date: <Typography variant="small2" color="textPrimary" />,
+              }}
+              values={{
+                date: proposalState === 'Canceled' ? cancelDate : endDate,
+              }}
+            />
+          </Typography>
+        )}
+
+        {proposalState === 'Active' && endDate && <Countdown date={endDate} />}
+      </div>
+    );
+  }, [proposalState, endDate, cancelDate]);
+
   return (
     <ProposalCard
       className={className}
@@ -165,25 +211,7 @@ const GovernanceProposalUi: React.FC<GovernanceProposalProps> = ({
           <StatusCard state={proposalState} />
         )
       }
-      footer={
-        endDate && proposalState === 'Active' ? (
-          <div css={styles.timestamp}>
-            <Typography variant="small2">
-              <Trans
-                i18nKey="voteProposalUi.activeUntilDate"
-                components={{
-                  Date: <Typography variant="small2" color="textPrimary" />,
-                }}
-                values={{
-                  date: endDate,
-                }}
-              />
-            </Typography>
-
-            <Countdown date={endDate} />
-          </div>
-        ) : undefined
-      }
+      footer={footerDom}
       data-testid={TEST_IDS.governanceProposal(proposalId.toString())}
     />
   );

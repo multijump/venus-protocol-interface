@@ -737,33 +737,38 @@
     "youSuccessfullyVotedForTheProposal": "You successfully voted for the proposal"
   },
   "voteProposalUi": {
-    "activeUntilDate": "Active until: <Date>{{ date, dd MMM HH:mm }}</Date>",
+    "activeUntilDate": "Active until: <Date>{{ date, dd MMM h:mm a }}</Date>",
     "cancel": "Cancel",
+    "canceledOn": "Canceled on: <Date>{{ date, dd MMM h:mm a }}</Date>",
     "countdownFormat": {
       "daysIncluded": "{{days}}d {{hours}}h : {{minutes}}m : {{seconds}}s",
       "hoursIncluded": "{{hours}}h : {{minutes}}m : {{seconds}}s",
       "minutesIncluded": "{{minutes}}m : {{seconds}}s",
       "secondsIncluded": "{{seconds}}s"
     },
+    "defeatedOn": "Defeated on: <Date>{{ date, dd MMM h:mm a }}</Date>",
     "description": "Description",
     "execute": "Execute",
+    "executedOn": "Executed on: <Date>{{ date, dd MMM h:mm a }}</Date>",
+    "expiredOn": "Expired on: <Date>{{ date, dd MMM h:mm a }}</Date>",
     "operation": "Operation",
     "proposalHistory": "Proposal History",
     "proposalState": {
       "active": "Active",
-      "activeTimestamp": "Active: <Span>{{date, dd MMM yyyy HH:mm}}</Span>",
+      "activeTimestamp": "Active: <Span>{{date, dd MMM yyyy h:mm a}}</Span>",
       "canceled": "Canceled",
-      "canceledTimestamp": "Canceled: <Span>{{date, dd MMM yyyy HH:mm}}</Span>",
+      "canceledTimestamp": "Canceled: <Span>{{date, dd MMM yyyy h:mm a}}</Span>",
       "defeated": "Defeated",
-      "defeatedTimestamp": "Defeated: <Span>{{date, dd MMM yyyy HH:mm}}</Span>",
+      "defeatedTimestamp": "Defeated: <Span>{{date, dd MMM yyyy h:mm a}}</Span>",
       "executed": "Executed",
-      "executedTimestamp": "Executed: <Span>{{date, dd MMM yyyy HH:mm}}</Span>",
+      "executedTimestamp": "Executed: <Span>{{date, dd MMM yyyy h:mm a}}</Span>",
       "passed": "Passed",
       "queued": "Queued",
-      "queuedTimestamp": "Queued: <Span>{{date, dd MMM yyyy HH:mm}}</Span>",
-      "succeededTimestamp": "Succeeded: <Span>{{date, dd MMM yyyy HH:mm}}</Span>"
+      "queuedTimestamp": "Queued: <Span>{{date, dd MMM yyyy h:mm a}}</Span>",
+      "succeededTimestamp": "Succeeded: <Span>{{date, dd MMM yyyy h:mm a}}</Span>"
     },
     "queue": "Queue",
+    "queuedOn": "Queued on: <Date>{{ date, dd MMM h:mm a }}</Date>",
     "statusCard": {
       "active": "Active",
       "ariaLabelAbstain": "votes abstain",
